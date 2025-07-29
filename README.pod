@@ -1,0 +1,9 @@
+=encoding utf8
+
+=head1 NAME
+
+Llama - An alternative core library for Perl
+
+=head1 AUTHOR
+
+Delon Newman <contact@delonnewman.name>
