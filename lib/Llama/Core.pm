@@ -1,4 +1,4 @@
-package Llama::Util;
+package Llama::Core;
 use strict;
 use warnings;
 use utf8;
@@ -12,6 +12,5 @@ sub chomped :prototype($) ($in) {
   s/\n$//;
   $_;
 }
-
 
 1;

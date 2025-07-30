@@ -1,8 +1,8 @@
-package Llama::Util::Test;
+package Llama::Core::Test;
 use Test::More;
 use lib qw(../../lib);
 
-use Llama::Util qw(chomped);
+use Llama::Core qw(chomped);
 
 is chomped "hiya\n", "hiya";
 
