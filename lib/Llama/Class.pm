@@ -5,7 +5,7 @@ use utf8;
 use feature 'signatures';
 use feature 'state';
 
-use Llama::Object 'Llama::HashObject';
+use Llama::Object 'Llama::HashObject', ':constructor';
 use Llama::Perl::Package;
 
 sub allocate($ref, $name = undef) {
@@ -39,6 +39,15 @@ sub name ($self) {
     Carp::confess "something unexpected happened, should have name";
 }
 
+sub mro ($self, @args) {
+  if (@args) {
+    mro::set_mro($self->name, $args[0]);
+    return $self;
+  }
+
+  mro::get_mro($self->name);
+}
+
 sub is_anon { 0 }
 
 sub object_id ($self) {
@@ -50,6 +59,8 @@ sub package ($self) {
   $self->{_package} //
     Carp::confess "something unexpected happened, should have package";
 }
+
+sub parents ($self) { $self->package->ISA }
 
 {
   no strict 'refs';
