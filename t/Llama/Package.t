@@ -30,7 +30,19 @@ is_deeply { first => *Mock::Package::first }, \%table;
 my @subs = $package->subroutine_names;
 is_deeply [qw(first)], \@subs;
 
-Llama::Package->load('List::Util')->alias('reduce' => 'Llama::Package::Test::reduce');
+my $list_util = Llama::Package->load('List::Util');
+
+$list_util->alias('reduce' => 'Llama::Package::Test::reduce');
 can_ok __PACKAGE__, 'reduce';
+
+eval {
+  $list_util->alias('reduce' => 'fold');
+};
+if ($@) {
+  fail("wrong exception thrown: $@") unless $@ =~ /fully qualified/;
+  pass("exception thrown: $@");
+} else {
+  fail('no exception thrown');
+}
 
 done_testing;
