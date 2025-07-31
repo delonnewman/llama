@@ -22,6 +22,8 @@ is $name, $package->name;
 my @name = $package->name;
 is_deeply [split('::', $name)], \@name;
 
+is 'Mock/Package.pm' => $package->path_name;
+
 is $package->symbol_table_name => "$name\::";
 
 my %table = $package->symbol_table;
