@@ -17,6 +17,9 @@ sub new ($class, $name) {
   bless \$name, $class;
 }
 
+sub is_package { 1 }
+sub is_module { 0 }
+
 sub load {
   my $self = shift;
   $self = $self->new(shift) if $self eq __PACKAGE__;
