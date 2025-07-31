@@ -10,6 +10,8 @@ use Module::Load ();
 
 use Llama::Util qw(extract_flags);
 
+use overload 'bool' => sub{1};
+
 # TODO: import mro 'c3' by default
 sub import($class, @args) {
   my ($calling_package) = caller;
@@ -19,6 +21,22 @@ sub import($class, @args) {
     my @parents = @args ? @args : (__PACKAGE__);
     Module::Load::load($_) for @parents;
     push @{$calling_package . '::ISA'}, @parents;
+
+    if ($flags{-abstract}) {
+      *{$calling_package . '::allocate'} = sub ($class) {
+        Carp::confess "abstract classes cannot be allocated";
+      };
+    }
+
+    if ($flags{-constructor}) {
+      *{$calling_package . '::new'} = sub ($class, @args) {
+          my $object = $class->allocate(@args);
+          if (my $method = $object->can('INIT')) {
+            $object->$method(@args);
+          }
+          return $object;
+      };
+    }
   }
 }
 
