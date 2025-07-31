@@ -35,6 +35,11 @@ sub extract_flags ($arrayref) {
       my $value = delete $arrayref->[$i + 1];
       $flags{$item} = $value;
     }
+    if ($item =~ /^:/) {
+      my $name = delete $arrayref->[$i];
+      $name =~ s/^://;
+      $flags{"-$name"} = 1;
+    }
   }
 
   wantarray ? %flags : {%flags};

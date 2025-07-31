@@ -14,6 +14,11 @@ subtest 'extract_flags' => sub {
 
   is $flags{-to} => 'person';
   is_deeply [qw(name age)], \@args;
+
+  @args  = ('Llama::Object',  ':constructor');
+  %flags = extract_flags \@args;
+
+  is $flags{-constructor} => 1;
 };
 
 done_testing;
