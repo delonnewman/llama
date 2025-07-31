@@ -1,4 +1,4 @@
-package Llama::Package;
+package Llama::Perl::Package;
 use strict;
 use warnings;
 use utf8;

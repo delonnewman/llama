@@ -1,4 +1,4 @@
-package Llama::Package::Test;
+package Llama::Perl::Package::Test;
 use strict;
 use warnings;
 use utf8;
@@ -6,7 +6,7 @@ use utf8;
 use Test::More;
 use lib qw(../../lib);
 
-use Llama::Package;
+use Llama::Perl::Package;
 
 sub throws(&@) {
   my ($block, $error_pattern) = @_;
@@ -21,7 +21,7 @@ sub throws(&@) {
   }
 }
 
-my $described_class = 'Llama::Package';
+my $described_class = 'Llama::Perl::Package';
 
 package Mock::Package {
   sub first {  }
@@ -48,9 +48,9 @@ is_deeply [qw(first)], \@syms;
 my $syms = $package->symbol_names;
 is_deeply [qw(first)], $syms;
 
-my $list_util = Llama::Package->load('List::Util');
+my $list_util = $described_class->load('List::Util');
 
-$list_util->alias('reduce' => 'Llama::Package::Test::reduce');
+$list_util->alias('reduce' => __PACKAGE__ . '::reduce');
 can_ok __PACKAGE__, 'reduce';
 throws { $list_util->alias('reduce' => 'fold') } qr/fully qualified/;
 
