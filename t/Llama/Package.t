@@ -50,7 +50,14 @@ if ($@) {
   fail('no exception thrown');
 }
 
-$described_class->new('Friendly')->define_subroutine('greeting', sub { 'hi' });
+my $friendly_package = $described_class->new('Friendly');
+$friendly_package->add_symbol('greeting', sub { 'hi' });
 is 'hi' => Friendly::greeting();
+
+$friendly_package->add_symbol('GREETINGS', { en_US => 'hi' });
+{
+  no warnings 'once';
+  is 'hi' => $Friendly::GREETINGS{en_US};
+}
 
 done_testing;

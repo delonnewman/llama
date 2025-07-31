@@ -46,7 +46,7 @@ sub alias ($self, %aliases) {
   $self;
 }
 
-sub define_subroutine ($self, $name, $body) {
+sub add_symbol ($self, $name, $body) {
   {
     no strict 'refs';
     *{$self->qualify($name)} = $body;
