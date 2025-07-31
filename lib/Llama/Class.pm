@@ -34,6 +34,13 @@ sub allocate($ref, $name = undef) {
   $object;
 }
 
+sub name ($self) {
+  $self->{name} //
+    Carp::confess "something unexpected happened, should have name";
+}
+
+sub is_anon { 0 }
+
 sub object_id ($self) {
   $self->{_object_id} //
     Carp::confess "something unexpected happened, should have object_id";
@@ -44,12 +51,11 @@ sub package ($self) {
     Carp::confess "something unexpected happened, should have package";
 }
 
-sub name ($self) {
-  $self->{name} //
-    Carp::confess "something unexpected happened, should have name";
+{
+  no strict 'refs';
+  no warnings 'once';
+  *module = \&package;
 }
-
-sub is_anon { 0 }
 
 package Llama::AnonymousClass;
 
