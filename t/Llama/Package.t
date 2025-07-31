@@ -29,8 +29,11 @@ is $package->symbol_table_name => "$name\::";
 my %table = $package->symbol_table;
 is_deeply { first => *Mock::Package::first }, \%table;
 
-my @subs = $package->subroutine_names;
-is_deeply [qw(first)], \@subs;
+my @syms = $package->symbol_names;
+is_deeply [qw(first)], \@syms;
+
+my $syms = $package->symbol_names;
+is_deeply [qw(first)], $syms;
 
 my $list_util = Llama::Package->load('List::Util');
 

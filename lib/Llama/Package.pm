@@ -59,7 +59,7 @@ sub qualify ($self, @parts) {
   join('::', $self->name, @parts);
 }
 
-sub subroutine_names ($self) {
+sub symbol_names ($self) {
   my %table = $self->symbol_table;
   wantarray ? keys %table : [keys %table];
 }
@@ -79,4 +79,4 @@ sub symbol_table_name { shift->name . '::' }
 __END__
 
 my $package = Llama::Package->new('Llama::Core');
-$package->symbol_table
+$package->subroutine_names
