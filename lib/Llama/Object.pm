@@ -44,6 +44,10 @@ sub import($class, @args) {
   }
 }
 
+sub allocate ($class) {
+  Carp::confess "abstract classes cannot be allocated";
+}
+
 sub class_name ($self) {
   my $class = ref($self);
   Carp::confess "invalid usage, called instance method on class"
