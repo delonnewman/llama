@@ -7,7 +7,7 @@ use feature 'signatures';
 use Carp ();
 use Module::Load ();
 
-use Llama::Util qw(valid_value_type);
+use Llama::Util ();
 
 sub new ($class, $name) {
   $name // Carp::croak("a name is required");
@@ -24,11 +24,6 @@ sub path_name ($self) {
   s/::/\//;
   "$_.pm";
 }
-
-# TODO: add a method that can determine if the package is loaded
-# sub is_loaded {
-
-# }
 
 sub load {
   my $self = shift;
@@ -58,8 +53,8 @@ sub alias ($self, %aliases) {
 }
 
 sub add_symbol ($self, $name, $value, $type = undef) {
-  my ($is_valid, $value_type) = valid_value_type($value, $type);
-  Carp::croak "symbol value is not the correct type: got $value_type, expected $type" if defined($is_valid) && !$is_valid;
+  my ($is_valid, $value_type) = Llama::Util::valid_value_type($value, $type);
+  Carp::confess "symbol value is not the correct type: got $value_type, expected $type" if $type && !$is_valid;
 
   {
     no strict 'refs';
@@ -75,6 +70,8 @@ sub qualify ($self, @parts) {
 
 sub symbol_names ($self, $type = undef) {
   my %table = $self->symbol_table;
+  Carp::carp "symbol type is empty this could mean that the package isn't loaded, try calling the 'load' method" unless %table;
+
   my @names = keys %table;
   @names = grep { defined($table{$_}{$type}) } @names if $type;
 
