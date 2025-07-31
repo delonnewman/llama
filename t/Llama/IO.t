@@ -4,14 +4,17 @@ use lib qw(../../lib);
 
 use Llama::IO qw(slurp spit);
 
-my $c1 = spit('./test.txt', 'this is a test');
+mkdir 't/data';
+
+# scalar context
+my $c1 = spit('./t/data/test.txt', 'this is a test');
 is $c1 => 'this is a test';
-is slurp('./test.txt') => 'this is a test';
+is slurp('./t/data/test.txt') => 'this is a test';
 
 # array context
-spit './test-array-context.txt', "this\nis\na\nlist";
-my @lines = slurp('./test-array-context.txt');
+spit './t/data/test-array-context.txt', "this\nis\na\nlist";
+my @lines = slurp('./t/data/test-array-context.txt');
 is_deeply \@lines, ["this\n", "is\n", "a\n", "list"];
-is slurp('./test-array-context.txt') => "this\nis\na\nlist";
+is slurp('./t/data/test-array-context.txt') => "this\nis\na\nlist";
 
 done_testing;
