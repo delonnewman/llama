@@ -98,5 +98,13 @@ sub symbol_table ($self) {
 
 sub symbol_table_name { shift->name . '::' }
 
+sub ISA ($self) {
+  {
+    no strict 'refs';
+    my @parents = @{$self->name . '::ISA'};
+    wantarray ? @parents : [@parents];
+  }
+}
+
 1;
 
