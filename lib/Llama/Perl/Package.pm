@@ -9,6 +9,8 @@ use Module::Load ();
 
 use Llama::Util ();
 
+# TODO: Move file oriented methods to subclass Llama::Perl::Module
+
 sub new ($class, $name) {
   $name // Carp::croak("a name is required");
 
@@ -35,8 +37,9 @@ sub path_name ($self) {
 
 sub name ($self) { wantarray ? split('::', $$self) : $$self }
 
-sub nested_package ($self, $name) {
-  __PACKAGE__->new($self->qualify($name));
+sub nested ($self, $name) {
+  my $class = ref($self);
+  $class->new($self->qualify($name));
 }
 
 sub alias ($self, %aliases) {
