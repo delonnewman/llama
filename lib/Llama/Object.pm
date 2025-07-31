@@ -3,8 +3,38 @@ use strict;
 use warnings;
 use utf8;
 use feature 'signatures';
+use feature 'state';
 
-sub import {  }
+use Carp ();
+use Module::Load ();
+
+use Llama::Util qw(extract_flags);
+
+# TODO: import mro 'c3' by default
+sub import($class, @args) {
+  my ($calling_package) = caller;
+  my %flags = extract_flags \@args;
+  {
+    no strict 'refs';
+    my @parents = @args ? @args : (__PACKAGE__);
+    Module::Load::load($_) for @parents;
+    push @{$calling_package . '::ISA'}, @parents;
+  }
+}
+
+sub class {
+  state $class = Llama::Class->allocate(__PACKAGE__);
+}
+
+sub allocate { Carp::confess "allocate must be implemented by subclasses" }
+
+state $current_id_ref = 0;
+sub OBJECT_ID ($class) {
+  my $pkg = __PACKAGE__;
+  Carp::confess "invalid usage try $pkg->OBJECT_ID" unless $class eq $pkg;
+
+  $current_id_ref++;
+}
 
 # # in Llama/Record.pm
 # package Llama::Record;

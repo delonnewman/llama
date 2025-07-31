@@ -6,4 +6,8 @@ use feature 'signatures';
 
 use Llama::Object;
 
+sub allocate ($class, %attributes) {
+  bless \%attributes, $class;
+}
+
 1;
