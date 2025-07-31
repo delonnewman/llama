@@ -7,7 +7,7 @@ use feature 'signatures';
 use Scalar::Util qw(reftype);
 
 use Exporter 'import';
-our @EXPORT_OK = qw(valid_value_type);
+our @EXPORT_OK = qw(valid_value_type extract_flags);
 
 # see https://github.com/moose/Package-Stash/blob/ac478644bb18a32e2f968138e2d651e47b843423/lib/Package/Stash/PP.pm#L135
 sub valid_value_type ($value, $type) {
@@ -23,6 +23,21 @@ sub valid_value_type ($value, $type) {
   };
 
   wantarray ? ($is_valid, $value_type) : $is_valid;
+}
+
+sub extract_flags ($arrayref) {
+  my %flags = ();
+
+  for (my $i = 0; $i < @$arrayref; $i++) {
+    my $item = $arrayref->[$i];
+    if ($item =~ /^-/) {
+      delete $arrayref->[$i];
+      my $value = delete $arrayref->[$i + 1];
+      $flags{$item} = $value;
+    }
+  }
+
+  wantarray ? %flags : {%flags};
 }
 
 1;
