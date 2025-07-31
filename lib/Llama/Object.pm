@@ -8,6 +8,7 @@ use feature 'state';
 use Carp ();
 use Module::Load ();
 
+use Llama::Perl::Package;
 use Llama::Util qw(extract_flags);
 
 use overload 'bool' => sub{1};
@@ -56,7 +57,11 @@ sub class_name ($self) {
   $class;
 }
 
-sub class ($self) { Llama::Class->new($self->class_name) }
+sub class ($self) {
+  my $pkg = Llama::Perl::Package->new('Llama::Class');
+  $pkg->load unless $pkg->is_loaded;
+  $pkg->name->new($self->class_name);
+}
 
 sub allocate { Carp::confess "allocate must be implemented by subclasses" }
 

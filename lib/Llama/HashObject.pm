@@ -6,13 +6,15 @@ use feature 'signatures';
 
 use Carp ();
 
-use Llama::Object qw(:base);
+use Llama::Object qw(:base :constructor);
 
 sub allocate ($class, %attributes) {
-  Carp::confess "abstract classes cannot be allocated"
-    if $class eq __PACKAGE__;
-
-  bless \%attributes, $class;
+  bless {
+    %attributes,
+    -object_id => Llama::Object->OBJECT_ID
+  }, $class;
 }
+
+sub object_id ($self) { $self->{-object_id} }
 
 1;

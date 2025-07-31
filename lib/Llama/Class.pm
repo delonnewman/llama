@@ -17,13 +17,13 @@ sub allocate($class, $name = undef) {
     $class = 'Llama::AnonymousClass';
   }
 
-  my $object = bless { name => $name, _object_id => $object_id }, $class;
+  my $object = bless { name => $name, -object_id => $object_id }, $class;
 
   # method resolution
   mro::set_mro($name, 'c3');
 
   $object->{name} = $name;
-  $object->{_package} = Llama::Perl::Package->new($name);
+  $object->{-package} = Llama::Perl::Package->new($name);
 
   $object;
 }
@@ -45,12 +45,12 @@ sub mro ($self, @args) {
 sub is_anon { 0 }
 
 sub object_id ($self) {
-  $self->{_object_id} //
+  $self->{-object_id} //
     Carp::confess "something unexpected happened, should have object_id";
 }
 
 sub package ($self) {
-  $self->{_package} //
+  $self->{-package} //
     Carp::confess "something unexpected happened, should have package";
 }
 
