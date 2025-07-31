@@ -45,4 +45,7 @@ if ($@) {
   fail('no exception thrown');
 }
 
+$described_class->new('Friendly')->define_subroutine('greeting', sub { 'hi' });
+is 'hi' => Friendly::greeting();
+
 done_testing;

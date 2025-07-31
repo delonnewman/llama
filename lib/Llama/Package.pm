@@ -40,11 +40,29 @@ sub alias {
 
     {
       no strict 'refs';
-      *{$alias} = *{$self->name . '::' . $original};
+      *{$alias} = *{$self->qualify($original)};
     }
   }
 
   $self;
+}
+
+sub define_subroutine {
+  my $self = shift;
+  my $name = shift;
+  my $body = shift;
+
+  {
+    no strict 'refs';
+    *{$self->qualify($name)} = $body;
+  }
+
+  $self;
+}
+
+sub qualify {
+  my $self = shift;
+  join('::', $self->name, @_);
 }
 
 sub subroutine_names {
@@ -58,13 +76,12 @@ sub symbol_table {
   my $self = shift;
   {
     no strict 'refs';
-    my %table = %{$self->name . '::'};
+    my %table = %{$self->symbol_table_name};
     wantarray ? %table : {%table};
   }
 }
 
 sub symbol_table_name { shift->name . '::' }
-
 
 1;
 
