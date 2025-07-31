@@ -8,6 +8,19 @@ use lib qw(../../lib);
 
 use Llama::Package;
 
+sub throws(&@) {
+  my ($block, $error_pattern) = @_;
+  eval {
+    $block->();
+  };
+  if ($@) {
+    fail("wrong exception thrown: $@") if $error_pattern && $@ !~ $error_pattern;
+    pass("exception thrown: $@");
+  } else {
+    fail('no exception thrown');
+  }
+}
+
 my $described_class = 'Llama::Package';
 
 package Mock::Package {
@@ -39,16 +52,7 @@ my $list_util = Llama::Package->load('List::Util');
 
 $list_util->alias('reduce' => 'Llama::Package::Test::reduce');
 can_ok __PACKAGE__, 'reduce';
-
-eval {
-  $list_util->alias('reduce' => 'fold');
-};
-if ($@) {
-  fail("wrong exception thrown: $@") unless $@ =~ /fully qualified/;
-  pass("exception thrown: $@");
-} else {
-  fail('no exception thrown');
-}
+throws { $list_util->alias('reduce' => 'fold') } qr/fully qualified/;
 
 my $friendly_package = $described_class->new('Friendly');
 $friendly_package->add_symbol('greeting', sub { 'hi' });
@@ -59,5 +63,10 @@ $friendly_package->add_symbol('GREETINGS', { en_US => 'hi' });
   no warnings 'once';
   is 'hi' => $Friendly::GREETINGS{en_US};
 }
+
+throws {
+  no strict 'refs';
+  $friendly_package->add_symbol('salutation', \*Friendly::greeting, 'HASH');
+} qr/symbol value is not the correct type/;
 
 done_testing;

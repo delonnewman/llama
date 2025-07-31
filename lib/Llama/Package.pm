@@ -7,6 +7,8 @@ use feature 'signatures';
 use Carp ();
 use Module::Load ();
 
+use Llama::Util qw(valid_value_type);
+
 sub new ($class, $name) {
   $name // Carp::croak("a name is required");
 
@@ -23,6 +25,11 @@ sub path_name ($self) {
   "$_.pm";
 }
 
+# TODO: add a method that can determine if the package is loaded
+# sub is_loaded {
+
+# }
+
 sub load {
   my $self = shift;
   $self = $self->new(shift) if $self eq __PACKAGE__;
@@ -30,6 +37,10 @@ sub load {
   Module::Load::load($self->name);
 
   $self;
+}
+
+sub nested_package ($self, $name) {
+  __PACKAGE__->new($self->qualify($name));
 }
 
 sub alias ($self, %aliases) {
@@ -46,10 +57,13 @@ sub alias ($self, %aliases) {
   $self;
 }
 
-sub add_symbol ($self, $name, $body) {
+sub add_symbol ($self, $name, $value, $type = undef) {
+  my ($is_valid, $value_type) = valid_value_type($value, $type);
+  Carp::croak "symbol value is not the correct type: got $value_type, expected $type" if defined($is_valid) && !$is_valid;
+
   {
     no strict 'refs';
-    *{$self->qualify($name)} = $body;
+    *{$self->qualify($name)} = $value;
   }
 
   $self;
@@ -59,8 +73,11 @@ sub qualify ($self, @parts) {
   join('::', $self->name, @parts);
 }
 
-sub symbol_names ($self) {
+sub symbol_names ($self, $type = undef) {
   my %table = $self->symbol_table;
+  my @names = keys %table;
+  @names = grep { defined($table{$_}{$type}) } @names if $type;
+
   wantarray ? keys %table : [keys %table];
 }
 
