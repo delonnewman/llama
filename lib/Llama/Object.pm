@@ -4,6 +4,8 @@ use warnings;
 use utf8;
 use feature 'signatures';
 
+sub import {  }
+
 # # in Llama/Record.pm
 # package Llama::Record;
 # use Llama::Object 'Llama::HashObject', -constructor; # will import a default constructor
