@@ -41,7 +41,8 @@ sub nested_package ($self, $name) {
 sub alias ($self, %aliases) {
   for my $original (keys %aliases) {
     my $alias = $aliases{$original};
-    Carp::croak "aliases should be fully qualified, got: $alias" unless $alias =~ /::/;
+    Carp::croak "aliases should be fully qualified, " .
+      "got '$alias' instead" unless $alias =~ /::/;
 
     {
       no strict 'refs';
@@ -54,7 +55,8 @@ sub alias ($self, %aliases) {
 
 sub add_symbol ($self, $name, $value, $type = undef) {
   my ($is_valid, $value_type) = Llama::Util::valid_value_type($value, $type);
-  Carp::confess "symbol value is not the correct type: got $value_type, expected $type" if $type && !$is_valid;
+  Carp::confess "symbol value is not the correct type: " .
+    "got $value_type, expected $type" if $type && !$is_valid;
 
   {
     no strict 'refs';
@@ -70,7 +72,8 @@ sub qualify ($self, @parts) {
 
 sub symbol_names ($self, $type = undef) {
   my %table = $self->symbol_table;
-  Carp::carp "symbol type is empty this could mean that the package isn't loaded, try calling the 'load' method" unless %table;
+  Carp::carp "symbol type is empty this could mean that " .
+    "the package isn't loaded, try calling the 'load' method" unless %table;
 
   my @names = keys %table;
   @names = grep { defined($table{$_}{$type}) } @names if $type;
@@ -90,7 +93,3 @@ sub symbol_table_name { shift->name . '::' }
 
 1;
 
-__END__
-
-my $package = Llama::Package->new('Llama::Core');
-$package->subroutine_names
