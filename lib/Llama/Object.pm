@@ -12,37 +12,46 @@ use Llama::Util qw(extract_flags);
 
 use overload 'bool' => sub{1};
 
-# TODO: import mro 'c3' by default
 sub import($class, @args) {
   my ($calling_package) = caller;
   my %flags = extract_flags \@args;
+  mro::set_mro($calling_package, 'c3') unless $calling_package eq 'main';
+
   {
     no strict 'refs';
     my @parents = @args ? @args : (__PACKAGE__);
     Module::Load::load($_) for @parents;
     push @{$calling_package . '::ISA'}, @parents;
 
+    # disallow allocation for abstract classes
     if ($flags{-abstract}) {
       *{$calling_package . '::allocate'} = sub ($class) {
         Carp::confess "abstract classes cannot be allocated";
       };
     }
 
+    # create default constructor
     if ($flags{-constructor}) {
       *{$calling_package . '::new'} = sub ($class, @args) {
-          my $object = $class->allocate(@args);
-          if (my $method = $object->can('INIT')) {
-            $object->$method(@args);
-          }
-          return $object;
+        my $object = $class->allocate(@args);
+        if (my $method = $object->can('INIT')) {
+          $object->$method(@args);
+        }
+        return $object;
       };
     }
   }
 }
 
-sub class {
-  state $class = Llama::Class->allocate(__PACKAGE__);
+sub class_name ($self) {
+  my $class = ref($self);
+  Carp::confess "invalid usage, called instance method on class"
+    unless $class;
+
+  $class;
 }
+
+sub class ($self) { Llama::Class->new($self->class_name) }
 
 sub allocate { Carp::confess "allocate must be implemented by subclasses" }
 

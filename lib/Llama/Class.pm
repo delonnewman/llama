@@ -5,31 +5,25 @@ use utf8;
 use feature 'signatures';
 use feature 'state';
 
-use Llama::Object 'Llama::HashObject', ':constructor';
+use Llama::Object ':constructor';
 use Llama::Perl::Package;
 
-sub allocate($ref, $name = undef) {
-  my $object = $ref->SUPER::allocate(name => $name);
-
+sub allocate($class, $name = undef) {
   my $object_id = Llama::Object->OBJECT_ID;
+
   unless ($name) {
     my $id = sprintf("0x%06X", $object_id);
     $name = __PACKAGE__  . '::__ANON__' . $id;
-    {
-       no strict 'refs';
-       push @{$name . '::ISA'}, 'Llama::AnonymousClass';
-    }
+    $class = 'Llama::AnonymousClass';
   }
 
-  {
-    no strict 'refs';
-    push @{$name . '::ISA'}, __PACKAGE__;
-  }
+  my $object = bless { name => $name, _object_id => $object_id }, $class;
 
-  my $package = Llama::Perl::Package->new($name);
+  # method resolution
+  mro::set_mro($name, 'c3');
+
   $object->{name} = $name;
-  $object->{_object_id} = $object_id;
-  $object->{_package} = $package;
+  $object->{_package} = Llama::Perl::Package->new($name);
 
   $object;
 }
@@ -69,6 +63,7 @@ sub parents ($self) { $self->package->ISA }
 }
 
 package Llama::AnonymousClass;
+use Llama::Object 'Llama::Class', ':abstract';
 
 sub is_anon { 1 }
 
