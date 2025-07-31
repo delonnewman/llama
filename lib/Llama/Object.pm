@@ -6,7 +6,7 @@ use feature 'signatures';
 
 # # in Llama/Record.pm
 # package Llama::Record;
-# use Llama::Object -constructor; # will import a default constructor
+# use Llama::Object 'Llama::HashObject', -constructor; # will import a default constructor
 #
 # sub INIT ($self) {
 #   # initialization within constructor
