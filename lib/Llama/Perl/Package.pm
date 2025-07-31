@@ -15,16 +15,6 @@ sub new ($class, $name) {
   bless \$name, $class;
 }
 
-sub name ($self) {
-  wantarray ? split('::', $$self) : $$self;
-}
-
-sub path_name ($self) {
-  local $_ = $self->name;
-  s/::/\//;
-  "$_.pm";
-}
-
 sub load {
   my $self = shift;
   $self = $self->new(shift) if $self eq __PACKAGE__;
@@ -33,6 +23,17 @@ sub load {
 
   $self;
 }
+
+sub is_loaded ($self) { !!$self->full_path }
+sub full_path ($self) { $INC{$self->path_name}; }
+
+sub path_name ($self) {
+  local $_ = $self->name;
+  s/::/\//;
+  "$_.pm";
+}
+
+sub name ($self) { wantarray ? split('::', $$self) : $$self }
 
 sub nested_package ($self, $name) {
   __PACKAGE__->new($self->qualify($name));
