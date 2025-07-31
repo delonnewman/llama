@@ -73,6 +73,13 @@ sub OBJECT_ID ($class) {
   $current_id_ref++;
 }
 
+sub to_string ($self) {
+  my $class = $self->class_name;
+  my $id = sprintf("0x%06X", $self->object_id);
+
+  "#<$class:$id>";
+}
+
 # # in Llama/Record.pm
 # package Llama::Record;
 # use Llama::Object 'Llama::HashObject', -constructor; # will import a default constructor
