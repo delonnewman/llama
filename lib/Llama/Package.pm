@@ -72,7 +72,7 @@ sub qualify ($self, @parts) {
 
 sub symbol_names ($self, $type = undef) {
   my %table = $self->symbol_table;
-  Carp::carp "symbol type is empty this could mean that " .
+  Carp::carp "symbol table is empty this could mean that " .
     "the package isn't loaded, try calling the 'load' method" unless %table;
 
   my @names = keys %table;
