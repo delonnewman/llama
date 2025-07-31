@@ -19,7 +19,8 @@ sub import($class, @args) {
 
   {
     no strict 'refs';
-    my @parents = @args ? @args : (__PACKAGE__);
+
+    my @parents = $flags{-base} ? (__PACKAGE__) : @args;
     Module::Load::load($_) for @parents;
     push @{$calling_package . '::ISA'}, @parents;
 

@@ -5,7 +5,7 @@ use utf8;
 use feature 'signatures';
 use feature 'state';
 
-use Llama::Object ':constructor';
+use Llama::Object qw(:base :constructor);
 use Llama::Perl::Package;
 
 sub allocate($class, $name = undef) {

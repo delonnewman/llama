@@ -6,7 +6,7 @@ use feature 'signatures';
 
 use Carp ();
 
-use Llama::Object;
+use Llama::Object qw(:base);
 
 sub allocate ($class, %attributes) {
   Carp::confess "abstract classes cannot be allocated"
