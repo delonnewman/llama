@@ -91,6 +91,22 @@ sub tap ($self, $block) {
   $self;
 }
 
+sub if_null ($self, $_block) { $self }
+sub if_falsy ($self, $_block) { $self }
+sub if_truthy ($self, $block) {
+  $block->();
+  $self;
+}
+
+sub if ($self, $block) {
+  $self->if_truthy($block);
+  $self
+}
+sub else ($self, $block) {
+  $self->if_falsy($block);
+  $self
+}
+
 # # in Llama/Record.pm
 # package Llama::Record;
 # use Llama::Object 'Llama::HashObject', -constructor; # will import a default constructor

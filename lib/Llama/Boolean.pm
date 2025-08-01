@@ -24,8 +24,11 @@ package Llama::Boolean::False {
 
   sub object_id { state $object_id = Llama::Object->OBJECT_ID }
   sub to_string { 'false' }
-  sub if_true($self, $_block) { $self }
-  sub if_false($self, $block) { $block->(); $self }
+  sub if_truthy($self, $_block) { $self }
+  sub if_falsy($self, $block) {
+    $block->();
+    $self
+  }
 }
 
 package Llama::Boolean::True {
@@ -35,8 +38,11 @@ package Llama::Boolean::True {
 
   sub object_id { state $object_id = Llama::Object->OBJECT_ID }
   sub to_string { 'true' }
-  sub if_true($self, $block) { $block->(); $self }
-  sub if_false($self, $_block) { $self }
+  sub if_falsy($self, $_block) { $self }
+  sub if_truthy($self, $block) {
+    $block->();
+    $self
+  }
 }
 
 1;
