@@ -11,7 +11,7 @@ use overload bool => sub{1};
 sub allocate ($class, $value) {
   my $object_id = Llama::Object->OBJECT_ID;
   my $id = sprintf("0x%06X", $object_id);
-  my $instance_class = "$class\::OBJECT_$id";
+  my $instance_class = "$class=OBJECT($id)";
 
   {
     no strict 'refs';
