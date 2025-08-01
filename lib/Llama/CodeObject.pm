@@ -9,9 +9,6 @@ use Carp ();
 use Llama::Object qw(:base);
 
 sub allocate ($class, $sub) {
-  Carp::confess "abstract classes cannot be allocated"
-    if $class eq __PACKAGE__;
-
   my $type = ref($sub);
   Carp::confess "invalid reference type: '$type'"
     unless $type eq 'CODE';
