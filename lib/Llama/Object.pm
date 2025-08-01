@@ -73,11 +73,22 @@ sub OBJECT_ID ($class) {
   $current_id_ref++;
 }
 
+sub object_id ($self) {
+  Carp::confess "subclasses must implement";
+}
+
+sub identical($self, $other) { $self->object_id eq $self->object_id }
+
 sub to_string ($self) {
   my $class = $self->class_name;
   my $id = sprintf("0x%06X", $self->object_id);
 
-  "#<$class:$id>";
+  "$class=OBJECT($id)";
+}
+
+sub tap ($self, $block) {
+  $block->();
+  $self;
 }
 
 # # in Llama/Record.pm
