@@ -3,7 +3,6 @@ use strict;
 use warnings;
 use utf8;
 use feature 'signatures';
-use feature 'state';
 
 use overload 'bool' => sub{0};
 
@@ -23,19 +22,19 @@ sub if_null ($self, $block) {
 sub if_truthy ($self, $_block) { $self }
 
 sub SCALAR {
-  state $scalar = Llama::Null::Scalar->allocate('');
+  Llama::Null::Scalar->allocate('');
 }
 
 sub HASH {
-  state $hash = Llama::Null::Hash->allocate;
+  Llama::Null::Hash->allocate();
 }
 
 sub ARRAY {
-  state $array = Llama::Null::Array->allocate;
+  Llama::Null::Array->allocate();
 }
 
 sub CODE {
-  state $code = Llama::Null::Code->allocate(sub{@_});
+  Llama::Null::Code->allocate(sub{@_});
 }
 
 package Llama::Null::Scalar {
