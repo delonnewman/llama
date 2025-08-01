@@ -5,8 +5,9 @@ use utf8;
 use feature 'signatures';
 use feature 'state';
 
-use Exporter 'import';
-our @EXPORT_OK = qw(false true);
+# TODO: fix exporting
+# use Exporter 'import';
+# our @EXPORT_OK = qw(false true);
 
 sub false :prototype() {
   state $false = Llama::Boolean::False->allocate(0)
@@ -17,7 +18,7 @@ sub true :prototype() {
 }
 
 package Llama::Boolean::False {
-  use Llama::Object 'Llama::ScalarObject';
+  use Llama::Object '+ScalarObject';
 
   use overload 'bool' => sub{0};
 
@@ -28,7 +29,7 @@ package Llama::Boolean::False {
 }
 
 package Llama::Boolean::True {
-  use Llama::Object 'Llama::ScalarObject';
+  use Llama::Object '+ScalarObject';
 
   use overload 'bool' => sub{1};
 
