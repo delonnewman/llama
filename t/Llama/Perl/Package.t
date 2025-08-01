@@ -5,6 +5,7 @@ use utf8;
 
 use Test::More;
 use lib qw(../../lib);
+use Scalar::Util qw(refaddr);
 
 use Llama::Perl::Package;
 
@@ -29,6 +30,13 @@ package Mock::Package {
 
 my $name = 'Mock::Package';
 my $package = $described_class->new($name);
+
+subtest "$described_class - named" => sub {
+  my $first  = $described_class->named('MetaTest');
+  my $second = $described_class->named('MetaTest');
+
+  ok refaddr($first) == refaddr($second);
+};
 
 subtest "$described_class - name" => sub {
   is $name, $package->name;
