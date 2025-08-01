@@ -5,15 +5,11 @@ use utf8;
 use feature 'signatures';
 use feature 'state';
 
-# TODO: fix exporting
-# use Exporter 'import';
-# our @EXPORT_OK = qw(false true);
-
-sub false :prototype() {
+sub FALSE {
   state $false = Llama::Boolean::False->allocate(0)
 }
 
-sub true :prototype() {
+sub TRUE {
   state $true = Llama::Boolean::True->allocate(1)
 }
 
