@@ -19,6 +19,13 @@ subtest 'extract_flags' => sub {
   %flags = extract_flags \@args;
 
   is $flags{-constructor} => 1;
+  is_deeply ['Llama::Object'], \@args;
+
+  @args  = qw(+Object  Llama::Protocol);
+  %flags = extract_flags \@args;
+
+  ok !%flags;
+  is_deeply [qw(Llama::Object Llama::Protocol)], \@args;
 };
 
 done_testing;

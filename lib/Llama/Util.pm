@@ -40,6 +40,11 @@ sub extract_flags ($arrayref) {
       $name =~ s/^://;
       $flags{"-$name"} = 1;
     }
+    if ($item =~ /^\+/) {
+      my $name = $arrayref->[$i];
+      $name =~ s/^\+//;
+      $arrayref->[$i] = "Llama::$name";
+    }
   }
 
   wantarray ? %flags : {%flags};
