@@ -5,8 +5,8 @@ use utf8;
 use feature 'signatures';
 use feature 'state';
 
-my $false_pkg = 'Llama::Boolean::False';
-my $true_pkg = 'Llama::Boolean::True';
+use Exporter 'import';
+our @EXPORT_OK = qw(false true);
 
 sub false :prototype() {
   state $false = Llama::Boolean::False->allocate(0)
