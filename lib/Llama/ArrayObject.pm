@@ -4,12 +4,9 @@ use warnings;
 use utf8;
 use feature 'signatures';
 
-use Llama::Object qw(:base);
+use Llama::Object qw(:base :constructor);
 
 sub allocate ($class, @values) {
-  Carp::confess "abstract classes cannot be allocated"
-    if $class eq __PACKAGE__;
-
   bless \@values, $class;
 }
 
