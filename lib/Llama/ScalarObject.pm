@@ -9,7 +9,6 @@ use Llama::Object qw(:base :constructor);
 use Scalar::Util ();
 
 use overload
-  'bool' => sub{1},
   '0+' => sub{shift->Num}
   '${}' => sub{shift->ScalarRef};
 
