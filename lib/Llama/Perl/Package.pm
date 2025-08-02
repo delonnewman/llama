@@ -31,6 +31,11 @@ sub new ($class, $name) {
   bless \$name, $class;
 }
 
+sub maybe_load ($self) {
+  $self->load unless $self->is_loaded;
+  $self;
+}
+
 sub load {
   my $self = shift;
   $self = $self->new(shift) if $self eq __PACKAGE__;
@@ -103,9 +108,14 @@ sub symbol_table ($self) {
 
 sub symbol_table_name { shift->name . '::' }
 
-sub ISA ($self) {
-  my @parents = @{$self->name . '::ISA'};
-  wantarray ? @parents : [@parents];
+sub ISA ($self, @parents) {
+  if (@parents) {
+    push @{$self->name . '::ISA'}, @parents;
+    return $self;
+  }
+
+  my @copy = @{$self->name . '::ISA'};
+  wantarray ? @copy : [@copy];
 }
 
 1;
