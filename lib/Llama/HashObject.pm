@@ -9,12 +9,7 @@ use Carp ();
 use Llama::Object qw(:base :constructor);
 
 sub allocate ($class, %attributes) {
-  bless {
-    %attributes,
-    -object_id => Llama::Object->OBJECT_ID
-  }, $class;
+  bless \%attributes, $class;
 }
-
-sub object_id ($self) { $self->{-object_id} }
 
 1;
