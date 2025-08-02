@@ -9,6 +9,7 @@ use Carp ();
 use Module::Load ();
 use Scalar::Util ();
 
+use Llama::Object::Util qw(add_abstract_method);
 use Llama::Perl::Package;
 use Llama::Util qw(extract_flags);
 
@@ -17,7 +18,6 @@ use overload 'bool' => sub{shift->Bool}, '""' => sub{shift->Str};
 sub import($class, @args) {
   my ($calling_package) = caller;
   my %flags = extract_flags \@args;
-  mro::set_mro($calling_package, 'c3') unless $calling_package eq 'main';
 
   {
     no strict 'refs';
@@ -28,9 +28,11 @@ sub import($class, @args) {
 
     # disallow allocation for abstract classes
     if ($flags{-abstract}) {
-      *{$calling_package . '::allocate'} = sub ($class) {
-        Carp::confess "abstract classes cannot be allocated";
-      };
+      add_abstract_method(
+        $calling_package,
+        'allocate',
+        'abstract classes cannot be allocated'
+      );
     }
 
     # create default constructor
@@ -74,7 +76,7 @@ sub INSTANCE_CLASS ($self) {
 sub ADDRESS ($self) { Scalar::Util::refaddr($self) }
 sub TYPE ($self) { Scalar::Util::reftype($self) }
 
-sub identical ($self, $other) { $self->ADDRESS == $self->ADDRESS }
+sub identical ($self, $other) { $self->ADDRESS == $other->ADDRESS }
 
 sub Bool { 1 }
 sub Str ($self) {

@@ -9,7 +9,7 @@ use Llama::Object qw(:base :constructor);
 use Scalar::Util ();
 
 use overload
-  '0+' => sub{shift->Num}
+  '0+' => sub{shift->Num},
   '${}' => sub{shift->ScalarRef};
 
 sub allocate ($class, $value) {
