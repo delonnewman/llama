@@ -16,8 +16,10 @@ sub TRUE {
 package Llama::Boolean::False {
   use Llama::Object '+ScalarObject';
 
+  sub Num { 0 }
   sub Bool { 0 }
   sub Str { 'false' }
+
   sub if_truthy($self, $_block) { $self }
   sub if_falsy($self, $block) {
     $block->();
@@ -28,8 +30,10 @@ package Llama::Boolean::False {
 package Llama::Boolean::True {
   use Llama::Object '+ScalarObject';
 
+  sub Num { 1 }
   sub Bool { 1 }
   sub Str { 'true' }
+
   sub if_falsy($self, $_block) { $self }
   sub if_truthy($self, $block) {
     $block->();
