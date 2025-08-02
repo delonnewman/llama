@@ -12,7 +12,7 @@ use Scalar::Util ();
 use Llama::Perl::Package;
 use Llama::Util qw(extract_flags);
 
-use overload 'bool' => sub{1};
+use overload 'bool' => sub{1}, '""' => sub{shift->to_string};
 
 sub import($class, @args) {
   my ($calling_package) = caller;
@@ -76,7 +76,7 @@ sub TYPE ($self) { Scalar::Util::reftype($self) }
 sub identical ($self, $other) { $self->ADDRESS == $self->ADDRESS }
 
 sub to_string ($self) {
-  my $class = $self->class_name;
+  my $class = $self->CLASS_NAME;
   my $id = sprintf("0x%06X", $self->ADDRESS);
 
   "$class=OBJECT($id)";
