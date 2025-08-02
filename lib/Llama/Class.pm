@@ -45,6 +45,8 @@ sub new ($class, $name = undef) {
 
 sub name ($self) { $$self }
 
+sub version ($self) { $self->package->VERSION }
+
 sub mro ($self, @args) {
   if (@args) {
     mro::set_mro($self->name, $args[0]);
