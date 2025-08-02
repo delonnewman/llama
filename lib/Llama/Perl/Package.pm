@@ -114,7 +114,8 @@ sub symbol_table_name { shift->name . '::' }
 
 sub ISA ($self, @parents) {
   if (@parents) {
-    push @{$self->name . '::ISA'}, @parents;
+    my %isa = map { $_ => 1 } (@{$self->name . '::ISA'}, @parents);
+    @{$self->name . '::ISA'} = keys %isa;
     return $self;
   }
 
