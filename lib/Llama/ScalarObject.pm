@@ -6,15 +6,23 @@ use feature 'signatures';
 
 use Llama::Object qw(:base :constructor);
 
+use Scalar::Util ();
+
 use overload
   'bool' => sub{1},
-  '0+' => sub { shift->to_int };
+  '0+' => sub{shift->Num};
 
 sub allocate ($class, $value) {
   bless \$value, $class;
 }
 
 sub value ($self) { $$self }
-sub to_int ($self) { int($self->value) }
+
+sub looks_like_number ($self) {
+  Scalar::Util::looks_like_number($self->value)
+}
+
+sub Num ($self) { 0+$self->value }
+sub Int ($self) { int($self->value) }
 
 1;

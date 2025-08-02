@@ -16,10 +16,8 @@ sub TRUE {
 package Llama::Boolean::False {
   use Llama::Object '+ScalarObject';
 
-  use overload 'bool' => sub{0};
-
-  sub object_id { state $object_id = Llama::Object->OBJECT_ID }
-  sub to_string { 'false' }
+  sub Bool { 0 }
+  sub Str { 'false' }
   sub if_truthy($self, $_block) { $self }
   sub if_falsy($self, $block) {
     $block->();
@@ -30,10 +28,8 @@ package Llama::Boolean::False {
 package Llama::Boolean::True {
   use Llama::Object '+ScalarObject';
 
-  use overload 'bool' => sub{1};
-
-  sub object_id { state $object_id = Llama::Object->OBJECT_ID }
-  sub to_string { 'true' }
+  sub Bool { 1 }
+  sub Str { 'true' }
   sub if_falsy($self, $_block) { $self }
   sub if_truthy($self, $block) {
     $block->();

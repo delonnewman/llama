@@ -4,8 +4,6 @@ use warnings;
 use utf8;
 use feature 'signatures';
 
-use overload 'bool' => sub{0};
-
 use Llama::Object qw(:base :abstract);
 
 sub if_null ($self, $block) {
@@ -20,6 +18,8 @@ sub if_null ($self, $block) {
 }
 
 sub if_truthy ($self, $_block) { $self }
+
+sub Bool { 0 }
 
 sub SCALAR {
   Llama::Null::Scalar->allocate('');
