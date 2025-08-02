@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use utf8;
 use feature 'signatures';
+no strict 'refs';
 
 use Llama::Object qw(:base :abstract);
 
@@ -11,11 +12,7 @@ sub if_null ($self, $block) {
   $self;
 }
 
-{
-  no strict 'refs';
-  no warnings 'once';
-  *if_falsy = \&if_null;
-}
+*if_falsy = \&if_null;
 
 sub if_truthy ($self, $_block) { $self }
 

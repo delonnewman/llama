@@ -6,7 +6,7 @@ use feature 'signatures';
 
 use Carp ();
 
-use Llama::Object qw(:base);
+use Llama::Object qw(:base :constructor);
 
 use overload '&{}' => sub{shift->CodeRef};
 
