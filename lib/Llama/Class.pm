@@ -14,7 +14,7 @@ use Llama::Perl::Package;
 
 use constant META_CLASS => '__META_CLASS__';
 
-sub of_instance ($class, $object) {
+sub for_instance ($class, $object) {
   Llama::InstanceClass->new($object);
 }
 

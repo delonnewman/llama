@@ -67,7 +67,7 @@ sub instance_class ($self) {
     ->named('Llama::Class')
     ->maybe_load
     ->name
-    ->of_instance($self)
+    ->for_instance($self)
 }
 
 sub object_address ($self) { Scalar::Util::refaddr($self) }
