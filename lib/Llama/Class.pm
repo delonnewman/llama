@@ -14,7 +14,11 @@ use Llama::Perl::Package;
 
 use constant META_CLASS => '__META_CLASS__';
 
-sub named ($class, $name) {
+sub of_instance ($class, $object) {
+  Llama::InstanceClass->new($object);
+}
+
+my sub cached_class ($name, $class) {
   my $sym = $name . '::' . META_CLASS;
   my $object = ${$sym};
 
@@ -23,6 +27,23 @@ sub named ($class, $name) {
     ${$sym} = $object;
   }
 
+  $object;
+}
+
+my sub cached_instance($name) {
+  my $sym = $name . '::' . META_CLASS;
+  ${$sym};
+}
+
+my sub cache_instance($name, $instance) {
+  my $sym = $name . '::' . META_CLASS;
+  ${$sym} = $instance;
+  $instance;
+}
+
+sub named ($class, $name) {
+  my $object = cached_instance($name);
+  $object //= cache_instance($name, $class->new($name));
   $object;
 }
 
@@ -68,6 +89,7 @@ package Llama::AnonymousClass {
     my $address = Scalar::Util::refaddr($object);
     $name .= "$class=OBJECT(" . sprintf("0x%06X", $address) . ')';
     mro::set_mro($name, 'c3');
+    cache_instance($name, $object);
 
     $object;
   }
@@ -82,7 +104,7 @@ package Llama::InstanceClass {
     push @{$name . '::ISA'}, $class;
 
     bless $object, $name; # re-bless $self into new class
-    return $class->SUPER->new($name);
+    return cache_instance($name, $class->SUPER::new($name));
   }
 }
 

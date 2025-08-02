@@ -64,10 +64,10 @@ sub instance_class ($self) {
   return $self->class if $self->class->isa('Llama::InstanceClass');
 
   Llama::Perl::Package
-    ->named('Llama::InstanceClass')
+    ->named('Llama::Class')
     ->maybe_load
     ->name
-    ->new($self)
+    ->of_instance($self)
 }
 
 sub object_address ($self) { Scalar::Util::refaddr($self) }
