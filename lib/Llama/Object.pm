@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use utf8;
 use feature 'signatures';
+no strict 'refs';
 
 use Carp ();
 use Module::Load ();
@@ -18,33 +19,29 @@ sub import($class, @args) {
   my ($calling_package) = caller;
   my %flags = extract_flags \@args;
 
-  {
-    no strict 'refs';
+  my @parents = $flags{-base} ? (__PACKAGE__) : @args;
+  Module::Load::load($_) for @parents;
+  push @{$calling_package . '::ISA'}, @parents;
 
-    my @parents = $flags{-base} ? (__PACKAGE__) : @args;
-    Module::Load::load($_) for @parents;
-    push @{$calling_package . '::ISA'}, @parents;
+  # disallow allocation for abstract classes
+  if ($flags{-abstract}) {
+    add_abstract_method(
+      $calling_package,
+      'allocate',
+      'abstract classes cannot be allocated'
+    );
+  }
 
-    # disallow allocation for abstract classes
-    if ($flags{-abstract}) {
-      add_abstract_method(
-        $calling_package,
-        'allocate',
-        'abstract classes cannot be allocated'
-      );
-    }
-
-    # create default constructor
-    if ($flags{-constructor}) {
-      *{$calling_package . '::new'} = sub ($class, @args) {
-        $class = ref($class) || $class;
-        my $object = $class->allocate(@args);
-        if (my $method = $object->can('BUILD')) {
-          $object->$method(@args);
-        }
-        return $object;
-      };
-    }
+  # create default constructor
+  if ($flags{-constructor}) {
+    *{$calling_package . '::new'} = sub ($class, @args) {
+      $class = ref($class) || $class;
+      my $object = $class->allocate(@args);
+      if (my $method = $object->can('BUILD')) {
+        $object->$method(@args);
+      }
+      return $object;
+    };
   }
 }
 
