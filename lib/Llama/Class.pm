@@ -59,10 +59,17 @@ sub mro ($self, @args) {
 sub package ($self) { Llama::Perl::Package->named($self->name) }
 *module = \&package;
 
-sub superclasses ($self) { $self->package->ISA }
-sub subclass ($self, @superclasses) {
-  $self->package->ISA(@superclasses);
-  $self
+sub superclasses ($self, @superclasses) {
+  if (@superclasses) {
+    $self->package->ISA(@superclasses);
+    return $self
+  }
+
+  $self->package->ISA
+}
+
+sub subclass ($self, $name = undef) {
+  Llama::Class->new($name)->superclasses($self->name);
 }
 
 sub add_method ($self, $name, $sub) {
