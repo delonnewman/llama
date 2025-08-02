@@ -3,7 +3,6 @@ use strict;
 use warnings;
 use utf8;
 use feature 'signatures';
-use feature 'state';
 
 use Carp ();
 use Module::Load ();
@@ -113,7 +112,7 @@ sub else ($self, $block) {
 # package Llama::Record;
 # use Llama::Object 'Llama::HashObject', -constructor; # will import a default constructor
 #
-# sub INIT ($self) {
+# sub BUILD ($self) {
 #   # initialization within constructor
 # }
 #

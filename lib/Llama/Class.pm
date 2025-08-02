@@ -56,11 +56,7 @@ sub mro ($self, @args) {
   mro::get_mro($self->name);
 }
 
-sub package ($self) {
-  Llama::Perl::Package->named($self->name)
-}
-
-# alias package => 'module';
+sub package ($self) { Llama::Perl::Package->named($self->name) }
 *module = \&package;
 
 sub superclasses ($self) { $self->package->ISA }
@@ -75,7 +71,7 @@ sub add_method ($self, $name, $sub) {
 }
 
 package Llama::AnonymousClass {
-  use Llama::Object 'Llama::Class';
+  use Llama::Object '+Class';
 
   sub new($class) {
     my $name = '';
@@ -91,7 +87,7 @@ package Llama::AnonymousClass {
 }
 
 package Llama::InstanceClass {
-  use Llama::Object 'Llama::Class';
+  use Llama::Object '+Class';
 
   sub new($class, $object) {
     my $id = sprintf("0x%06X", $object->ADDRESS);
