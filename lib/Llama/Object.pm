@@ -40,7 +40,7 @@ sub import($class, @args) {
       *{$calling_package . '::new'} = sub ($class, @args) {
         $class = ref($class) || $class;
         my $object = $class->allocate(@args);
-        if (my $method = $object->can('INIT')) {
+        if (my $method = $object->can('BUILD')) {
           $object->$method(@args);
         }
         return $object;
