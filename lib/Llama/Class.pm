@@ -5,33 +5,36 @@ use utf8;
 use feature 'signatures';
 use feature 'state';
 
-use Llama::Object qw(:base :constructor);
+no strict 'refs';
+
+use Scalar::Util ();
+
+use Llama::Object qw(:base);
 use Llama::Perl::Package;
 
-sub allocate($class, $name = undef) {
-  my $object_id = Llama::Object->OBJECT_ID;
+use constant META_CLASS => '__META_CLASS__';
 
-  unless ($name) {
-    my $id = sprintf("0x%06X", $object_id);
-    $name = __PACKAGE__  . '::__ANON__' . $id;
-    $class = 'Llama::AnonymousClass';
+sub named ($class, $name) {
+  my $sym = $name . '::' . META_CLASS;
+  my $object = ${$sym};
+
+  unless ($object) {
+    $object = $class->new($name);
+    ${$sym} = $object;
   }
-
-  my $object = bless { name => $name, -object_id => $object_id }, $class;
-
-  # method resolution
-  mro::set_mro($name, 'c3');
-
-  $object->{name} = $name;
-  $object->{-package} = Llama::Perl::Package->new($name);
 
   $object;
 }
 
-sub name ($self) {
-  $self->{name} //
-    Carp::confess "something unexpected happened, should have name";
+sub new ($class, $name = undef) {
+  return Llama::AnonymousClass->new unless $name;
+
+  my $object = bless \$name, $class;
+  mro::set_mro($name, 'c3');
+  $object;
 }
+
+sub name ($self) { $$self }
 
 sub mro ($self, @args) {
   if (@args) {
@@ -42,29 +45,45 @@ sub mro ($self, @args) {
   mro::get_mro($self->name);
 }
 
-sub is_anon { 0 }
-
-sub object_id ($self) {
-  $self->{-object_id} //
-    Carp::confess "something unexpected happened, should have object_id";
-}
-
 sub package ($self) {
-  $self->{-package} //
-    Carp::confess "something unexpected happened, should have package";
+  Llama::Perl::Package->named($self->name)
 }
 
-sub parents ($self) { $self->package->ISA }
+# alias package => 'module';
+*module = \&package;
 
-{
-  no strict 'refs';
-  no warnings 'once';
-  *module = \&package;
+sub superclasses ($self) { $self->package->ISA }
+sub subclass ($self, @superclasses) {
+  $self->package->ISA(@superclasses);
+  $self
 }
 
-package Llama::AnonymousClass;
-use Llama::Object 'Llama::Class', ':abstract';
+package Llama::AnonymousClass {
+  use Llama::Object 'Llama::Class';
 
-sub is_anon { 1 }
+  sub new($class) {
+    my $name = '';
+    my $object = bless \$name, $class;
+
+    my $address = Scalar::Util::refaddr($object);
+    $name .= "$class=OBJECT(" . sprintf("0x%06X", $address) . ')';
+    mro::set_mro($name, 'c3');
+
+    $object;
+  }
+}
+
+package Llama::InstanceClass {
+  use Llama::Object 'Llama::Class';
+
+  sub new($class, $object) {
+    my $id = sprintf("0x%06X", $object->object_address);
+    my $name = "$class=OBJECT($id)";
+    push @{$name . '::ISA'}, $class;
+
+    bless $object, $name; # re-bless $self into new class
+    return $class->SUPER->new($name);
+  }
+}
 
 1;
