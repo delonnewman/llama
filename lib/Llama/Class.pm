@@ -18,24 +18,12 @@ sub for_instance ($class, $object) {
   Llama::InstanceClass->new($object);
 }
 
-my sub cached_class ($name, $class) {
-  my $sym = $name . '::' . META_CLASS;
-  my $object = ${$sym};
-
-  unless ($object) {
-    $object = $class->new($name);
-    ${$sym} = $object;
-  }
-
-  $object;
-}
-
-my sub cached_instance($name) {
+my sub cached_instance ($name) {
   my $sym = $name . '::' . META_CLASS;
   ${$sym};
 }
 
-my sub cache_instance($name, $instance) {
+my sub cache_instance ($name, $instance) {
   my $sym = $name . '::' . META_CLASS;
   ${$sym} = $instance;
   $instance;
