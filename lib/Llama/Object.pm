@@ -86,12 +86,12 @@ sub Str ($self) {
   "$class=OBJECT($id)";
 }
 
+
+sub then ($self, $block) { $block->($self) }
 sub tap ($self, $block) {
   $block->($self);
   $self;
 }
-
-sub then ($self, $block) { $block->($self) }
 
 sub if_null ($self, $_block) { $self }
 sub if_falsy ($self, $_block) { $self }
