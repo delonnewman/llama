@@ -69,7 +69,7 @@ sub subclass ($self, @superclasses) {
   $self
 }
 
-sub add_method ($name, $sub) {
+sub add_method ($self, $name, $sub) {
   $self->package->add_symbol($name, $sub, 'CODE');
   $self;
 }
@@ -94,7 +94,7 @@ package Llama::InstanceClass {
   use Llama::Object 'Llama::Class';
 
   sub new($class, $object) {
-    my $id = sprintf("0x%06X", $object->object_address);
+    my $id = sprintf("0x%06X", $object->ADDRESS);
     my $name = "$class=OBJECT($id)";
     push @{$name . '::ISA'}, $class;
 

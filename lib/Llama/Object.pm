@@ -50,18 +50,18 @@ sub allocate ($class) {
   Carp::confess "abstract classes cannot be allocated";
 }
 
-sub class ($self) {
+sub CLASS ($self) {
   Llama::Perl::Package
     ->named('Llama::Class')
     ->maybe_load
     ->name
-    ->named($self->class_name)
+    ->named($self->CLASS_NAME)
 }
 
-sub class_name ($self) { ref($self) || $self }
+sub CLASS_NAME ($self) { ref($self) || $self }
 
-sub instance_class ($self) {
-  return $self->class if $self->class->isa('Llama::InstanceClass');
+sub INSTANCE_CLASS ($self) {
+  return $self->CLASS if $self->CLASS->isa('Llama::InstanceClass');
 
   Llama::Perl::Package
     ->named('Llama::Class')
@@ -70,14 +70,14 @@ sub instance_class ($self) {
     ->for_instance($self)
 }
 
-sub object_address ($self) { Scalar::Util::refaddr($self) }
-sub object_type ($self) { Scalar::Util::reftype($self) }
+sub ADDRESS ($self) { Scalar::Util::refaddr($self) }
+sub TYPE ($self) { Scalar::Util::reftype($self) }
 
-sub identical ($self, $other) { $self->object_address == $self->object_address }
+sub identical ($self, $other) { $self->ADDRESS == $self->ADDRESS }
 
 sub to_string ($self) {
   my $class = $self->class_name;
-  my $id = sprintf("0x%06X", $self->object_address);
+  my $id = sprintf("0x%06X", $self->ADDRESS);
 
   "$class=OBJECT($id)";
 }
