@@ -10,7 +10,8 @@ use Scalar::Util ();
 
 use overload
   'bool' => sub{1},
-  '0+' => sub{shift->Num};
+  '0+' => sub{shift->Num}
+  '${}' => sub{shift->ScalarRef};
 
 sub allocate ($class, $value) {
   bless \$value, $class;
@@ -24,5 +25,6 @@ sub looks_like_number ($self) {
 
 sub Num ($self) { 0+$self->value }
 sub Int ($self) { int($self->value) }
+sub ScalarRef ($self) { $self }
 
 1;
