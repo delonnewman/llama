@@ -7,6 +7,7 @@ use feature 'state';
 
 use Carp ();
 use Module::Load ();
+use Scalar::Util ();
 
 use Llama::Perl::Package;
 use Llama::Util qw(extract_flags);
@@ -49,39 +50,34 @@ sub allocate ($class) {
   Carp::confess "abstract classes cannot be allocated";
 }
 
-sub class_name ($self) {
-  my $class = ref($self);
-  Carp::confess "invalid usage, called instance method on class"
-    unless $class;
-
-  $class;
-}
-
 sub class ($self) {
-  my $pkg = Llama::Perl::Package->new('Llama::Class');
-  $pkg->load unless $pkg->is_loaded;
-  $pkg->name->new($self->class_name);
+  Llama::Perl::Package
+    ->named('Llama::Class')
+    ->maybe_load
+    ->name
+    ->named($self->class_name)
 }
 
-sub allocate { Carp::confess "allocate must be implemented by subclasses" }
+sub class_name ($self) { ref($self) || $self }
 
-state $current_id_ref = 0;
-sub OBJECT_ID ($class) {
-  my $pkg = __PACKAGE__;
-  Carp::confess "invalid usage try $pkg->OBJECT_ID" unless $class eq $pkg;
+sub instance_class ($self) {
+  return $self->class if $self->class->isa('Llama::InstanceClass');
 
-  $current_id_ref++;
+  Llama::Perl::Package
+    ->named('Llama::InstanceClass')
+    ->maybe_load
+    ->name
+    ->new($self)
 }
 
-sub object_id ($self) {
-  Carp::confess "subclasses must implement";
-}
+sub object_address ($self) { Scalar::Util::refaddr($self) }
+sub object_type ($self) { Scalar::Util::reftype($self) }
 
-sub identical($self, $other) { $self->object_id eq $self->object_id }
+sub identical ($self, $other) { $self->object_address == $self->object_address }
 
 sub to_string ($self) {
   my $class = $self->class_name;
-  my $id = sprintf("0x%06X", $self->object_id);
+  my $id = sprintf("0x%06X", $self->object_address);
 
   "$class=OBJECT($id)";
 }
