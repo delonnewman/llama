@@ -8,6 +8,8 @@ use Carp ();
 
 use Llama::Object qw(:base);
 
+use overload '&{}' => sub{shift->CodeRef};
+
 sub allocate ($class, $sub) {
   my $type = ref($sub);
   Carp::confess "invalid reference type: '$type'"
@@ -15,5 +17,7 @@ sub allocate ($class, $sub) {
 
   bless $sub, $class;
 }
+
+sub CodeRef ($self) { $self }
 
 1;
