@@ -36,6 +36,7 @@ sub import($class, @args) {
     # create default constructor
     if ($flags{-constructor}) {
       *{$calling_package . '::new'} = sub ($class, @args) {
+        $class = ref($class) || $class;
         my $object = $class->allocate(@args);
         if (my $method = $object->can('INIT')) {
           $object->$method(@args);
@@ -83,14 +84,16 @@ sub to_string ($self) {
 }
 
 sub tap ($self, $block) {
-  $block->();
+  $block->($self);
   $self;
 }
+
+sub then ($self, $block) { $block->($self) }
 
 sub if_null ($self, $_block) { $self }
 sub if_falsy ($self, $_block) { $self }
 sub if_truthy ($self, $block) {
-  $block->();
+  $block->($self);
   $self;
 }
 
