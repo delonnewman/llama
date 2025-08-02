@@ -67,6 +67,11 @@ sub subclass ($self, @superclasses) {
   $self
 }
 
+sub add_method ($name, $sub) {
+  $self->package->add_symbol($name, $sub, 'CODE');
+  $self;
+}
+
 package Llama::AnonymousClass {
   use Llama::Object 'Llama::Class';
 
