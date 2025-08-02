@@ -6,7 +6,9 @@ use feature 'signatures';
 
 use Llama::Object qw(:base :constructor);
 
-use overload bool => sub{1};
+use overload
+  'bool' => sub{1},
+  '0+' => sub { shift->to_int };
 
 sub allocate ($class, $value) {
   bless \$value, $class;
