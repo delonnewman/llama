@@ -41,7 +41,7 @@ sub new ($class, $name = undef) {
   return Llama::AnonymousClass->new unless $name;
 
   my $object = bless \$name, $class;
-  $self->mro($DEFAULT_MRO);
+  $object->mro($DEFAULT_MRO);
   $object;
 }
 
@@ -61,6 +61,10 @@ sub mro ($self, @args) {
 sub package ($self) { Llama::Perl::Package->named($self->name) }
 *module = \&package;
 
+sub ancestry ($self) {
+  mro::get_linear_isa($self->name, $self->mro);
+}
+
 sub superclasses ($self, @superclasses) {
   if (@superclasses) {
     $self->package->ISA(@superclasses);
@@ -69,6 +73,7 @@ sub superclasses ($self, @superclasses) {
 
   $self->package->ISA
 }
+*parents = \&superclasses;
 
 sub subclass ($self, $name = undef) {
   Llama::Class->new($name)->superclasses($self->name);
@@ -88,7 +93,7 @@ package Llama::AnonymousClass {
 
     my $address = Scalar::Util::refaddr($object);
     $name .= "$class=OBJECT(" . sprintf("0x%06X", $address) . ')';
-    $self->mro($DEFAULT_MRO);
+    $object->mro($DEFAULT_MRO);
     cache_instance($name, $object);
 
     $object;
