@@ -10,6 +10,7 @@ use Module::Load ();
 use Scalar::Util ();
 
 use Llama::Object::Util qw(add_abstract_method);
+use Llama::Delegation;
 use Llama::Perl::Package;
 use Llama::Util qw(extract_flags);
 
@@ -58,6 +59,8 @@ sub CLASS ($self) {
 }
 
 sub CLASS_NAME ($self) { ref($self) || $self }
+
+delegate {add_method => 'ADD_METHOD'} => 'OWN_CLASS';
 
 sub OWN_CLASS ($self) {
   return $self->CLASS if $self->CLASS->isa('Llama::EigenClass');
