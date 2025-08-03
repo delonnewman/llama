@@ -78,9 +78,10 @@ sub superclasses ($self, @superclasses) {
 sub subclass ($self, $name = undef) {
   Llama::Class->new($name)->superclasses($self->name);
 }
+*inherit = \&subclass;
 
 sub add_method ($self, $name, $sub) {
-  $self->package->add_symbol($name, $sub, 'CODE');
+  $self->package->add_sub($name, $sub);
   $self;
 }
 
