@@ -16,8 +16,8 @@ use constant META_CLASS => '__META_CLASS__';
 
 our $DEFAULT_MRO = 'c3';
 
-sub for_instance ($class, $object) {
-  Llama::InstanceClass->new($object);
+sub own ($class, $object) {
+  Llama::EigenClass->new($object);
 }
 
 my sub cached_instance ($name) {
@@ -95,7 +95,7 @@ package Llama::AnonymousClass {
   }
 }
 
-package Llama::InstanceClass {
+package Llama::EigenClass {
   use Llama::Object '+Class';
 
   sub new($class, $object) {

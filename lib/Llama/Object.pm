@@ -59,14 +59,14 @@ sub CLASS ($self) {
 
 sub CLASS_NAME ($self) { ref($self) || $self }
 
-sub INSTANCE_CLASS ($self) {
-  return $self->CLASS if $self->CLASS->isa('Llama::InstanceClass');
+sub OWN_CLASS ($self) {
+  return $self->CLASS if $self->CLASS->isa('Llama::EigenClass');
 
   Llama::Perl::Package
     ->named('Llama::Class')
     ->maybe_load
     ->name
-    ->for_instance($self)
+    ->own($self)
 }
 
 sub ADDRESS ($self) { Scalar::Util::refaddr($self) }
