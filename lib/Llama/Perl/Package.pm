@@ -77,9 +77,13 @@ sub alias ($self, %aliases) {
   $self;
 }
 
+sub get_sub ($self, $name) { $self->read_symbol($name, 'CODE') }
+
 sub read_symbol ($self, $name, $type) {
   *{$self->qualify($name)}{$type};
 }
+
+sub add_sub ($self, $name, $code) { $self->add_symbol($name, $code, 'CODE') }
 
 sub add_symbol ($self, $name, $value, $type = undef) {
   my ($is_valid, $value_type) = Llama::Util::valid_value_type($value, $type);
