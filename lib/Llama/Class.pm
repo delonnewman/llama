@@ -14,6 +14,8 @@ use Llama::Perl::Package;
 
 use constant META_CLASS => '__META_CLASS__';
 
+our $DEFAULT_MRO = 'c3';
+
 sub for_instance ($class, $object) {
   Llama::InstanceClass->new($object);
 }
@@ -39,7 +41,7 @@ sub new ($class, $name = undef) {
   return Llama::AnonymousClass->new unless $name;
 
   my $object = bless \$name, $class;
-  mro::set_mro($name, 'c3');
+  $self->mro($DEFAULT_MRO);
   $object;
 }
 
@@ -86,7 +88,7 @@ package Llama::AnonymousClass {
 
     my $address = Scalar::Util::refaddr($object);
     $name .= "$class=OBJECT(" . sprintf("0x%06X", $address) . ')';
-    mro::set_mro($name, 'c3');
+    $self->mro($DEFAULT_MRO);
     cache_instance($name, $object);
 
     $object;
