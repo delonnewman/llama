@@ -23,6 +23,10 @@ sub import {
         for my $meth (@$method) {
           $pkg->add_sub($meth, sub { shift->$accessor()->$meth(@_) });
         }
+      } elsif (ref $method eq 'HASH') {
+        while (my ($original, $alias) = each %$method) {
+          $pkg->add_sub($alias, sub { shift->$accessor()->$original(@_) });
+        }
       } else {
         $pkg->add_sub($method, sub { shift->$accessor()->$method(@_) });
       }

@@ -11,6 +11,8 @@ package Second {
   sub two { 2 }
   sub three { 3 }
   sub four { 4 }
+  sub five { 5 }
+  sub six { 6 }
 }
 
 package First {
@@ -18,6 +20,7 @@ package First {
 
   delegate two => 'second';
   delegate [qw(three four)] => 'second';
+  delegate {five => 'cinco', six => 'seis'} => 'second';
 
   sub new { bless {}, $_[0] }
   sub one { 1 }
@@ -29,5 +32,8 @@ is $first->two => 2;
 
 is $first->three => 3;
 is $first->four => 4;
+
+is $first->cinco => 5;
+is $first->seis => 6;
 
 done_testing;
