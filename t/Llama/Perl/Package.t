@@ -75,7 +75,7 @@ subtest "$described_class - alias" => sub {
   throws { $list_util->alias('reduce' => 'fold') } qr/fully qualified/;
 };
 
-subtest "$described_class - alias" => sub {
+subtest "$described_class - add_symbol" => sub {
   my $friendly_package = $described_class->new('Friendly');
   $friendly_package->add_symbol('greeting', sub { 'hi' });
   is 'hi' => Friendly::greeting();
