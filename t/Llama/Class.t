@@ -25,4 +25,21 @@ subtest 'caching' => sub {
   is $first->ADDR => $second->ADDR;
 };
 
+subtest 'eigen classes' => sub {
+  package EigenTest {
+    use Llama::Object qw(+HashObject :constructor);
+  }
+
+  my $object = EigenTest->new;
+  isa_ok $object => 'EigenTest';
+
+  my $eigen_class = $described_class->own($object);
+  $eigen_class->add_method(translate => sub { 'eigen means own' });
+
+  ok !(EigenTest->new->can('translate'));
+  can_ok $object => 'translate';
+  isa_ok $object => 'EigenTest';
+  isa_ok $object => $eigen_class->name;
+};
+
 done_testing;
