@@ -112,15 +112,18 @@ package Llama::AnonymousClass {
 }
 
 package Llama::EigenClass {
-  use Llama::Object '+Class';
+  use Llama::Object '+AnonymousClass';
 
   sub new($class, $object) {
-    my $id = sprintf("0x%06X", $object->ADDRESS);
-    my $name = "$class=OBJECT($id)";
-    push @{$name . '::ISA'}, $class;
+    my $new_class = $class->next::method;
 
-    bless $object, $name; # re-bless $self into new class
-    return cache_instance($name, $class->SUPER::new($name));
+    # add original class to new class ancestry
+    push @{$new_class->name . '::ISA'}, $object->CLASS_NAME;
+
+    # re-bless $self into new class
+    bless $object, $new_class->name;
+
+    $new_class;
   }
 }
 
