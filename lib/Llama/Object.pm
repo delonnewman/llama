@@ -38,9 +38,7 @@ sub import($class, @args) {
     *{$calling_package . '::new'} = sub ($class, @args) {
       $class = ref($class) || $class;
       my $object = $class->allocate(@args);
-      if (my $method = $object->can('BUILD')) {
-        $object->$method(@args);
-      }
+      $object->try('BUILD', @args);
       return $object;
     };
   }
@@ -91,6 +89,11 @@ sub Str ($self) {
   "$class=OBJECT($id)";
 }
 
+sub try ($self, $method_name, @args) {
+  if (my $method = $self->can($method_name)) {
+    return $self->$method(@args);
+  }
+}
 
 sub then ($self, $block) { $block->($self) }
 sub tap ($self, $block) {
