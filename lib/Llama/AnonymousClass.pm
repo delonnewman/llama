@@ -12,7 +12,7 @@ package Llama::AnonymousClass {
 
     $name .= "$class=OBJECT(" . sprintf("0x%06X", $object->ADDR) . ')';
     $object->mro($Llama::Class::DEFAULT_MRO);
-    Llama::Class::cache_instance($name, $object);
+    Llama::Class::ObjectCache->set($name, $object);
 
     $object;
   }

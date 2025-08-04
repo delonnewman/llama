@@ -14,28 +14,17 @@ use Llama::Perl::Package;
 
 use Llama::AnonymousClass;
 use Llama::EigenClass;
+use Llama::Class::ObjectCache;
 
 our $DEFAULT_MRO = 'c3';
-use constant META_CLASS => '__META_CLASS__';
 
 sub own ($class, $object) {
   Llama::EigenClass->new($object);
 }
 
-sub cached_instance ($name) {
-  my $sym = $name . '::' . META_CLASS;
-  ${$sym};
-}
-
-sub cache_instance ($name, $instance) {
-  my $sym = $name . '::' . META_CLASS;
-  ${$sym} = $instance;
-  $instance;
-}
-
 sub named ($class, $name) {
-  my $object = cached_instance($name);
-  $object //= cache_instance($name, $class->new($name));
+  my $object = Llama::Class::ObjectCache->get($name);
+  $object //= Llama::Class::ObjectCache->set($name, $class->new($name));
   $object;
 }
 
