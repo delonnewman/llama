@@ -19,7 +19,7 @@ use Llama::Class::ObjectCache;
 our $DEFAULT_MRO = 'c3';
 
 sub own ($class, $object) {
-  Llama::EigenClass->new($object);
+  Llama::Class::EigenClass->new($object);
 }
 
 sub named ($class, $name) {
@@ -29,7 +29,7 @@ sub named ($class, $name) {
 }
 
 sub new ($class, $name = undef) {
-  return Llama::AnonymousClass->new unless $name;
+  return Llama::Class::AnonymousClass->new unless $name;
 
   my $object = bless \$name, $class;
   $object->mro($DEFAULT_MRO);
