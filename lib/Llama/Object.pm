@@ -38,8 +38,8 @@ sub import($, @args) {
   if ($flags{-constructor}) {
     $package->add_sub('new', sub ($class, @args) {
       $class = ref($class) || $class;
-      my $object = $class->allocate(@args);
-      $object->try('BUILD', $object, @args);
+      my $object = $class->allocate;
+      $object->try('BUILD', @args);
       return $object;
     });
   }
