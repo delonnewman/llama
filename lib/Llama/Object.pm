@@ -86,7 +86,7 @@ sub same ($self, $other) { $self->ID eq $other->ID }
 sub Bool { 1 }
 sub Str ($self) {
   my $class = $self->CLASS_NAME;
-  my $id = sprintf("0x%06X", $self->object_id);
+  my $id = sprintf("0x%06X", $self->ID);
 
   "$class=OBJECT($id)";
 }
