@@ -60,6 +60,7 @@ sub CLASS ($self) {
 sub CLASS_NAME ($self) { ref($self) || $self }
 
 delegate {add_method => 'ADD_METHOD', methods => 'METHODS'} => 'OWN_CLASS';
+delegate {add_attribute => 'ADD_ATTRIBUTE'} => 'OWN_CLASS';
 
 sub OWN_CLASS ($self) {
   return $self->CLASS if $self->CLASS->isa('Llama::EigenClass');

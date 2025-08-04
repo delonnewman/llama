@@ -9,6 +9,7 @@ no strict 'refs';
 
 use Scalar::Util ();
 
+use Llama::Attribute;
 use Llama::Object qw(:base);
 use Llama::Perl::Package;
 
@@ -86,6 +87,17 @@ sub prepend_superclasses($self, @superclasses) {
 sub add_method ($self, $name, $sub) {
   $self->package->add_sub($name, $sub);
   $self;
+}
+
+sub add_attribute ($self, @args) {
+  my $attribute = Llama::Attribute->new(@args);
+  push @{$self->package->qualify('ATTRIBUTES')}, $attribute;
+  $self;
+}
+
+sub attributes ($self, @args) {
+  my @attributes = @{$self->package->qualify('ATTRIBUTES')};
+  wantarray ? @attributes : [@attributes];
 }
 
 sub methods ($self) {
