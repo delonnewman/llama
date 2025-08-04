@@ -10,8 +10,7 @@ package Llama::AnonymousClass {
     my $name = '';
     my $object = bless \$name, $class;
 
-    my $address = Scalar::Util::refaddr($object);
-    $name .= "$class=OBJECT(" . sprintf("0x%06X", $address) . ')';
+    $name .= "$class=OBJECT(" . sprintf("0x%06X", $object->ADDR) . ')';
     $object->mro($Llama::Class::DEFAULT_MRO);
     Llama::Class::cache_instance($name, $object);
 

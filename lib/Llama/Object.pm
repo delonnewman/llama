@@ -77,15 +77,16 @@ sub BLESS ($self, $class_name) {
   $self;
 }
 
-sub ADDRESS ($self) { Scalar::Util::refaddr($self) }
 sub TYPE ($self) { Scalar::Util::reftype($self) }
+sub ADDR ($self) { Scalar::Util::refaddr($self) }
+*object_id = \&ADDR;
 
-sub identical ($self, $other) { $self->ADDRESS == $other->ADDRESS }
+sub identical ($self, $other) { $self->object_id == $other->object_id }
 
 sub Bool { 1 }
 sub Str ($self) {
   my $class = $self->CLASS_NAME;
-  my $id = sprintf("0x%06X", $self->ADDRESS);
+  my $id = sprintf("0x%06X", $self->object_id);
 
   "$class=OBJECT($id)";
 }
