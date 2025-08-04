@@ -9,38 +9,39 @@ use Carp ();
 use Module::Load ();
 use Scalar::Util ();
 
-use Llama::Object::Util qw(add_abstract_method);
+use Llama::Object::Util qw(abstract_method);
 use Llama::Delegation;
 use Llama::Perl::Package;
 use Llama::Util qw(extract_flags);
 
 use overload 'bool' => sub{shift->Bool}, '""' => sub{shift->Str};
 
-sub import($class, @args) {
+sub import($, @args) {
   my ($calling_package) = caller;
   my %flags = extract_flags \@args;
+  my $package = Llama::Perl::Package->named($calling_package);
 
   my @parents = $flags{-base} ? (__PACKAGE__) : @args;
   Llama::Perl::Package->named($_)->maybe_load for @parents;
-  push @{$calling_package . '::ISA'}, @parents;
+  push $package->ISA->@*, @parents;
 
   # disallow allocation for abstract classes
   if ($flags{-abstract}) {
-    add_abstract_method(
+    $package->add_sub(abstract_method(
       $calling_package,
       'allocate',
       'abstract classes cannot be allocated'
-    );
+    ));
   }
 
   # create default constructor
   if ($flags{-constructor}) {
-    *{$calling_package . '::new'} = sub ($class, @args) {
+    $package->add_sub('new', sub ($class, @args) {
       $class = ref($class) || $class;
       my $object = $class->allocate(@args);
       $object->try('BUILD', @args);
       return $object;
-    };
+    });
   }
 }
 
