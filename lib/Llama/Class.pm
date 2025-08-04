@@ -12,8 +12,8 @@ use Scalar::Util ();
 use Llama::Object qw(:base);
 use Llama::Perl::Package;
 
-use Llama::AnonymousClass;
-use Llama::EigenClass;
+use Llama::Class::AnonymousClass;
+use Llama::Class::EigenClass;
 use Llama::Class::ObjectCache;
 
 our $DEFAULT_MRO = 'c3';

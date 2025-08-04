@@ -3,8 +3,8 @@ use warnings;
 use utf8;
 use feature 'signatures';
 
-package Llama::EigenClass {
-  use Llama::Object '+AnonymousClass';
+package Llama::Class::EigenClass {
+  use Llama::Object '+Class::AnonymousClass';
 
   sub new($class, $object) {
     my $new_class = $class->next::method;
