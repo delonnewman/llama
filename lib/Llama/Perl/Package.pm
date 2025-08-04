@@ -7,8 +7,8 @@ use feature 'signatures';
 no strict 'refs';
 
 use Carp ();
-use Data::Printer;
 use Module::Load ();
+use Scalar::Util ();
 
 use Llama::Util ();
 
@@ -108,27 +108,25 @@ sub symbol_names ($self, $type = undef) {
   return wantarray ? @names : \@names unless $type;
 
   @names = grep {
-    ref(\$table{$_}) eq 'GLOB'
-        && defined(*{$table{$_}}{$type})
+    ref(\$table{$_}) eq 'GLOB' && defined(*{$table{$_}}{$type})
   } @names;
 
   wantarray ? @names : \@names;
 }
 
 sub symbol_table ($self) {
-  \%{$self->symbol_table_name};
+  wantarray ? %{$self->symbol_table_name} : \%{$self->symbol_table_name};
 }
 
 sub symbol_table_name { shift->name . '::' }
 
 sub ISA ($self, @parents) {
   if (@parents) {
-    @{$self->name . '::ISA'} = @parents;
+    @{$self->qualify('ISA')} = @parents;
     return $self;
   }
 
-  my @copy = @{$self->name . '::ISA'};
-  wantarray ? @copy : [@copy];
+  wantarray ? @{$self->qualify('ISA')} : \@{$self->qualify('ISA')};
 }
 
 1;
