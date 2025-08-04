@@ -64,9 +64,7 @@ sub path_name ($self) {
 
 sub name ($self) { wantarray ? split('::', $$self) : $$self }
 
-sub VERSION ($self) {
-  $self->read_symbol('VERSION', 'SCALAR');
-}
+sub VERSION ($self) { $self->name->VERSION }
 
 sub nested ($self, $name) {
   my $class = ref($self);
