@@ -73,13 +73,13 @@ sub subclass ($self, $name = undef) {
 }
 *inherit = \&subclass;
 
-sub append_superclass($self, $superclass) {
-  push $self->package->ISA->@*, $superclass;
+sub append_superclasses($self, @superclasses) {
+  push $self->package->ISA->@*, @superclasses;
   $self;
 }
 
-sub prepend_superclass($self, $superclass) {
-  unshift $self->package->ISA->@*, $superclass;
+sub prepend_superclasses($self, @superclasses) {
+  unshift $self->package->ISA->@*, @superclasses;
   $self;
 }
 
