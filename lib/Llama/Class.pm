@@ -12,20 +12,22 @@ use Scalar::Util ();
 use Llama::Object qw(:base);
 use Llama::Perl::Package;
 
-use constant META_CLASS => '__META_CLASS__';
+use Llama::AnonymousClass;
+use Llama::EigenClass;
 
 our $DEFAULT_MRO = 'c3';
+use constant META_CLASS => '__META_CLASS__';
 
 sub own ($class, $object) {
   Llama::EigenClass->new($object);
 }
 
-my sub cached_instance ($name) {
+sub cached_instance ($name) {
   my $sym = $name . '::' . META_CLASS;
   ${$sym};
 }
 
-my sub cache_instance ($name, $instance) {
+sub cache_instance ($name, $instance) {
   my $sym = $name . '::' . META_CLASS;
   ${$sym} = $instance;
   $instance;
@@ -98,39 +100,6 @@ sub methods ($self) {
   } $self->ancestry;
 
   wantarray ? @methods : [@methods];
-}
-
-package Llama::AnonymousClass {
-  use Llama::Object '+Class';
-  our $LOADED = 1;
-
-  sub new($class) {
-    my $name = '';
-    my $object = bless \$name, $class;
-
-    my $address = Scalar::Util::refaddr($object);
-    $name .= "$class=OBJECT(" . sprintf("0x%06X", $address) . ')';
-    $object->mro($DEFAULT_MRO);
-    cache_instance($name, $object);
-
-    $object;
-  }
-}
-
-package Llama::EigenClass {
-  use Llama::Object '+AnonymousClass';
-
-  sub new($class, $object) {
-    my $new_class = $class->next::method;
-
-    # add original class to new class ancestry
-    push @{$new_class->name . '::ISA'}, $object->CLASS_NAME;
-
-    # re-bless $self into new class
-    bless $object, $new_class->name;
-
-    $new_class;
-  }
 }
 
 1;
