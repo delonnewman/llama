@@ -39,7 +39,7 @@ sub import($, @args) {
     $package->add_sub('new', sub ($class, @args) {
       $class = ref($class) || $class;
       my $object = $class->allocate(@args);
-      $object->try('BUILD', @args);
+      $object->try('BUILD', $object, @args);
       return $object;
     });
   }
