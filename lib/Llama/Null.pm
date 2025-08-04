@@ -19,19 +19,20 @@ sub if_truthy ($self, $_block) { $self }
 sub Bool { 0 }
 
 sub SCALAR {
-  Llama::Null::Scalar->allocate;
+  Llama::Null::Scalar->new;
 }
 
 sub HASH {
-  Llama::Null::Hash->allocate;
+  Llama::Null::Hash->new;
 }
 
 sub ARRAY {
-  Llama::Null::Array->allocate;
+  Llama::Null::Array->new;
 }
 
 sub CODE {
-  Llama::Null::Code->allocate;
+  Llama::Null::Code->new(sub{});
+}
 
 package Llama::Null::Scalar {
   use Llama::Object qw(+ScalarObject +Null);
