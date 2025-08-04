@@ -82,6 +82,11 @@ sub subclass ($self, $name = undef) {
 }
 *inherit = \&subclass;
 
+sub add_superclass($self, $superclass) {
+  push $self->package->ISA->@*, $superclass;
+  $self;
+}
+
 sub add_method ($self, $name, $sub) {
   $self->package->add_sub($name, $sub);
   $self;
@@ -97,6 +102,7 @@ sub methods ($self) {
 
 package Llama::AnonymousClass {
   use Llama::Object '+Class';
+  our $LOADED = 1;
 
   sub new($class) {
     my $name = '';
