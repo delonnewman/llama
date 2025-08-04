@@ -17,8 +17,17 @@ sub BUILD ($self, $name, %options) {
   $self->LOCK(@ATTRIBUTES);
 }
 
-sub validate ($self, $value) {
+sub name ($self) { $self->{name} }
 
+sub is_valid ($self, $value) {
+  my $validator = $self->{validate};
+  return 1 unless $validator;
+
+  $validator->($value);
+}
+
+sub validate ($self, $value) {
+  Carp::confess "invalid value: '$value'" unless $self->is_valid($value);
 }
 
 1;
