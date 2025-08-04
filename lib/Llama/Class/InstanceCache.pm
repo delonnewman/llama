@@ -18,5 +18,4 @@ sub set ($, $class_name, $instance) {
   $instance;
 }
 
-
 1;
