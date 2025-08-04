@@ -8,7 +8,7 @@ package Llama::EigenClass {
 
   sub new($class, $object) {
     my $new_class = $class->next::method;
-    $new_class->add_superclass($object->CLASS_NAME);
+    $new_class->append_superclass($object->CLASS_NAME);
 
     # re-bless $self into new class
     bless $object, $new_class->name;

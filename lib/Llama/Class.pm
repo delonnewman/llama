@@ -84,7 +84,7 @@ sub subclass ($self, $name = undef) {
 }
 *inherit = \&subclass;
 
-sub add_superclass($self, $superclass) {
+sub append_superclass($self, $superclass) {
   push $self->package->ISA->@*, $superclass;
   $self;
 }
