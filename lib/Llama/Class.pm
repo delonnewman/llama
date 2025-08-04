@@ -46,6 +46,7 @@ sub new ($class, $name = undef) {
 }
 
 sub name ($self) { $$self }
+*Str = \&name;
 
 sub version ($self) { $self->package->VERSION }
 
@@ -62,7 +63,8 @@ sub package ($self) { Llama::Perl::Package->named($self->name) }
 *module = \&package;
 
 sub ancestry ($self) {
-  mro::get_linear_isa($self->name, $self->mro);
+  my $classes = mro::get_linear_isa($self->name, $self->mro);
+  wantarray ? @$classes : [@$classes];
 }
 
 sub superclasses ($self, @superclasses) {
@@ -83,6 +85,14 @@ sub subclass ($self, $name = undef) {
 sub add_method ($self, $name, $sub) {
   $self->package->add_sub($name, $sub);
   $self;
+}
+
+sub methods ($self) {
+  my @methods = map {
+    Llama::Perl::Package->named($_)->symbol_names('CODE')
+  } $self->ancestry;
+
+  wantarray ? @methods : [@methods];
 }
 
 package Llama::AnonymousClass {
