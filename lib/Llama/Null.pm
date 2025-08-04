@@ -13,7 +13,6 @@ sub if_null ($self, $block) {
 }
 
 *if_falsy = \&if_null;
-
 sub if_truthy ($self, $_block) { $self }
 
 sub Bool { 0 }
