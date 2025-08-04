@@ -79,9 +79,9 @@ sub BLESS ($self, $class_name) {
 
 sub TYPE ($self) { Scalar::Util::reftype($self) }
 sub ADDR ($self) { Scalar::Util::refaddr($self) }
-*object_id = \&ADDR;
+*ID = \&ADDR;
 
-sub identical ($self, $other) { $self->object_id == $other->object_id }
+sub same ($self, $other) { $self->ID eq $other->ID }
 
 sub Bool { 1 }
 sub Str ($self) {
