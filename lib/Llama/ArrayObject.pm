@@ -8,8 +8,8 @@ use Llama::Object qw(:base :constructor);
 
 use overload '@{}' => sub{shift->ArrayRef};
 
-sub allocate ($class, @values) {
-  bless \@values, $class;
+sub allocate ($class) {
+  bless [], $class;
 }
 
 sub ArrayRef ($self) { $self }

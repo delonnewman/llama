@@ -12,7 +12,8 @@ use overload
   '0+' => sub{shift->Num},
   '${}' => sub{shift->ScalarRef};
 
-sub allocate ($class, $value) {
+sub allocate ($class) {
+  my $value = '';
   bless \$value, $class;
 }
 
