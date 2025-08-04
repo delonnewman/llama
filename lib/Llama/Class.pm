@@ -14,7 +14,7 @@ use Llama::Perl::Package;
 
 use Llama::Class::AnonymousClass;
 use Llama::Class::EigenClass;
-use Llama::Class::ObjectCache;
+use Llama::Class::InstanceCache;
 
 our $DEFAULT_MRO = 'c3';
 
@@ -23,8 +23,8 @@ sub own ($class, $object) {
 }
 
 sub named ($class, $name) {
-  my $object = Llama::Class::ObjectCache->get($name);
-  $object //= Llama::Class::ObjectCache->set($name, $class->new($name));
+  my $object = Llama::Class::InstanceCache->get($name);
+  $object //= Llama::Class::InstanceCache->set($name, $class->new($name));
   $object;
 }
 

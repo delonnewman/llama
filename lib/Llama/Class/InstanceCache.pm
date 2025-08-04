@@ -1,4 +1,4 @@
-package Llama::Class::ObjectCache;
+package Llama::Class::InstanceCache;
 use strict;
 use warnings;
 use utf8;
