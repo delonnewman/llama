@@ -72,6 +72,11 @@ sub OWN_CLASS ($self) {
     ->own($self)
 }
 
+sub BLESS ($self, $class_name) {
+  bless $self, $class_name;
+  $self;
+}
+
 sub ADDRESS ($self) { Scalar::Util::refaddr($self) }
 sub TYPE ($self) { Scalar::Util::reftype($self) }
 
