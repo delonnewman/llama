@@ -21,7 +21,7 @@ sub import($class, @args) {
   my %flags = extract_flags \@args;
 
   my @parents = $flags{-base} ? (__PACKAGE__) : @args;
-  Module::Load::load($_) for @parents;
+  Llama::Perl::Package->named($_)->maybe_load for @parents;
   push @{$calling_package . '::ISA'}, @parents;
 
   # disallow allocation for abstract classes
