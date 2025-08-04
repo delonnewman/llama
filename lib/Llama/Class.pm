@@ -89,6 +89,11 @@ sub append_superclass($self, $superclass) {
   $self;
 }
 
+sub prepend_superclass($self, $superclass) {
+  unshift $self->package->ISA->@*, $superclass;
+  $self;
+}
+
 sub add_method ($self, $name, $sub) {
   $self->package->add_sub($name, $sub);
   $self;
