@@ -46,13 +46,6 @@ sub load {
   $self;
 }
 
-sub try ($self, $method_name, @args) {
-  if (my $method = $self->can($method_name)) {
-    return $self->$method(@args);
-  }
-  return undef;
-}
-
 sub is_loaded ($self) { !!$self->full_path }
 sub full_path ($self) { $INC{$self->path_name}; }
 
