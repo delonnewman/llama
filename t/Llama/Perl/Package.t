@@ -22,6 +22,19 @@ sub throws(&@) {
   }
 }
 
+sub doesnt_throw(&@) {
+  my ($block, $error_pattern) = @_;
+  eval {
+    $block->();
+  };
+  if ($@) {
+    fail("wrong exception thrown: $@") if $error_pattern && $@ !~ $error_pattern;
+    fail("exception thrown: $@");
+  } else {
+    pass('no exception thrown');
+  }
+}
+
 my $described_class = 'Llama::Perl::Package';
 
 package Mock::Package {
@@ -54,16 +67,19 @@ subtest "$described_class - symbol_table_name" => sub {
 };
 
 subtest "$described_class - symbol_table" => sub {
-  my %table = $package->symbol_table;
+  my %table = $package->symbol_table->%*;
   is_deeply { first => *Mock::Package::first }, \%table;
 };
 
-subtest "$described_class - symbol_table_names" => sub {
+subtest "$described_class - symbol_names" => sub {
   my @syms = $package->symbol_names;
   is_deeply [qw(first)], \@syms;
 
   my $syms = $package->symbol_names;
   is_deeply [qw(first)], $syms;
+
+  my $class_pkg = $described_class->load('Llama::Class');
+  doesnt_throw { $syms = $class_pkg->symbol_names('CODE') } # regression
 };
 
 subtest "$described_class - alias" => sub {

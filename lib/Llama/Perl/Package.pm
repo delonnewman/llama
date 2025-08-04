@@ -7,6 +7,7 @@ use feature 'signatures';
 no strict 'refs';
 
 use Carp ();
+use Data::Printer;
 use Module::Load ();
 
 use Llama::Util ();
@@ -38,7 +39,7 @@ sub maybe_load ($self) {
 
 sub load {
   my $self = shift;
-  $self = $self->new(shift) if $self eq __PACKAGE__;
+  $self = $self->named(shift) if $self eq __PACKAGE__;
 
   Module::Load::load($self->name);
 
@@ -99,19 +100,23 @@ sub qualify ($self, @parts) {
 }
 
 sub symbol_names ($self, $type = undef) {
-  my %table = $self->symbol_table;
+  my %table = $self->symbol_table->%*;
   Carp::carp "symbol table is empty this could mean that " .
     "the package isn't loaded, try calling the 'load' method" unless %table;
 
   my @names = keys %table;
-  @names = grep { defined($table{$_}{$type}) } @names if $type;
+  return wantarray ? @names : \@names unless $type;
 
-  wantarray ? keys %table : [keys %table];
+  @names = grep {
+    ref(\$table{$_}) eq 'GLOB'
+        && defined(*{$table{$_}}{$type})
+  } @names;
+
+  wantarray ? @names : \@names;
 }
 
 sub symbol_table ($self) {
-  my %table = %{$self->symbol_table_name};
-  wantarray ? %table : {%table};
+  \%{$self->symbol_table_name};
 }
 
 sub symbol_table_name { shift->name . '::' }
