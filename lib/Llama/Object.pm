@@ -55,7 +55,8 @@ delegate {methods => 'METHODS', attributes => 'ATTRIBUTES'} => 'CLASS';
 sub ADD_ATTRIBUTE ($self, @args) {
   my $class     = $self->OWN_CLASS;
   my $attribute = $class->add_attribute(@args);
-  my $name = $attribute->name;
+  my $name      = $attribute->name;
+
   if ($attribute->is_mutable) {
     $class->add_method($name => sub ($self, @args) {
       Carp::confess "attribute methods only work on instances" unless ref($self);
@@ -71,6 +72,7 @@ sub ADD_ATTRIBUTE ($self, @args) {
       return $class->get_attribute_value($name);
     });
   }
+
   $self;
 }
 
