@@ -5,21 +5,29 @@ use utf8;
 use feature 'signatures';
 use feature 'state';
 
+use Llama::Object qw(+ScalarObject :abstract);
+
 sub FALSE {
-  state $false = Llama::Boolean::False->allocate(0)
+  state $false = do {
+    my $value = 0;
+    bless \$value, 'Llama::Boolean::False';
+  };
 }
 
 sub TRUE {
-  state $true = Llama::Boolean::True->allocate(1)
+  state $true = do {
+    my $value = 1;
+    bless \$value, 'Llama::Boolean::True';
+  };
 }
 
+sub Num ($self) { $self->value }
+*Bool = \&Num;
+
 package Llama::Boolean::False {
-  use Llama::Object '+ScalarObject';
+  use Llama::Object qw(+Boolean :abstract);
 
-  sub Num { 0 }
-  sub Bool { 0 }
   sub Str { 'false' }
-
   sub if_truthy($self, $_block) { $self }
   sub if_falsy($self, $block) {
     $block->();
@@ -28,12 +36,9 @@ package Llama::Boolean::False {
 }
 
 package Llama::Boolean::True {
-  use Llama::Object '+ScalarObject';
+  use Llama::Object qw(+Boolean :abstract);
 
-  sub Num { 1 }
-  sub Bool { 1 }
   sub Str { 'true' }
-
   sub if_falsy($self, $_block) { $self }
   sub if_truthy($self, $block) {
     $block->();

@@ -27,7 +27,7 @@ sub import($, @args) {
 
   # disallow allocation for abstract classes
   if ($flags{-abstract}) {
-    $package->add_sub(abstract_method(
+    $package->add_sub('allocate', abstract_method(
       $calling_package,
       'allocate',
       'abstract classes cannot be allocated'
