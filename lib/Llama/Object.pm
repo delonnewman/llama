@@ -49,29 +49,8 @@ sub allocate ($class) {
   Carp::confess "abstract classes cannot be allocated";
 }
 
-sub CLASS ($self) {
-  Llama::Perl::Package
-    ->named('Llama::Class')
-    ->maybe_load
-    ->name
-    ->named($self->CLASS_NAME)
-}
-
-sub CLASS_NAME ($self) { ref($self) || $self }
-
 delegate {add_method => 'ADD_METHOD'} => 'OWN_CLASS';
 delegate {methods => 'METHODS', attributes => 'ATTRIBUTES'} => 'CLASS';
-
-sub OWN_CLASS ($self) {
-  return $self->CLASS unless Scalar::Util::blessed($self);
-  return $self->CLASS if $self->CLASS->isa('Llama::EigenClass');
-
-  Llama::Perl::Package
-    ->named('Llama::Class')
-    ->maybe_load
-    ->name
-    ->own($self)
-}
 
 sub ADD_ATTRIBUTE ($self, @args) {
   my $class     = $self->OWN_CLASS;
@@ -94,6 +73,27 @@ sub ADD_ATTRIBUTE ($self, @args) {
   }
   $self;
 }
+
+sub OWN_CLASS ($self) {
+  return $self->CLASS unless Scalar::Util::blessed($self);
+  return $self->CLASS if $self->CLASS->isa('Llama::EigenClass');
+
+  Llama::Perl::Package
+    ->named('Llama::Class')
+    ->maybe_load
+    ->name
+    ->own($self)
+}
+
+sub CLASS ($self) {
+  Llama::Perl::Package
+    ->named('Llama::Class')
+    ->maybe_load
+    ->name
+    ->named($self->CLASS_NAME)
+}
+
+sub CLASS_NAME ($self) { ref($self) || $self }
 
 sub BLESS ($self, $class_name) {
   bless $self, $class_name;
