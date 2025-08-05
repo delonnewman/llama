@@ -5,6 +5,7 @@ use feature 'signatures';
 
 package Llama::Class::EigenClass {
   use Llama::Object '+Class::AnonymousClass';
+  use Data::Printer;
 
   sub new($class, $object) {
     my $new_class = $class->next::method;
@@ -17,7 +18,10 @@ package Llama::Class::EigenClass {
     $object->BLESS($new_class->name);
 
     # copy attributes from original class
-    $object->ADD_ATTRIBUTE($_) for $orig_class->attributes;
+    for my $name ($orig_class->attributes) {
+      my $attribute = $orig_class->attribute($name);
+      $new_class->add_attribute($attribute);
+    }
 
     $new_class;
   }
