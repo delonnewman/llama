@@ -89,15 +89,44 @@ sub add_method ($self, $name, $sub) {
   $self;
 }
 
+=pod
+
+head2 add_attribute
+
+  $class->add_attribute($attribute);
+  $class->add_attribute($name, mutable => 1, type => 'Str');
+
+=cut
+
 sub add_attribute ($self, @args) {
-  my $attribute = Llama::Attribute->new(@args);
-  push @{$self->package->qualify('ATTRIBUTES')}, $attribute;
-  $self;
+  my $attribute = @args == 1 && $args[0]->isa('Llama::Attribute')
+    ? $args[0]
+    : Llama::Attribute->new(@args);
+
+  ${$self->package->qualify('ATTRIBUTES')}{$attribute->name} = $attribute;
+
+  $attribute;
+}
+
+sub attribute ($self, $name) {
+  my $attribute = ${$self->package->qualify('ATTRIBUTES')}{$name};
+  Carp::confess "unknown attribute '$name'" unless $attribute;
+  $attribute;
 }
 
 sub attributes ($self, @args) {
-  my @attributes = @{$self->package->qualify('ATTRIBUTES')};
+  my @attributes = keys %{$self->package->qualify('ATTRIBUTES')};
   wantarray ? @attributes : [@attributes];
+}
+
+sub set_attribute_value ($self, $name, $value) {
+  my $attribute = $self->attribute($name);
+  $attribute->validate_writable->validate($value);
+  ${$self->package->qualify('ATTRIBUTE_DATA')}{$name} = $value;
+}
+
+sub get_attribute_value ($self, $name) {
+  ${$self->package->qualify('ATTRIBUTE_DATA')}{$name};
 }
 
 sub methods ($self) {

@@ -60,9 +60,10 @@ sub CLASS ($self) {
 sub CLASS_NAME ($self) { ref($self) || $self }
 
 delegate {add_method => 'ADD_METHOD', methods => 'METHODS'} => 'OWN_CLASS';
-delegate {add_attribute => 'ADD_ATTRIBUTE'} => 'OWN_CLASS';
+delegate {attributes => 'ATTRIBUTES'} => 'OWN_CLASS';
 
 sub OWN_CLASS ($self) {
+  return $self->CLASS unless Scalar::Util::blessed($self);
   return $self->CLASS if $self->CLASS->isa('Llama::EigenClass');
 
   Llama::Perl::Package
@@ -70,6 +71,28 @@ sub OWN_CLASS ($self) {
     ->maybe_load
     ->name
     ->own($self)
+}
+
+sub ADD_ATTRIBUTE ($self, @args) {
+  my $class     = $self->OWN_CLASS;
+  my $attribute = $class->add_attribute(@args);
+  my $name = $attribute->name;
+  if ($attribute->is_mutable) {
+    $class->add_method($name => sub ($self, @args) {
+      Carp::confess "attribute methods only work on instances" unless ref($self);
+      if (@args) {
+        $class->set_attribute_value($name, $args[0]);
+        return $self;
+      }
+      return $class->get_attribute_value($name);
+    });
+  } else {
+    $class->add_method($name => sub ($self) {
+      Carp::confess "attribute methods only work on instances" unless ref($self);
+      return $class->get_attribute_value($name);
+    });
+  }
+  $self;
 }
 
 sub BLESS ($self, $class_name) {
