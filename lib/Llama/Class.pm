@@ -89,6 +89,17 @@ sub add_method ($self, $name, $sub) {
   $self;
 }
 
+# a class is it's own class
+sub OWN_CLASS ($self) { $self }
+
+sub methods ($self) {
+  my @methods = map {
+    Llama::Perl::Package->named($_)->symbol_names('CODE')
+  } $self->ancestry;
+
+  wantarray ? @methods : [@methods];
+}
+
 =pod
 
 head2 add_attribute
@@ -127,14 +138,6 @@ sub set_attribute_value ($self, $name, $value) {
 
 sub get_attribute_value ($self, $name) {
   ${$self->package->qualify('ATTRIBUTE_DATA')}{$name};
-}
-
-sub methods ($self) {
-  my @methods = map {
-    Llama::Perl::Package->named($_)->symbol_names('CODE')
-  } $self->ancestry;
-
-  wantarray ? @methods : [@methods];
 }
 
 1;
