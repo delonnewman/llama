@@ -38,7 +38,7 @@ sub maybe_load ($self) {
 
 sub load {
   my $self = shift;
-  $self = $self->named(shift) if $self eq __PACKAGE__;
+  $self = $self->named(shift) unless Scalar::Util::blessed($self);
 
   Module::Load::load($self->name);
 
