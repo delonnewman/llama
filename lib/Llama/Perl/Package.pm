@@ -3,7 +3,6 @@ use strict;
 use warnings;
 use utf8;
 use feature 'signatures';
-
 no strict 'refs';
 
 use Carp ();
