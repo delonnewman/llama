@@ -8,11 +8,11 @@ package Llama::Class::EigenClass {
   use Data::Printer;
 
   sub new($class, $object) {
-    my $new_class = $class->next::method;
+    my $new_class  = $class->next::method;
     my $orig_class = $object->CLASS;
 
     # make original class a super class
-    $new_class->append_superclasses($object->CLASS_NAME);
+    $new_class->append_superclasses($orig_class->name);
 
     # bless object into new class
     $object->BLESS($new_class->name);
