@@ -74,7 +74,7 @@ subtest 'attributes' => sub {
     $self->OWN_CLASS->get_attribute_value('name')
   });
 
-  is $object->OWN_CLASS->get_attribute_value('name') => 'Hosea'
+  is $object->name => 'Hosea'
 };
 
 done_testing;
