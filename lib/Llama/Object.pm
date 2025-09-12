@@ -6,6 +6,7 @@ use feature 'signatures';
 no strict 'refs';
 
 use Carp ();
+use Data::Printer;
 use Module::Load ();
 use Scalar::Util ();
 
@@ -78,7 +79,7 @@ sub ADD_ATTRIBUTE ($self, @args) {
 
 sub OWN_CLASS ($self) {
   return $self->CLASS unless Scalar::Util::blessed($self);
-  return $self->CLASS if $self->CLASS->isa('Llama::EigenClass');
+  return $self->CLASS if $self->CLASS->isa('Llama::Class::EigenClass');
 
   Llama::Perl::Package
     ->named('Llama::Class')
