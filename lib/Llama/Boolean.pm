@@ -5,7 +5,7 @@ use utf8;
 use feature 'signatures';
 use feature 'state';
 
-use Llama::Object qw(+ScalarObject :abstract);
+use Llama::Base qw(+ScalarObject :abstract);
 
 sub FALSE {
   state $false = do {
@@ -25,7 +25,7 @@ sub Num ($self) { $self->value }
 *Bool = \&Num;
 
 package Llama::Boolean::False {
-  use Llama::Object qw(+Boolean :abstract);
+  use Llama::Base qw(+Boolean :abstract);
 
   sub Str { 'false' }
   sub if_truthy($self, $_block) { $self }
@@ -36,7 +36,7 @@ package Llama::Boolean::False {
 }
 
 package Llama::Boolean::True {
-  use Llama::Object qw(+Boolean :abstract);
+  use Llama::Base qw(+Boolean :abstract);
 
   sub Str { 'true' }
   sub if_falsy($self, $_block) { $self }

@@ -10,7 +10,7 @@ use Data::Printer;
 use Scalar::Util ();
 
 use Llama::Attribute;
-use Llama::Object qw(:base);
+use Llama::Base qw(:base);
 use Llama::Perl::Package;
 
 use Llama::Class::AnonymousClass;
@@ -93,7 +93,7 @@ sub add_method ($self, $name, $sub) {
 }
 
 # a class is it's own class
-sub OWN_CLASS ($self) { $self }
+sub eigen_class ($self) { $self }
 
 sub methods ($self) {
   my @methods = sort map {

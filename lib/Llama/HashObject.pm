@@ -6,7 +6,7 @@ use feature 'signatures';
 
 use Hash::Util ();
 
-use Llama::Object qw(:base :constructor);
+use Llama::Base qw(:base :constructor);
 
 use overload '%{}' => sub{shift->HashRef};
 

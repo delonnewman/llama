@@ -9,6 +9,7 @@ use Carp ();
 use Data::Printer;
 use Scalar::Util ();
 
+use Llama::Delegation;
 use Llama::Perl::Package;
 
 sub new ($class, $object) {
@@ -40,8 +41,11 @@ sub add_attribute ($self, @args) {
   $self;
 }
 
+delegate [qw(attributes set_attribute_value get_attribute_value)] => 'class';
+delegate add_method => 'eigen_class';
+
 sub eigen_class ($self) {
-  return $self->class if $self->CLASS->isa('Llama::Class::EigenClass');
+  return $self->class if $self->class->isa('Llama::Class::EigenClass');
 
   Llama::Perl::Package
     ->named('Llama::Class::EigenClass')

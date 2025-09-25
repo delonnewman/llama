@@ -4,7 +4,7 @@ use warnings;
 use utf8;
 use feature 'signatures';
 
-use Llama::Object qw(:base :constructor);
+use Llama::Base qw(:base :constructor);
 
 use Scalar::Util ();
 

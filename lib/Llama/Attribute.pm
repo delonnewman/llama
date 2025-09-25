@@ -8,7 +8,7 @@ use feature 'signatures';
 
 use Carp ();
 
-use Llama::Object qw(+HashObject :constructor);
+use Llama::Base qw(+HashObject :constructor);
 
 my @ATTRIBUTES = qw(name type validate mutable);
 

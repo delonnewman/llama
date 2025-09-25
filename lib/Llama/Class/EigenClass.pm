@@ -4,7 +4,7 @@ use utf8;
 use feature 'signatures';
 
 package Llama::Class::EigenClass {
-  use Llama::Object '+Class::AnonymousClass';
+  use Llama::Base '+Class::AnonymousClass';
   use Data::Printer;
 
   sub new($class, $how) {

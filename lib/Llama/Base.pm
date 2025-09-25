@@ -17,13 +17,15 @@ use overload
   'bool' => sub{shift->Bool},
   '""' => sub{shift->Str};
 
+sub Package :prototype() { 'Llama::Perl::Package' }
+
 sub import($, @args) {
   my ($calling_package) = caller;
   my %flags = extract_flags \@args;
-  my $package = Llama::Perl::Package->named($calling_package);
+  my $package = Package->named($calling_package);
 
   my @parents = $flags{-base} ? (__PACKAGE__) : @args;
-  Llama::Perl::Package->named($_)->maybe_load for @parents;
+  Package->named($_)->maybe_load for @parents;
   push $package->ISA->@*, @parents;
 
   # disallow allocation for abstract classes
@@ -46,16 +48,11 @@ sub import($, @args) {
   }
 }
 
-sub allocate ($self) { die "not implemented" }
+sub allocate ($class) { die "not implemented" }
 
-sub CLASS ($self) {
-  my $class_name = ref($self) || $self;
-
-  Llama::Perl::Package
-    ->named('Llama::Class')
-    ->maybe_load
-    ->name
-    ->named($class_name);
+sub HOW ($self) {
+  return Package->named('Llama::Class')->maybe_load->name->named($self) unless ref $self;
+  return Package->named('Llama::Object')->maybe_load->name->new($self);
 }
 
 sub __type__ ($self) { Scalar::Util::reftype($self) }
