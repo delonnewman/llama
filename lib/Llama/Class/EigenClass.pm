@@ -20,5 +20,4 @@ sub new($class, $how) {
   $new_class;
 }
 
-
 1;
