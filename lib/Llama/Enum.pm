@@ -1,7 +1,5 @@
 package Llama::Enum;
-
 use Llama::Base qw(+Base::Scalar :signatures);
-no strict 'refs';
 
 use Carp ();
 use Scalar::Util qw(blessed);
