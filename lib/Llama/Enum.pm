@@ -1,6 +1,6 @@
 package Llama::Enum;
 
-use Llama::Base qw(:base :signatures);
+use Llama::Base qw(+Base::Scalar :signatures);
 no strict 'refs';
 
 use Carp ();
@@ -11,8 +11,6 @@ use Llama::Enum::Class;
 use Llama::Enum::Member;
 
 use overload (
-  "0+"   => sub { shift->to_int },
-  "bool" => sub { 1 },
   "cmp"  => sub($self, $other, $) { $self->key   cmp $self->parent->coerce($other)->key },
   "<=>"  => sub($self, $other, $) { $self->value <=> $self->parent->coerce($other)->value },
   "=="   => sub($self, $other, $) { $self->value == $self->parent->coerce($other)->value },
@@ -145,17 +143,11 @@ sub equals($self, $other) {
   return $self->key eq $other->key;
 }
 
-sub to_int($self) { int($self->value) }
-
 sub Str ($self) {
   my $str = $self->parent . '(';
   $str .= $self->key eq $self->value ? $self->key : $self->key . ' => ' . $self->value;
   $str .= ")";
   return $str;
-}
-
-sub name($self) {
-  return ucfirst(lc $self->key);
 }
 
 sub key($self) { [split('::', ref $self)]->[-1] }
