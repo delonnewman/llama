@@ -3,13 +3,16 @@ use Llama::Base qw(:base :constructor :signatures);
 
 use Hash::Util ();
 
+use Llama::Perl::Package;
+sub Package :prototype() { 'Llama::Perl::Package' }
+
 use overload '%{}' => sub{shift->HashRef};
 
 sub allocate ($class, @args) {
   bless {}, $class;
 }
 
-sub lock ($self, @keys) {
+sub freeze ($self, @keys) {
   my @attributes = (keys %$self, @keys);
 
   Hash::Util::lock_keys(%$self, @attributes);
@@ -18,7 +21,12 @@ sub lock ($self, @keys) {
   $self;
 }
 
-sub is_locked ($self) { Hash::Util::hash_locked(%$self) }
+sub HOW ($self) {
+  return Package->named('Llama::Class')->maybe_load->name->named($self) unless ref $self;
+  return Package->named('Llama::Object::Hash')->maybe_load->name->new($self);
+}
+
+sub is_frozen ($self) { Hash::Util::hash_locked(%$self) }
 
 sub HashRef ($self) { $self }
 
