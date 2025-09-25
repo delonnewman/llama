@@ -7,15 +7,15 @@ package Llama::Class::EigenClass {
   use Llama::Object '+Class::AnonymousClass';
   use Data::Printer;
 
-  sub new($class, $object) {
+  sub new($class, $how) {
     my $new_class  = $class->next::method;
-    my $orig_class = $object->CLASS;
+    my $orig_class = $how->class;
 
     # make original class a super class
     $new_class->append_superclasses($orig_class->name);
 
     # bless object into new class
-    $object->BLESS($new_class->name);
+    $how->BLESS($new_class->name);
 
     # copy attributes from original class
     for my $name ($orig_class->attributes) {
