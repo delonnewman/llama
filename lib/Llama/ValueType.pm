@@ -111,7 +111,7 @@ see ref
 
 Numbers - 1 2 3
 Strings - 'Hey'
-Regexp  - /@/
+Regexp  - /@/, qr/@/
 Arrays  - [Bool, Str]
 Hashes  - { a => Num, b => Num, c => Str }
 
