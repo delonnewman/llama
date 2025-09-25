@@ -17,15 +17,21 @@ use Llama::Util qw(extract_flags);
 
 use overload
   'bool' => sub{shift->Bool},
-  '""' => sub{shift->Str};
+  '""'   => sub{shift->Str};
 
 sub Package :prototype() { 'Llama::Perl::Package' }
 
 sub import($, @args) {
-  my ($calling_package) = caller;
   my %flags = extract_flags \@args;
-  my $package = Package->named($calling_package);
 
+  my $caller  = caller;
+  my $package = Package->named($caller);
+
+  # sensible defaults
+  $_->import for qw(strict warnings utf8);
+  feature->import(':5.16');
+
+  # subclassing
   my @parents = $flags{-base} ? (__PACKAGE__) : @args;
   Package->named($_)->maybe_load for @parents;
   push $package->ISA->@*, @parents;
@@ -47,6 +53,12 @@ sub import($, @args) {
       $object->try('BUILD', @args);
       return $object;
     });
+  }
+
+  if ($flags{-signatures}) {
+    Carp::croak 'Subroutine signatures require Perl 5.20+' if $] < 5.020;
+    require experimental;
+    experimental->import($_) for qw(signatures postderef);
   }
 }
 
