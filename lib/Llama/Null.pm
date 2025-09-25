@@ -1,18 +1,18 @@
 package Llama::Null;
 use Llama::Base qw(:base :abstract);
 
-sub if_null ($self, $block) {
-  $block->();
+sub if_null ($self, $block, @args) {
+  $self->$block(@args);
   $self;
 }
 
 *if_falsy = \&if_null;
-sub if_truthy ($self, $_block) { $self }
+sub if_truthy ($self, $_block, @args) { $self }
 
 sub Bool { 0 }
 
 sub SCALAR {
-  Llama::Null::Scalar->new;
+  state $SCALAR = Llama::Null::Scalar->new(undef);
 }
 
 sub HASH {
@@ -24,7 +24,7 @@ sub ARRAY {
 }
 
 sub CODE {
-  Llama::Null::Code->new(sub{});
+  state $CODE = Llama::Null::Code->new(sub{});
 }
 
 package Llama::Null::Scalar {
@@ -36,11 +36,11 @@ package Llama::Null::Hash {
 }
 
 package Llama::Null::Array {
-  use Llama::Object qw(+Base::Array +Null);
+  use Llama::Base qw(+Base::Array +Null);
 }
 
 package Llama::Null::Code {
-  use Llama::Object qw(+Base::Code +Null);
+  use Llama::Base qw(+Base::Code +Null);
 }
 
 1;
