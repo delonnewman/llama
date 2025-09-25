@@ -1,6 +1,71 @@
 package Llama::ValueType;
 use Llama::Base qw(:base :signatures);
 
+sub Any {}
+package Llama::ValueType::Any {}
+
+sub SCALAR {}
+package Llama::ValueType::SCALAR {
+  sub Num {}
+  sub Str {}
+  sub REF {}
+}
+
+package Llama::ValueType::SCALAR::REF {
+  sub SCALAR {}
+  sub CODE ($IN, $OUT) {}
+  sub HASH ($K, $V = undef) {}
+  sub ARRAY ($V) {}
+  sub Blessed ($ISA) {}
+}
+
+package Llama::ValueType::SCALAR::REF::SCALAR {}
+package Llama::ValueType::SCALAR::REF::CODE {}
+package Llama::ValueType::SCALAR::REF::HASH {}
+package Llama::ValueType::SCALAR::REF::ARRAY {}
+package Llama::ValueType::SCALAR::REF::Blessed {
+  sub Can (@METHODS) {}
+}
+
+sub CODE ($IN, $OUT) {}
+package Llama::ValueType::CODE {}
+
+sub HASH ($K, $V = undef) {}
+package Llama::ValueType::HASH {}
+
+sub ARRAY ($V) {}
+package Llama::ValueType::ARRAY {}
+
+sub Regexp {}
+package Llama::ValueType::Regexp {}
+
+sub GLOB {}
+package Llama::ValueType::GLOB {}
+
+sub LVALUE {}
+package Llama::ValueType::LVALUE {}
+
+sub FORMAT {}
+package Llama::ValueType::FORMAT {}
+
+sub IO {}
+package Llama::ValueType::IO {}
+
+sub VSTRING {}
+package Llama::ValueType::VSTRING {}
+
+package Llama::ValueType::Literal {}
+package Llama::ValueType::Literal::Number {}
+package Llama::ValueType::Literal::String {}
+package Llama::ValueType::Literal::Regexp {}
+package Llama::ValueType::Literal::Array {}
+package Llama::ValueType::Literal::Hash {}
+
+package Llama::ValueType::Operator {}
+package Llama::ValueType::Operator::Negation {}
+package Llama::ValueType::Operator::Disjunction {}
+package Llama::ValueType::Operator::Conjunction {}
+
 1;
 
 __END__
@@ -11,37 +76,41 @@ __END__
 
 see ref
 
+- Any
 - SCALAR
+  - Undef
   - Num
   - Str
-    - Str[$LENGTH]
   - REF
     - SCALAR
     - CODE
-      - CODE[@IN => @OUT]
+      - CODE(@IN => @OUT)
     - HASH
-      - HASH[$V]
-      - HASH[$K => $V]
+      - HASH($V)
+      - HASH($K => $V)
     - ARRAY
-      - ARRAY[$V]
+      - ARRAY($V)
     - Blessed
-      - Blessed[$ISA]
-      - Can[@METHODS]
-  - Undef
+      - Blessed($ISA)
+      - Can(@METHODS)
 - CODE
-  - CODE[@IN => @OUT]
+  - CODE(@IN => @OUT)
 - HASH
-  - HASH[$V]
-  - HASH[$K => $V]
+  - HASH($V)
+  - HASH($K => $V)
 - ARRAY
-  - ARRAY[$V]
+  - ARRAY($V)
 - Regexp
-- Any
+- GLOB
+- LVALUE
+- FORMAT
+- IO
+- VSTRING
 
 # Literals
 
 Numbers - 1 2 3
-Strings - "Hey"
+Strings - 'Hey'
 Regexp  - /@/
 Arrays  - [Bool, Str]
 Hashes  - { a => Num, b => Num, c => Str }
@@ -55,17 +124,17 @@ Hashes  - { a => Num, b => Num, c => Str }
 # Core
 
 Scalar    = SCALAR
-Num       = Scalar[Num]
-Str       = Scalar[Str]
-Ref       = Scalar[REF]
-ScalarRef = Scalar[REF[SCALAR]]
-CodeRef   = Scalar[REF[CODE]]
-HashRef   = Scalar[REF[HASH]]
-ArrayRef  = Scalar[REF[ARRAY]]
-Object    = Scalar[REF[Blessed]]
-Undef     = Scalar[Undef]
-Defined   = Scalar[!Undef]
-Value     = Scalar[!REF]
+Num       = Scalar::Num
+Str       = Scalar::Str
+Ref       = Scalar::REF
+ScalarRef = Scalar::REF::SCALAR
+CodeRef   = Scalar::REF::CODE
+HashRef   = Scalar::REF::HASH
+ArrayRef  = Scalar::REF::ARRAY
+Object    = Scalar::REF::Blessed
+Undef     = Scalar::Undef
+Defined   = Scalar(!Scalar::Undef)
+Value     = Scalar(!Scalar::REF)
 Code      = CODE
 Hash      = HASH
 Array     = ARRAY
