@@ -11,7 +11,6 @@ use Llama::Enum::Class;
 use Llama::Enum::Member;
 
 use overload (
-  '""'   => sub { shift->to_string },
   "0+"   => sub { shift->to_int },
   "bool" => sub { 1 },
   "cmp"  => sub($self, $other, $) { $self->key   cmp $self->parent->coerce($other)->key },
@@ -148,7 +147,7 @@ sub equals($self, $other) {
 
 sub to_int($self) { int($self->value) }
 
-sub to_string($self) {
+sub Str ($self) {
   my $str = $self->parent . '(';
   $str .= $self->key eq $self->value ? $self->key : $self->key . ' => ' . $self->value;
   $str .= ")";
