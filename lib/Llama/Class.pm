@@ -19,10 +19,6 @@ use Llama::Class::InstanceCache;
 
 our $DEFAULT_MRO = 'c3';
 
-sub own ($class, $object) {
-  Llama::Class::EigenClass->new($object);
-}
-
 sub named ($class, $name) {
   my $object = Llama::Class::InstanceCache->get($name);
   $object //= Llama::Class::InstanceCache->set($name, $class->new($name));
@@ -82,6 +78,13 @@ sub append_superclasses($self, @superclasses) {
 sub prepend_superclasses($self, @superclasses) {
   unshift $self->package->ISA->@*, @superclasses;
   $self;
+}
+
+sub add_instance_method ($self, $name, $sub) {
+  $self->add_method($name, sub ($self, @args) {
+    Carp::confess "instance methods can't be called in a package context" unless ref $self;
+    return $sub->(@args);
+  });
 }
 
 sub add_method ($self, $name, $sub) {
