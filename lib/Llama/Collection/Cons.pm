@@ -1,9 +1,4 @@
 package Llama::Collection::Cons;
-use strict;
-use warnings;
-use utf8;
-use feature 'signatures';
-
-use Llama::Object qw(+ArrayObject +Sequence);
+use Llama::Base qw(+Base::Array +Sequence);
 
 1;

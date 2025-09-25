@@ -1,4 +1,4 @@
-package Llama::CodeObject;
+package Llama::Base::Code;
 use Llama::Base qw(:base :constructor :signatures);
 
 use Carp ();

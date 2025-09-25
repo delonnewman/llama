@@ -1,5 +1,5 @@
 package Llama::Boolean;
-use Llama::Base qw(+ScalarObject :abstract :signatures);
+use Llama::Base qw(+Base::Scalar :abstract :signatures);
 
 sub FALSE {
   state $false = do {

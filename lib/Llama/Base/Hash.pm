@@ -1,4 +1,4 @@
-package Llama::HashObject;
+package Llama::Base::Hash;
 use Llama::Base qw(:base :constructor :signatures);
 
 use Hash::Util ();

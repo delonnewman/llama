@@ -28,7 +28,7 @@ subtest 'caching' => sub {
 
 subtest 'eigen classes' => sub {
   package EigenTest {
-    use Llama::Base qw(+HashObject :constructor);
+    use Llama::Base qw(+Base::Hash :constructor);
   }
 
   my $object = EigenTest->new;
@@ -55,7 +55,7 @@ subtest 'attributes' => sub {
   is $class->get_attribute_value('testing') => $AttributesTest::ATTRIBUTE_DATA{testing};
 
   package ObjectAttributes {
-    use Llama::Base qw(+ScalarObject :constructor);
+    use Llama::Base qw(+Base::Scalar :constructor);
   }
   ObjectAttributes->HOW->add_attribute(name => (mutable => 1));
   my $object = ObjectAttributes->new(1);

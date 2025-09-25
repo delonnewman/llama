@@ -1,11 +1,5 @@
 package Llama::Null;
-use strict;
-use warnings;
-use utf8;
-use feature 'signatures';
-no strict 'refs';
-
-use Llama::Object qw(:base :abstract);
+use Llama::Base qw(:base :abstract);
 
 sub if_null ($self, $block) {
   $block->();
@@ -34,19 +28,19 @@ sub CODE {
 }
 
 package Llama::Null::Scalar {
-  use Llama::Object qw(+ScalarObject +Null);
+  use Llama::Base qw(+Base::Scalar +Null);
 }
 
 package Llama::Null::Hash {
-  use Llama::Object qw(+HashObject +Null);
+  use Llama::Base qw(+Base::Hash +Null);
 }
 
 package Llama::Null::Array {
-  use Llama::Object qw(+ArrayObject +Null);
+  use Llama::Object qw(+Base::Array +Null);
 }
 
 package Llama::Null::Code {
-  use Llama::Object qw(+CodeObject +Null);
+  use Llama::Object qw(+Base::Code +Null);
 }
 
 1;

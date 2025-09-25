@@ -1,5 +1,5 @@
 package Llama::Class;
-use Llama::Base qw(+ScalarObject :signatures);
+use Llama::Base qw(+Base::Scalar :signatures);
 
 use Data::Printer;
 use Scalar::Util ();

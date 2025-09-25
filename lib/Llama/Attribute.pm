@@ -1,5 +1,5 @@
 package Llama::Attribute;
-use Llama::Base qw(+HashObject :constructor :signatures);
+use Llama::Base qw(+Base::Hash :constructor :signatures);
 
 # Attribute meta object
 

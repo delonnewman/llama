@@ -1,4 +1,4 @@
-package Llama::ScalarObject;
+package Llama::Base::Scalar;
 use Llama::Base qw(:base :constructor :signatures);
 
 use Scalar::Util ();
