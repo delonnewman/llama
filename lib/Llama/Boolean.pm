@@ -1,11 +1,5 @@
 package Llama::Boolean;
-use strict;
-use warnings;
-use utf8;
-use feature 'signatures';
-use feature 'state';
-
-use Llama::Base qw(+ScalarObject :abstract);
+use Llama::Base qw(+ScalarObject :abstract :signatures);
 
 sub FALSE {
   state $false = do {
