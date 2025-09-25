@@ -7,13 +7,12 @@ no strict 'refs';
 
 use Carp ();
 use Module::Load ();
+use Sub::Util ();
 use Scalar::Util ();
 
 use Llama::Util ();
 
 use constant META_PKG => '__META_PKG__';
-
-# TODO: Move file oriented methods to subclass Llama::Perl::Module
 
 sub named($class, $name) {
   my $sym = $name . '::' . META_PKG;
@@ -80,7 +79,11 @@ sub read_symbol ($self, $name, $type) {
   *{$self->qualify($name)}{$type};
 }
 
-sub add_sub ($self, $name, $code) { $self->add_symbol($name, $code, 'CODE') }
+sub add_sub ($self, $name, $code) {
+  Sub::Util::set_subname($name, $code);
+
+  $self->add_symbol($name, $code, 'CODE');
+}
 
 sub add_symbol ($self, $name, $value, $type = undef) {
   my ($is_valid, $value_type) = Llama::Util::valid_value_type($value, $type);
