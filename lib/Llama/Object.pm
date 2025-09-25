@@ -22,19 +22,20 @@ sub add_attribute ($self, @args) {
   my $attribute = $class->add_attribute(@args);
   my $name      = $attribute->name;
 
-  if ($attribute->is_mutable) {
-    $class->add_instance_method($name => sub ($self, @args) {
-      if (@args) {
-        $class->set_attribute_value($name, $args[0]);
-        return $self;
-      }
-      return $class->get_attribute_value($name);
-    });
-  } else {
+  unless ($attribute->is_mutable) {
     $class->add_instance_method($name => sub ($self) {
       return $class->get_attribute_value($name);
     });
+    return $self;
   }
+
+  $class->add_instance_method($name => sub ($self, @args) {
+    if (@args) {
+      $class->set_attribute_value($name, $args[0]);
+      return $self;
+    }
+    return $class->get_attribute_value($name);
+  });
 
   $self;
 }
