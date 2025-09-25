@@ -1,6 +1,8 @@
 package Llama::ValueType;
 use Llama::Base qw(:base :signatures);
 
+# A set of meta objects for charaterizing Perl values implements type interface.
+
 sub Any {}
 package Llama::ValueType::Any {}
 

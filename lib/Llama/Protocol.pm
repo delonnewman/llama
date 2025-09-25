@@ -1,8 +1,6 @@
 package Llama::Protocol;
 
-use strict;
-use warnings;
-use utf8;
-use feature 'signatures';
+# A collection of method signatures implements type interface--
+# represents an abstract object contract.
 
 1;
