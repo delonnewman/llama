@@ -33,11 +33,12 @@ sub import($, @args) {
   my $caller = caller;
   my $pkg    = Package->named($caller);
 
-
   # subclassing
   my @parents = $flags{-base} ? (__PACKAGE__) : @args;
-  Package->named($_)->maybe_load for @parents;
-  $pkg->ISA(@parents);
+  if (@parents) {
+    Package->named($_)->maybe_load for @parents;
+    $pkg->ISA(@parents);
+  }
 
   # disallow allocation for abstract classes
   if ($flags{-abstract}) {
