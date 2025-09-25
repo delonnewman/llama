@@ -122,26 +122,13 @@ sub try ($self, $method_name, @args) {
   }
 }
 
-sub then ($self, $block) { $block->($self) }
-sub tap ($self, $block) {
-  $block->($self);
-  $self;
+sub then ($self, $sub_or_method_name, @args) {
+  return $self->$sub_or_method_name(@args);
 }
 
-sub if_null ($self, $_block) { $self }
-sub if_falsy ($self, $_block) { $self }
-sub if_truthy ($self, $block) {
-  $block->($self);
-  $self;
-}
-
-sub if ($self, $block) {
-  $self->if_truthy($block);
-  $self
-}
-sub else ($self, $block) {
-  $self->if_falsy($block);
-  $self
+sub tap ($self, $sub_or_method_name, @args) {
+  $self->$sub_or_method_name(@args);
+  return $self;
 }
 
 # # in Llama/Record.pm
