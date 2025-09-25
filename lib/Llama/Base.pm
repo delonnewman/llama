@@ -7,7 +7,6 @@ no strict 'refs';
 
 use Carp ();
 use Data::Printer;
-use Module::Load ();
 use Scalar::Util ();
 
 use Llama::Object::Util qw(abstract_method);
