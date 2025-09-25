@@ -105,7 +105,12 @@ sub methods ($self) {
 head2 add_attribute
 
   $class->add_attribute($attribute);
-  $class->add_attribute($name, mutable => 1, type => 'Str');
+  $class->add_attribute($name, mutable => 1, value => 'Str');
+  $class->add_attribute($name, { mutable => 1, value => 'Str' });
+  $class->add_attribute($name, 'Mutable[Str]');
+
+  my $type = Llama::AttributeType->new(mutable => 1, value => 'Str');
+  $class->add_attribute($name, $type);
 
 =cut
 
@@ -124,6 +129,14 @@ sub attribute ($self, $name) {
   Carp::confess "unknown attribute '$name'" unless $attribute;
   $attribute;
 }
+
+=pod
+
+head2 attributes
+
+  $class->attributes # => Llama::Schema
+
+=cut
 
 sub attributes ($self) {
   my @attributes = keys %{$self->package->qualify('ATTRIBUTES')};
