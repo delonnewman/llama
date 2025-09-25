@@ -1,7 +1,9 @@
 package Llama::Perl::Package;
+
+use utf8;
 use strict;
 use warnings;
-use utf8;
+use feature ':5.20';
 use feature 'signatures';
 no strict 'refs';
 

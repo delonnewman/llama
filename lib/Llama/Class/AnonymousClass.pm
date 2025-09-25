@@ -1,21 +1,15 @@
-use strict;
-use warnings;
-use utf8;
-use feature 'signatures';
+package Llama::Class::AnonymousClass;
+use Llama::Base qw(+Class :signatures);
 
-package Llama::Class::AnonymousClass {
-  use Llama::Base '+Class';
+sub new($class) {
+  my $name = '';
+  my $object = bless \$name, $class;
 
-  sub new($class) {
-    my $name = '';
-    my $object = bless \$name, $class;
+  $name .= "$class=OBJECT(" . sprintf("0x%06X", $object->__addr__) . ')';
+  $object->mro($Llama::Class::DEFAULT_MRO);
+  Llama::Class::InstanceCache->set($name, $object);
 
-    $name .= "$class=OBJECT(" . sprintf("0x%06X", $object->__addr__) . ')';
-    $object->mro($Llama::Class::DEFAULT_MRO);
-    Llama::Class::InstanceCache->set($name, $object);
-
-    $object;
-  }
+  $object;
 }
 
 1;

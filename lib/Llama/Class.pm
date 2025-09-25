@@ -81,6 +81,11 @@ sub add_instance_method ($self, $name, $sub) {
   });
 }
 
+sub add_abstract_method ($self, $name, $message = undef) {
+  $message //= "${self}::$name - abstract methods cannot be invoked";
+  $self->add_method($name, sub { Carp::confess $message });
+}
+
 sub add_method ($self, $name, $sub) {
   $self->package->add_sub($name, $sub);
   $self;

@@ -14,14 +14,16 @@ sub allocate ($class) {
   bless {}, $class;
 }
 
-sub LOCK ($self, @keys) {
+sub lock ($self, @keys) {
   my @attributes = (keys %$self, @keys);
+
   Hash::Util::lock_keys(%$self, @attributes);
   Hash::Util::lock_value(%$self, $_) for @attributes;
+
   $self;
 }
 
-sub LOCKED ($self) { Hash::Util::hash_locked(%$self) }
+sub is_locked ($self) { Hash::Util::hash_locked(%$self) }
 
 sub HashRef ($self) { $self }
 

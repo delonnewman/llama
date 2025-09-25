@@ -15,7 +15,7 @@ my @ATTRIBUTES = qw(name type validate mutable);
 sub BUILD ($self, $name, %options) {
   %$self = (name => $name, %options);
   $self->{validate} = $options{validate} // sub {1};
-  $self->LOCK(@ATTRIBUTES);
+  $self->lock(@ATTRIBUTES);
 }
 
 sub name ($self) { $self->{name} }

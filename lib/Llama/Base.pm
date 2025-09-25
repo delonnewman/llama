@@ -3,7 +3,7 @@ package Llama::Base;
 use strict;
 use warnings;
 use utf8;
-use feature ':5.16';
+use feature ':5.20';
 use feature 'signatures';
 use mro;
 no strict 'refs';
@@ -12,7 +12,7 @@ use Carp ();
 use Data::Printer;
 use Scalar::Util ();
 
-use Llama::Object::Util qw(abstract_method);
+use Llama::Base::Util;
 use Llama::Perl::Package;
 use Llama::Util qw(extract_flags);
 
@@ -23,37 +23,32 @@ use overload
 sub Package :prototype() { 'Llama::Perl::Package' }
 
 sub import($, @args) {
-  my %flags = extract_flags \@args;
-
-  my $caller  = caller;
-  my $package = Package->named($caller);
-
   # sensible defaults
   $_->import for qw(strict warnings utf8);
-  feature->import(':5.16');
+  feature->import(':5.20');
+
+  my %flags = extract_flags \@args;
+  return unless %flags;
+
+  my $caller = caller;
+  my $pkg    = Package->named($caller);
+
 
   # subclassing
   my @parents = $flags{-base} ? (__PACKAGE__) : @args;
   Package->named($_)->maybe_load for @parents;
-  push $package->ISA->@*, @parents;
+  $pkg->ISA(@parents);
 
   # disallow allocation for abstract classes
   if ($flags{-abstract}) {
-    $package->add_sub('new', abstract_method(
-      $caller,
-      'allocate',
-      'abstract classes cannot be allocated'
-    ));
+    my $add_abstract_method = \&Llama::Base::Util::add_abstract_method;
+    $pkg->$add_abstract_method('allocate', 'abstract classes cannot be allocated');
   }
 
   # create default constructor
   if ($flags{-constructor}) {
-    $package->add_sub('new', sub ($class, @args) {
-      $class = ref($class) || $class;
-      my $object = $class->allocate;
-      $object->try('BUILD', @args);
-      return $object;
-    });
+    my $add_constructor = \&Llama::Base::Util::add_constructor;
+    $pkg->$add_constructor();
   }
 
   if ($flags{-signatures}) {
@@ -104,6 +99,8 @@ sub tap ($self, $sub_or_method_name, @args) {
   $self->$sub_or_method_name(@args);
   return $self;
 }
+
+sub itself ($self) { $self }
 
 1;
 
