@@ -1,10 +1,5 @@
 package Llama::ScalarObject;
-use strict;
-use warnings;
-use utf8;
-use feature 'signatures';
-
-use Llama::Base qw(:base :constructor);
+use Llama::Base qw(:base :constructor :signatures);
 
 use Scalar::Util ();
 
