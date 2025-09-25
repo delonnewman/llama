@@ -100,7 +100,7 @@ package Llama::Record;
 use Llama::Base '+HashClass', -signatures;
 
 sub new ($self, %attributes) {
-  my $class = $self->SUPER::new($attributes{name}); # if name is undef will be and instance of AnonymousClass
+  my $class = $self->SUPER::new($attributes{name}); # if name is undef will be an instance of AnonymousClass
 
   my %schema = ($attributes{attributes} // {})->%*;
   for my $attribute (keys %schema) {
