@@ -58,7 +58,7 @@ subtest 'attributes' => sub {
     use Llama::Base qw(+ScalarObject :constructor);
   }
   ObjectAttributes->HOW->add_attribute(name => (mutable => 1));
-  my $object = ObjectAttributes->new;
+  my $object = ObjectAttributes->new(1);
 
   my $attribute = ObjectAttributes->HOW->attribute('name');
   ok $attribute->is_mutable => 'is mutable';

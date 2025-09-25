@@ -1,9 +1,5 @@
 package Llama::Object;
-use strict;
-use warnings;
-use utf8;
-use feature 'signatures';
-no strict 'refs';
+use Llama::Base qw(:base :signatures);
 
 use Carp ();
 use Data::Printer;

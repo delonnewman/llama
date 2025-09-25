@@ -17,7 +17,7 @@ sub add_abstract_method ($package, $name, $message = undef) {
 sub add_constructor ($package) {
   $package->add_sub('new', sub ($self, @args) {
     my $class = ref($self) || $self;
-    my $object = $class->allocate;
+    my $object = $class->allocate(@args);
 
     $object->try('BUILD', @args);
 

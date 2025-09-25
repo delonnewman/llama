@@ -10,7 +10,7 @@ use Llama::Base qw(:base :constructor);
 
 use overload '%{}' => sub{shift->HashRef};
 
-sub allocate ($class) {
+sub allocate ($class, @args) {
   bless {}, $class;
 }
 
