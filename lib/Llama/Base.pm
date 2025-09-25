@@ -5,6 +5,7 @@ use warnings;
 use utf8;
 use feature ':5.16';
 use feature 'signatures';
+use mro;
 no strict 'refs';
 
 use Carp ();
