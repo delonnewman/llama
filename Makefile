@@ -1,5 +1,5 @@
 test:
-	prove -r -Ilib
+	prove -r -Ilib -It/lib
 
 console:
 	reply -Ilib
