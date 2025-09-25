@@ -77,9 +77,9 @@ sub members($class, @keys) {
 
   no strict 'refs';
   my %members = %{$class . '::' . KEYS_INDEX};
-  %members = %members{@keys} if @keys;
+  my @members = @keys ? map { $members{$_} } @keys : values %members;
 
-  return wantarray ? values %members : int %members;
+  return wantarray ? @members : int @members;
 }
 
 sub all($class, @keys) {
