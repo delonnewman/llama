@@ -43,7 +43,7 @@ subtest 'eigen classes' => sub {
   isa_ok $eigen_class => 'Llama::Class';
   isa_ok $object => $eigen_class->name;
 
-  ok $object->HOW->eigen_class->is_same($object->HOW->eigen_class) => 'same instance';
+  ok $object->HOW->eigen_class->identical($object->HOW->eigen_class) => 'same instance';
 };
 
 subtest 'attributes' => sub {

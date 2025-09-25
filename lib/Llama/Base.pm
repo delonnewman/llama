@@ -39,7 +39,7 @@ sub import($, @args) {
   # disallow allocation for abstract classes
   if ($flags{-abstract}) {
     $package->add_sub('new', abstract_method(
-      $calling_package,
+      $caller,
       'allocate',
       'abstract classes cannot be allocated'
     ));
@@ -76,9 +76,9 @@ sub __type__ ($self) { Scalar::Util::reftype($self) }
 sub __addr__ ($self) { Scalar::Util::refaddr($self) }
 *__id__ = \&__addr__;
 
-sub is_same ($self, $other) { $self->__id__ eq $other->__id__ }
-*is_equal = \&is_same;
-*is_match = \&is_same;
+sub identical ($self, $other) { $self->__id__ eq $other->__id__ }
+*equals  = \&identical;
+*matches = \&identical;
 
 sub Bool { 1 }
 

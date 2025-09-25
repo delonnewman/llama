@@ -1,16 +1,10 @@
 package Llama::Class;
-use strict;
-use warnings;
-use utf8;
-use feature 'signatures';
-use feature 'state';
-no strict 'refs';
+use Llama::Base qw(:base :signatures);
 
 use Data::Printer;
 use Scalar::Util ();
 
 use Llama::Attribute;
-use Llama::Base qw(:base);
 use Llama::Perl::Package;
 
 use Llama::Class::AnonymousClass;
@@ -122,12 +116,14 @@ sub add_attribute ($self, @args) {
     ? $args[0]
     : Llama::Attribute->new(@args);
 
+  no strict 'refs';
   ${$self->package->qualify('ATTRIBUTES')}{$attribute->name} = $attribute;
 
   $attribute;
 }
 
 sub attribute ($self, $name) {
+  no strict 'refs';
   my $attribute = ${$self->package->qualify('ATTRIBUTES')}{$name};
   Carp::confess "unknown attribute '$name'" unless $attribute;
   $attribute;
@@ -142,17 +138,20 @@ head2 attributes
 =cut
 
 sub attributes ($self) {
+  no strict 'refs';
   my @attributes = keys %{$self->package->qualify('ATTRIBUTES')};
   wantarray ? @attributes : [@attributes];
 }
 
 sub set_attribute_value ($self, $name, $value) {
+  no strict 'refs';
   my $attribute = $self->attribute($name);
   $attribute->validate_writable->validate($value);
   ${$self->package->qualify('ATTRIBUTE_DATA')}{$name} = $value;
 }
 
 sub get_attribute_value ($self, $name) {
+  no strict 'refs';
   ${$self->package->qualify('ATTRIBUTE_DATA')}{$name};
 }
 
