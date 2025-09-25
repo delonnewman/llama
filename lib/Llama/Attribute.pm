@@ -5,24 +5,21 @@ use Llama::Base qw(+Base::Hash :constructor :signatures);
 
 use Carp ();
 
-my @ATTRIBUTES = qw(name type validate mutable);
+use Llama::Delegation;
+use Llama::Attribute::Type;
 
-sub BUILD ($self, $name, %options) {
-  %$self = (name => $name, %options);
-  $self->{validate} = $options{validate} // sub {1};
-  $self->freeze(@ATTRIBUTES);
+my $Any = sub{1};
+
+sub BUILD ($self, $name, @args) {
+  $self->{name} = $name;
+  $self->{type} = Llama::Attribute::Type->parse(@args);
+  $self->freeze;
 }
 
+delegate [qw(is_mutable is_optional is_valid)] => 'type';
+
+sub type ($self) { $self->{type} }
 sub name ($self) { $self->{name} }
-
-sub is_mutable ($self) { !!$self->{mutable} }
-
-sub is_valid ($self, $value) {
-  my $validator = $self->{validate};
-  return 1 unless $validator;
-
-  $validator->($value);
-}
 
 sub validate_writable ($self) {
   Carp::confess $self->name . " is not writable" unless $self->is_mutable;
