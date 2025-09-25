@@ -113,15 +113,15 @@ see ref
 
 Numbers - 1 2 3
 Strings - 'Hey'
-Regexp  - /@/, qr/@/
+Regexp  - qr/@/
 Arrays  - [Bool, Str]
 Hashes  - { a => Num, b => Num, c => Str }
 
 # Operators
 
-! - negation
-| - disjunction
-& - conjunction
+Not - negation
+Or  - disjunction
+And - conjunction
 
 # Core
 
@@ -135,14 +135,15 @@ HashRef   = Scalar::REF::HASH
 ArrayRef  = Scalar::REF::ARRAY
 Object    = Scalar::REF::Blessed
 Undef     = Scalar::Undef
-Defined   = Scalar(!Scalar::Undef)
-Value     = Scalar(!Scalar::REF)
+Defined   = Scalar(Not(Scalar::Undef))
+Value     = Scalar(Not(Scalar::REF))
 Code      = CODE
 Hash      = HASH
 Array     = ARRAY
-Bool      = 1 | 0 | undef | ''
+Bool      = Or(1, 0, undef, '')
+Maybe($T) = Or(Undef, $T)
 
 # Extended
 
-UUID  = Str & /[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}/
-Email = Str & /.+@.+/
+UUID  = And(Str, qr/[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}/)
+Email = And(Str, /.+@.+/)
