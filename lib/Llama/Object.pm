@@ -5,8 +5,8 @@ use Carp ();
 use Data::Printer;
 use Scalar::Util ();
 
+use Llama::Package;
 use Llama::Delegation;
-use Llama::Perl::Package;
 
 sub new ($class, $object) {
   bless sub{$object}, $class;
@@ -43,7 +43,7 @@ delegate add_method => 'eigen_class';
 sub eigen_class ($self) {
   return $self->class if $self->class->isa('Llama::Class::EigenClass');
 
-  Llama::Perl::Package
+  Llama::Package
     ->named('Llama::Class::EigenClass')
     ->maybe_load
     ->name
@@ -51,7 +51,7 @@ sub eigen_class ($self) {
 }
 
 sub class ($self) {
-  Llama::Perl::Package
+  Llama::Package
     ->named('Llama::Class')
     ->maybe_load
     ->name

@@ -3,8 +3,8 @@ use Llama::Base qw(:base :constructor :signatures);
 
 use Hash::Util ();
 
-use Llama::Perl::Package;
-sub Package :prototype() { 'Llama::Perl::Package' }
+use Llama::Package;
+sub Package :prototype() { 'Llama::Package' }
 
 use overload '%{}' => sub{shift->HashRef};
 

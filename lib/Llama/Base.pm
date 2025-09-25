@@ -12,15 +12,15 @@ use Carp ();
 use Data::Printer;
 use Scalar::Util ();
 
-use Llama::Base::Util;
-use Llama::Perl::Package;
+use Llama::Package;
 use Llama::Util qw(extract_flags);
+use Llama::Base::Util;
 
 use overload
   'bool' => sub{shift->Bool},
   '""'   => sub{shift->Str};
 
-sub Package :prototype() { 'Llama::Perl::Package' }
+sub Package :prototype() { 'Llama::Package' }
 
 sub import($, @args) {
   # sensible defaults

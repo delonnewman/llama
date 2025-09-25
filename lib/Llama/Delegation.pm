@@ -3,12 +3,12 @@ use Llama::Base qw(:signatures);
 
 use Carp ();
 
-use Llama::Perl::Package;
+use Llama::Package;
 use Llama::Util qw(extract_flags);
 
 sub import {
   my ($calling_package) = caller;
-  my $pkg = Llama::Perl::Package->named($calling_package);
+  my $pkg = Llama::Package->named($calling_package);
 
   # delegate qw(os os_version browser browser_version), -to => 'ua', -tx => \&uc;
   # delegate os => 'ua'

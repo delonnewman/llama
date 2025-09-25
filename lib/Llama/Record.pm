@@ -20,4 +20,4 @@ sub age ($self) {
   # ...calculate age with $self->dob
 }
 
-Llama::Perl::Package->named('DateTime')->is_loaded
+Llama::Package->named('DateTime')->is_loaded

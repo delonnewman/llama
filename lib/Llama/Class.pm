@@ -4,8 +4,8 @@ use Llama::Base qw(+Base::Scalar :signatures);
 use Data::Printer;
 use Scalar::Util ();
 
+use Llama::Package;
 use Llama::Attribute;
-use Llama::Perl::Package;
 
 use Llama::Class::AnonymousClass;
 use Llama::Class::EigenClass;
@@ -41,7 +41,7 @@ sub mro ($self, @args) {
   mro::get_mro($self->name);
 }
 
-sub package ($self) { Llama::Perl::Package->named($self->name) }
+sub package ($self) { Llama::Package->named($self->name) }
 *module = \&package;
 
 sub ancestry ($self) {
@@ -96,7 +96,7 @@ sub eigen_class ($self) { $self }
 
 sub methods ($self) {
   my @methods = sort map {
-    Llama::Perl::Package->named($_)->symbol_names('CODE')
+    Llama::Package->named($_)->symbol_names('CODE')
   } $self->ancestry;
 
   wantarray ? @methods : [@methods];

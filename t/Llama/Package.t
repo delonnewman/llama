@@ -1,4 +1,4 @@
-package Llama::Perl::Package::Test;
+package Llama::Package::Test;
 use strict;
 use warnings;
 use utf8;
@@ -7,7 +7,7 @@ use Test::More;
 use lib qw(../../lib);
 use Scalar::Util qw(refaddr);
 
-use Llama::Perl::Package;
+use Llama::Package;
 
 sub throws(&@) {
   my ($block, $error_pattern) = @_;
@@ -35,7 +35,7 @@ sub doesnt_throw(&@) {
   }
 }
 
-my $described_class = 'Llama::Perl::Package';
+my $described_class = 'Llama::Package';
 
 package Mock::Package {
   sub first {  }
