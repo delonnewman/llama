@@ -16,8 +16,8 @@ is $described_class->TRUE->value => 1;
 is int($described_class->FALSE) => 0;
 is int($described_class->TRUE) => 1;
 
-is "".$described_class->FALSE => 'false';
-is "".$described_class->TRUE => 'true';
+is $described_class->FALSE => 'false';
+is $described_class->TRUE => 'true';
 
 ok !$described_class->FALSE;
 ok $described_class->TRUE;
