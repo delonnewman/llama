@@ -1,14 +1,9 @@
 package Llama::Attribute;
-use strict;
-use warnings;
-use utf8;
-use feature 'signatures';
+use Llama::Base qw(+HashObject :constructor :signatures);
 
 # Attribute meta object
 
 use Carp ();
-
-use Llama::Base qw(+HashObject :constructor);
 
 my @ATTRIBUTES = qw(name type validate mutable);
 
