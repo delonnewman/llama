@@ -16,20 +16,14 @@ sub coerce ($class, $value) {
 
 package Llama::Boolean::FALSE {
   sub Str { 'false' }
-  sub if_truthy($self, $_block, @args) { $self }
-  sub if_falsy($self, $block, @args) {
-    $self->$block(@args);
-    $self
-  }
+  *if_truthy = \&Llama::Base::itself;
+  *if_falsy = \&Llama::Base::tap;
 }
 
 package Llama::Boolean::TRUE {
   sub Str { 'true' }
-  sub if_falsy($self, $_block, @args) { $self }
-  sub if_truthy($self, $block, @args) {
-    $self->$block(@args);
-    $self
-  }
+  *if_truthy = \&Llama::Base::tap;
+  *if_falsy = \&Llama::Base::itself;
 }
 
 1;

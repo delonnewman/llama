@@ -102,7 +102,14 @@ sub tap ($self, $sub_or_method_name, @args) {
   return $self;
 }
 
-sub itself ($self) { $self }
+sub itself ($self, @args) { $self }
+
+*if_null   = \&itself;
+*if_falsy  = \&itself;
+*if_truthy = \&tap;
+
+sub if ($self, @args) { $self->if_truthy(@args) }
+sub else ($self, @args) { $self->if_falsy(@args) }
 
 1;
 

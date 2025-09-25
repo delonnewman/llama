@@ -6,8 +6,8 @@ sub if_null ($self, $block, @args) {
   $self;
 }
 
-*if_falsy = \&if_null;
-sub if_truthy ($self, $_block, @args) { $self }
+*if_falsy  = \&if_null;
+*if_truthy = \&Llama::Base::itself;
 
 sub Bool { 0 }
 
