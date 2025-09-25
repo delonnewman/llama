@@ -136,7 +136,8 @@ sub new ($self, %attributes) {
   return $class;
 }
 
-1;
+package main;
+use Llama::Attribute::Type qw(Str Optional Mutable);
 
 # Meta Protocol
 Llama::Record->HOW->package->is_package # => 1
@@ -149,12 +150,12 @@ Llama::Record->HOW # Llama::Class=SCALAR(0x018129)
 my $record_class = Llama::Record->allocate(
   name       => 'Address',
   attributes => {
-    street_address_1 => 'Str',
-    street_address_2 => 'Optional[Str]',
-    city             => 'Str',
-    state            => 'Str',
-    postal           => 'Str'
-    notes            => 'Optional[Mutable[Str]]',
+    street_address_1 => Str,
+    street_address_2 => Optional(Str),
+    city             => Str,
+    state            => Str,
+    postal           => Str
+    notes            => Optional(Mutable(Str)),
   }
 );
 
@@ -162,12 +163,12 @@ my $record_class = Llama::Record->allocate(
 my $record_class = Llama::Record->new(
   name       => 'Address', # if unnamed will be an instance of AnonymousClass
   attributes => {
-    street_address_1 => 'Str',
-    street_address_2 => 'Optional[Str]',
-    city             => 'Str',
-    state            => 'Str',
-    postal           => 'Str'
-    notes            => 'Optional[Mutable[Str]]',
+    street_address_1 => Str,
+    street_address_2 => Optional(Str),
+    city             => Str,
+    state            => Str,
+    postal           => Str
+    notes            => Optional(Mutable(Str)),
   }
 );
 
