@@ -49,14 +49,13 @@ sub is_loaded ($self) { !!$self->full_path }
 sub full_path ($self) { $INC{$self->path_name}; }
 
 sub path_name ($self) {
-  local $_ = $self->name;
-  s/::/\//;
-  "$_.pm";
+  my $path = join '/' => $self->name;
+  "$path.pm";
 }
 
-sub name ($self) { wantarray ? split('::', $$self) : $$self }
+sub name ($self) { wantarray ? split '::' => $$self : $$self }
 
-sub VERSION ($self) { $self->name->VERSION }
+sub version ($self) { $self->name->VERSION }
 
 sub nested ($self, $name) {
   my $class = ref($self);

@@ -42,6 +42,8 @@ subtest 'eigen classes' => sub {
   isa_ok $object => 'EigenTest';
   isa_ok $eigen_class => 'Llama::Class';
   isa_ok $object => $eigen_class->name;
+
+  ok $object->OWN_CLASS->same($object->OWN_CLASS) => 'same instance';
 };
 
 subtest 'attributes' => sub {
@@ -72,7 +74,7 @@ subtest 'attributes' => sub {
     $self->OWN_CLASS->get_attribute_value('name')
   });
 
-  # is $object->name => 'Hosea'
+  is $object->name => 'Hosea'
 };
 
 done_testing;

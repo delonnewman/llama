@@ -4,9 +4,9 @@ use warnings;
 use utf8;
 use feature 'signatures';
 use feature 'state';
-
 no strict 'refs';
 
+use Data::Printer;
 use Scalar::Util ();
 
 use Llama::Attribute;
@@ -40,7 +40,7 @@ sub new ($class, $name = undef) {
 sub name ($self) { $$self }
 *Str = \&name;
 
-sub version ($self) { $self->package->VERSION }
+sub version ($self) { $self->package->version }
 
 sub mro ($self, @args) {
   if (@args) {
@@ -93,7 +93,7 @@ sub add_method ($self, $name, $sub) {
 sub OWN_CLASS ($self) { $self }
 
 sub methods ($self) {
-  my @methods = map {
+  my @methods = sort map {
     Llama::Perl::Package->named($_)->symbol_names('CODE')
   } $self->ancestry;
 
@@ -125,7 +125,7 @@ sub attribute ($self, $name) {
   $attribute;
 }
 
-sub attributes ($self, @args) {
+sub attributes ($self) {
   my @attributes = keys %{$self->package->qualify('ATTRIBUTES')};
   wantarray ? @attributes : [@attributes];
 }
