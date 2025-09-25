@@ -1,7 +1,9 @@
 package Llama::Util;
+
 use strict;
 use warnings;
 use utf8;
+use feature ':5.20';
 use feature 'signatures';
 
 use Scalar::Util qw(reftype);
