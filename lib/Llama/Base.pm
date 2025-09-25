@@ -51,6 +51,7 @@ sub import($, @args) {
     $pkg->$add_constructor();
   }
 
+  # enable signatures
   if ($flags{-signatures}) {
     Carp::croak 'Subroutine signatures require Perl 5.20+' if $] < 5.020;
     require experimental;
@@ -118,8 +119,10 @@ sub new ($self, %attributes) {
     $class->add_attribute($attribute, $schema{$attribute});
   }
 
-  $class->add_method('new', sub ($self, %attributes) {
+  $class->add_method('BUILD', sub ($self, %attributes) {
     $self->HOW->attributes->validate(\%attributes);
+    $self->HOW->assign_attributes(%attributes);
+    $self->HOW->lock;
   });
 
   return $class;
