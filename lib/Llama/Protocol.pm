@@ -1,4 +1,5 @@
 package Llama::Protocol;
+
 use strict;
 use warnings;
 use utf8;
