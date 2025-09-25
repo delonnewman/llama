@@ -1,0 +1,21 @@
+#+title: Notes
+
+* Object
+** Protocol
+*** Role
+
+** Class
+*** Enum
+*** Record
+
+
+* Enumerable
+* Associative
+
+* HashObject
+** Entity (mutable heterogenous data)
+** Record (immutable heterogenous data)
+** Dictionary is Enumerable (mutable homogenous key/value lookup)
+
+* ArrayObject
+** Vector is Enumerable (immutable indexed)
