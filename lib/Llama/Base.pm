@@ -1,7 +1,9 @@
 package Llama::Base;
+
 use strict;
 use warnings;
 use utf8;
+use feature ':5.16';
 use feature 'signatures';
 no strict 'refs';
 
@@ -47,6 +49,9 @@ sub import($, @args) {
     });
   }
 }
+
+# Protect subclasses using AUTOLOAD
+sub DESTROY { }
 
 sub allocate ($class) { die "not implemented" }
 
