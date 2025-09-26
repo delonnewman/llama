@@ -130,7 +130,7 @@ sub new ($self, %attributes) {
   }
 
   $class->add_method('BUILD', sub ($self, %attributes) {
-    $self->HOW->attributes->parse(\%attributes, $self);
+    $self->class->attributes->parse(\%attributes, $self);
     $self->freeze;
   });
 
