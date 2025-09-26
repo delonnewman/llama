@@ -12,6 +12,8 @@ sub allocate ($class, @args) {
   bless {}, $class;
 }
 
+sub is_frozen ($self) { Hash::Util::hash_locked(%$self) }
+
 sub freeze ($self, @keys) {
   my @attributes = (keys %$self, @keys);
 
@@ -21,14 +23,19 @@ sub freeze ($self, @keys) {
   $self;
 }
 
-# TODO: add 'assign_attributes', 'attribute_writer_missing'?
+sub assign_attributes ($self, @args) {
+  return unless @args;
+
+  my %attributes = @args > 1 ? @args : $args[0]->%*;
+  $self->{$_} = $attributes{$_} for keys %attributes;
+
+  return $self;
+}
 
 sub META ($self) {
   return $self->class unless ref $self;
   return Package->named('Llama::Object::Hash')->maybe_load->name->new($self);
 }
-
-sub is_frozen ($self) { Hash::Util::hash_locked(%$self) }
 
 sub HashRef ($self) { $self }
 

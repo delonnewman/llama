@@ -1,8 +1,24 @@
 package Llama::Object::Hash;
 use Llama::Base qw(+Object :signatures);
 
-sub keys ($self) { keys $self->subject->%* }
-sub values ($self) { values $self->subject->%* }
+use Llama::Pair;
+
+sub keys ($self) {
+  my @keys = CORE::keys $self->subject->%*;
+  wantarray ? @keys : \@keys;
+}
+
+sub values ($self) {
+  my @values = CORE::values $self->subject->%*;
+  wantarray ? @values : \@values;
+}
+
+sub pairs  ($self) {
+  my $subject = $self->subject;
+  my @keys    = $self->keys;
+  my @pairs   = map { Llama::Pair->new($_ => $subject->{$_}) } @keys;
+  wantarray ? @pairs : \@pairs;
+}
 
 sub freeze ($self, @keys) {
   my @attributes = ($self->subject_keys, @keys);

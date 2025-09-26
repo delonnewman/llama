@@ -1,5 +1,23 @@
 package Llama::Record;
-use Llama::Base qw(+Class :constructor :signatures);
+use Llama::Base qw(+Class::Hash :signatures);
+
+sub new ($self, %attributes) {
+  my $class = $self->next::method($attributes{name}); # if name is undef will be an instance of AnonymousClass
+  $class->superclasses('Llama::Base::Hash');
+
+  my %schema = ($attributes{attributes} // {})->%*;
+  for my $attribute (keys %schema) {
+    $class->add_attribute($attribute, $schema{$attribute});
+  }
+
+  $class->add_method('BUILD', sub ($self, %attributes) {
+    # $self->class->attributes->parse(\%attributes, $self);
+    $self->assign_attributes(%attributes);
+    $self->freeze;
+  });
+
+  return $class;
+}
 
 1;
 
@@ -25,10 +43,11 @@ Llama::Package->named('DateTime')->is_loaded
 
 # in Llama/Record.pm
 package Llama::Record;
-use Llama::Base '+HashClass', -signatures;
+use Llama::Base '+Class', -signatures;
 
 sub new ($self, %attributes) {
   my $class = $self->SUPER::new($attributes{name}); # if name is undef will be an instance of AnonymousClass
+  $class->superclasses('Llama::Base::Hash');
 
   my %schema = ($attributes{attributes} // {})->%*;
   for my $attribute (keys %schema) {
