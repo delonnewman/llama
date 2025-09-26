@@ -34,7 +34,7 @@ subtest 'eigen classes' => sub {
   my $object = EigenTest->new;
   isa_ok $object => 'EigenTest';
 
-  my $eigen_class = $object->HOW->eigen_class;
+  my $eigen_class = $object->META->eigen_class;
   $eigen_class->add_method(translate => sub { 'eigen means own' });
 
   ok !(EigenTest->new->can('translate'));
@@ -43,7 +43,7 @@ subtest 'eigen classes' => sub {
   isa_ok $eigen_class => 'Llama::Class';
   isa_ok $object => $eigen_class->name;
 
-  ok $object->HOW->eigen_class->identical($object->HOW->eigen_class) => 'same instance';
+  ok $object->META->eigen_class->identical($object->META->eigen_class) => 'same instance';
 };
 
 subtest 'attributes' => sub {
@@ -57,21 +57,21 @@ subtest 'attributes' => sub {
   package ObjectAttributes {
     use Llama::Base qw(+Base::Scalar :constructor);
   }
-  ObjectAttributes->HOW->add_attribute(name => (mutable => 1));
+  ObjectAttributes->META->add_attribute(name => (mutable => 1));
   my $object = ObjectAttributes->new(1);
 
-  my $attribute = ObjectAttributes->HOW->attribute('name');
+  my $attribute = ObjectAttributes->META->attribute('name');
   ok $attribute->is_mutable => 'is mutable';
 
-  my @attributes = $object->HOW->attributes;
+  my @attributes = $object->META->attributes;
   is_deeply \@attributes, [qw(name)];
 
-  $attribute = $object->HOW->eigen_class->attribute('name');
+  $attribute = $object->META->eigen_class->attribute('name');
   ok $attribute->is_mutable => 'is mutable';
 
-  $object->HOW->set_attribute_value(name => 'Hosea');
-  $object->HOW->add_method(name => sub ($self) {
-    $self->HOW->get_attribute_value('name')
+  $object->META->set_attribute_value(name => 'Hosea');
+  $object->META->add_method(name => sub ($self) {
+    $self->META->get_attribute_value('name')
   });
 
   is $object->name => 'Hosea'

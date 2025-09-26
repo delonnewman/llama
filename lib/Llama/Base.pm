@@ -63,8 +63,6 @@ sub import($, @args) {
 # Protect subclasses using AUTOLOAD
 sub DESTROY { }
 
-sub allocate ($class) { die "cannot be allocated" }
-
 sub new ($self, @args) {
   my $class = ref($self) || $self;
   my $object = $class->allocate(@args);
@@ -74,15 +72,17 @@ sub new ($self, @args) {
   return $object;
 }
 
-sub DEFINITE { Llama::Bool->FALSE }
-
 sub HOW ($self) {
-  return Package->named('Llama::Class')->maybe_load->name->named($self) unless ref $self;
+  return $self->class unless ref $self;
   return Package->named('Llama::Object')->maybe_load->name->new($self);
 }
+*META = \&HOW;
 
-# TODO: Add 'class'
+sub class ($self) {
+  Package->named('Llama::Class')->maybe_load->name->named($self->__name__);
+}
 
+sub __name__ ($self) { ref($self) || $self }
 sub __type__ ($self) { Scalar::Util::reftype($self) }
 sub __addr__ ($self) { Scalar::Util::refaddr($self) }
 *__id__ = \&__addr__;
@@ -94,10 +94,10 @@ sub identical ($self, $other) { $self->__id__ eq $other->__id__ }
 sub Bool { 1 }
 
 sub Str ($self) {
-  my $class = $self->CLASS_NAME;
-  my $id = sprintf("0x%06X", $self->ID);
+  my $class = $self->__name__;
+  my $id = sprintf("0x%06X", $self->__id__);
 
-  "$class=OBJECT($id)";
+  return "$class=OBJECT($id)";
 }
 
 sub try ($self, $method_name, @args) {
