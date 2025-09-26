@@ -70,6 +70,8 @@ sub HOW ($self) {
   return Package->named('Llama::Object')->maybe_load->name->new($self);
 }
 
+# TODO: Add 'class'
+
 sub __type__ ($self) { Scalar::Util::reftype($self) }
 sub __addr__ ($self) { Scalar::Util::refaddr($self) }
 *__id__ = \&__addr__;
