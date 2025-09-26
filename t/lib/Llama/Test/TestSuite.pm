@@ -11,7 +11,8 @@ use Test::More ();
 
 my @EXPORT = qw();
 my %FORWARDING = (
-  'Test::More' => [qw(ok is isnt pass fail diag subtest is_deeply like unlike done_testing)],
+  'Test::More' =>
+    [qw(ok is isnt pass fail diag subtest is_deeply like unlike done_testing require_ok)],
   'Data::Printer' => [qw(p np)],
 );
 

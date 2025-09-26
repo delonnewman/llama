@@ -63,7 +63,18 @@ sub import($, @args) {
 # Protect subclasses using AUTOLOAD
 sub DESTROY { }
 
-sub allocate ($class) { die "not implemented" }
+sub allocate ($class) { die "cannot be allocated" }
+
+sub new ($self, @args) {
+  my $class = ref($self) || $self;
+  my $object = $class->allocate(@args);
+
+  $object->try('BUILD', @args);
+
+  return $object;
+}
+
+sub DEFINITE { Llama::Bool->FALSE }
 
 sub HOW ($self) {
   return Package->named('Llama::Class')->maybe_load->name->named($self) unless ref $self;
