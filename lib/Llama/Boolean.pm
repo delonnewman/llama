@@ -1,12 +1,25 @@
 package Llama::Boolean;
 use Llama::Base qw(:signatures);
+use Llama::Util qw(extract_flags);
+
 use Llama::Enum {
   FALSE => 0,
   TRUE  => 1,
 };
 
-sub Num ($self) { $self->value }
-*Bool = \&Num;
+# sub import ($class, @args) {
+#   my $caller = caller;
+#   my %flags  = extract_flags \@args;
+
+#   if ($flags{-symbols}) {
+#     no strict 'refs';
+#     *{$caller . '::true'}  = sub :prototype() { __PACKAGE__->TRUE };
+#     *{$caller . '::false'} = sub :prototype() { __PACKAGE__->FALSE };
+#   }
+# }
+
+sub Num  ($self) {   $self->value }
+sub Bool ($self) { !!$self->value }
 
 sub coerce ($class, $value) {
   return $class->FALSE if !defined($value) || $value eq '';
