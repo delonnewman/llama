@@ -13,7 +13,7 @@ sub parse ($class, @args) {
   my $ref   = ref $value;
   return $class->new(%$value) if $ref eq 'HASH';
 
-  die "don't know how to parse " . np($value);
+  return $class->new(value => $value);
 }
 
 sub BUILD ($self, %attributes) {
