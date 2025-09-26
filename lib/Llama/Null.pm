@@ -1,12 +1,8 @@
 package Llama::Null;
 use Llama::Base qw(:base :abstract);
 
-sub if_null ($self, $block, @args) {
-  $self->$block(@args);
-  $self;
-}
-
-*if_falsy  = \&if_null;
+*if_null   = \&Llama::Base::tap;
+*if_falsy  = \&Llama::Base::tap;
 *if_truthy = \&Llama::Base::itself;
 
 sub Bool { 0 }
