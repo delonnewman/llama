@@ -20,7 +20,10 @@ is $described_class->FALSE => 'false';
 is $described_class->TRUE => 'true';
 
 ok !$described_class->FALSE;
-ok $described_class->TRUE;
+ok  $described_class->TRUE;
+
+ok !$described_class->TRUE ==  $described_class->FALSE;
+ok  $described_class->TRUE == !$described_class->FALSE;
 
 my $false_falsy;
 $described_class->FALSE->if_falsy(sub { $false_falsy = 1 });
