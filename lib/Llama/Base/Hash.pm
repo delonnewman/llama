@@ -21,7 +21,7 @@ sub freeze ($self, @keys) {
   $self;
 }
 
-# TODO: add 'assign_attributes'
+# TODO: add 'assign_attributes', 'attribute_writer_missing'?
 
 sub HOW ($self) {
   return Package->named('Llama::Class')->maybe_load->name->named($self) unless ref $self;
