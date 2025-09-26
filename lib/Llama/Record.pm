@@ -13,7 +13,7 @@ sub new ($self, %attributes) {
   $class->add_method('BUILD', sub ($self, %attributes) {
     # $self->class->attributes->parse(\%attributes, $self);
     $self->assign_attributes(%attributes);
-    $self->freeze;
+    $self->freeze($self->class->readonly_attributes);
   });
 
   return $class;
