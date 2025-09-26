@@ -21,6 +21,8 @@ sub freeze ($self, @keys) {
   $self;
 }
 
+# TODO: add 'assign_attributes'
+
 sub HOW ($self) {
   return Package->named('Llama::Class')->maybe_load->name->named($self) unless ref $self;
   return Package->named('Llama::Object::Hash')->maybe_load->name->new($self);
