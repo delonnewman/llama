@@ -130,9 +130,8 @@ sub new ($self, %attributes) {
   }
 
   $class->add_method('BUILD', sub ($self, %attributes) {
-    $self->HOW->attributes->validate(\%attributes);
-    $self->HOW->assign_attributes(%attributes);
-    $self->HOW->lock;
+    $self->HOW->attributes->parse(\%attributes, $self);
+    $self->freeze;
   });
 
   return $class;
