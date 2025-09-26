@@ -9,10 +9,10 @@ use Llama::Package;
 use Llama::Delegation;
 
 sub new ($class, $object) {
-  bless sub{$object}, $class;
+  bless \$object, $class;
 }
 
-sub subject ($self) { $self->() }
+sub subject ($self) { $$self }
 
 sub add_attribute ($self, @args) {
   my $class     = $self->eigen_class;
@@ -55,14 +55,23 @@ sub class ($self) {
     ->named('Llama::Class')
     ->maybe_load
     ->name
-    ->named($self->class_name)
+    ->named($self->name)
 }
 
-sub class_name ($self) { ref $self->subject }
+sub name ($self) { ref $self->subject }
+sub type ($self) { Scalar::Util::reftype($self->subject) }
+sub addr ($self) { Scalar::Util::refaddr($self->subject) }
 
 sub BLESS ($self, $class_name) {
   bless $self->subject, $class_name;
   $self;
+}
+
+sub Str ($self) {
+  my $class   = $self->__name__;
+  my $subject = $self->subject;
+
+  return "$class($subject)";
 }
 
 1;
