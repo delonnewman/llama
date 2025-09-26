@@ -72,11 +72,10 @@ sub new ($self, @args) {
   return $object;
 }
 
-sub HOW ($self) {
+sub META ($self) {
   return $self->class unless ref $self;
   return Package->named('Llama::Object')->maybe_load->name->new($self);
 }
-*META = \&HOW;
 
 sub class ($self) {
   Package->named('Llama::Class')->maybe_load->name->named($self->__name__);
