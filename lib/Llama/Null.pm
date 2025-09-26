@@ -8,7 +8,7 @@ use Llama::Base qw(:base :abstract);
 sub Bool { 0 }
 
 sub SCALAR {
-  state $SCALAR = Llama::Null::Scalar->new(undef);
+  state $SCALAR = Llama::Null::Scalar->new('');
 }
 
 sub HASH {
