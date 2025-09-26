@@ -95,11 +95,11 @@ sub add_method ($self, $name, $sub) {
 sub eigen_class ($self) { $self }
 
 sub methods ($self) {
-  my @methods = sort map {
-    Llama::Package->named($_)->symbol_names('CODE')
+  my %methods = map {
+    $_ => [Llama::Package->named($_)->symbol_names('CODE')]
   } $self->ancestry;
 
-  wantarray ? @methods : [@methods];
+  wantarray ? %methods : \%methods;
 }
 
 =pod
@@ -145,7 +145,14 @@ head2 attributes
 sub attributes ($self) {
   no strict 'refs';
   my @attributes = keys %{$self->package->qualify('ATTRIBUTES')};
-  wantarray ? @attributes : [@attributes];
+  wantarray ? @attributes : \@attributes;
+}
+
+sub readonly_attributes ($self) {
+  no strict 'refs';
+  my %attributes = %{$self->package->qualify('ATTRIBUTES')};
+  my @attributes = map { $_->name } grep { !$_->is_mutable } values %attributes;
+  wantarray ? @attributes : \@attributes;
 }
 
 sub set_attribute_value ($self, $name, $value) {
