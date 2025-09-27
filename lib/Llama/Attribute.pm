@@ -10,6 +10,8 @@ use Llama::Attribute::Type;
 
 my $Any = sub{1};
 
+no warnings 'experimental::signatures';
+
 sub BUILD ($self, $name, @args) {
   $self->{name} = $name;
   $self->{type} = Llama::Attribute::Type->parse(@args);

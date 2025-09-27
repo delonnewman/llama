@@ -3,6 +3,8 @@ use Llama::Base qw(+Class::Hash :signatures);
 
 use Llama::Entity;
 
+no warnings 'experimental::signatures';
+
 sub import ($class, $attributes) {
   my $caller = caller;
   $class->new(name => $caller, attributes => $attributes);

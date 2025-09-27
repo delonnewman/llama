@@ -59,6 +59,7 @@ sub import($, @args) {
     require experimental;
     eval "package $caller; no warnings qw(experimental::signatures experimental::postderef); 1" or die $@;
     experimental->import($_) for qw(signatures postderef);
+    warnings->unimport('experimental::signatures');
   }
 }
 

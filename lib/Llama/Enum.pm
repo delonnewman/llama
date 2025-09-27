@@ -8,6 +8,8 @@ use Data::Printer;
 use Llama::Enum::Class;
 use Llama::Enum::Member;
 
+no warnings 'experimental::signatures';
+
 use overload (
   "cmp"  => sub($self, $other, $) { $self->key   cmp $self->parent->coerce($other)->key },
   "<=>"  => sub($self, $other, $) { $self->value <=> $self->parent->coerce($other)->value },

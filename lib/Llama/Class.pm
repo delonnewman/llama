@@ -13,6 +13,8 @@ use Llama::Class::InstanceCache;
 
 our $DEFAULT_MRO = 'c3';
 
+no warnings 'experimental::signatures';
+
 sub named ($class, $name) {
   my $object = Llama::Class::InstanceCache->get($name);
   $object //= Llama::Class::InstanceCache->set($name, $class->new($name));
