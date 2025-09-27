@@ -5,6 +5,7 @@ use warnings;
 use utf8;
 use feature ':5.20';
 use feature 'signatures';
+no warnings 'experimental::signatures';
 
 use Scalar::Util qw(reftype);
 

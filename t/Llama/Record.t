@@ -1,6 +1,7 @@
 package Llama::Pair::Test;
 use Llama::Test::TestSuite;
 use Feature::Compat::Try;
+no warnings 'experimental::signatures';
 
 my $described_class = 'Llama::Record';
 require_ok $described_class;

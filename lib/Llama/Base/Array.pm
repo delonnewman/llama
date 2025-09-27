@@ -1,5 +1,5 @@
 package Llama::Base::Array;
-use Llama::Base qw(:base :constructor, :signatures);
+use Llama::Base qw(:base :constructor :signatures);
 
 use overload '@{}' => sub{shift->ArrayRef};
 

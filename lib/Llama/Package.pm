@@ -5,6 +5,7 @@ use strict;
 use warnings;
 use feature ':5.20';
 use feature 'signatures';
+no warnings 'experimental::signatures';
 no strict 'refs';
 
 use Carp ();

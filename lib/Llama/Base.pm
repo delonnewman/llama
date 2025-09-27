@@ -5,6 +5,7 @@ use warnings;
 use utf8;
 use feature ':5.20';
 use feature 'signatures';
+no warnings 'experimental::signatures';
 use mro;
 no strict 'refs';
 
@@ -56,6 +57,7 @@ sub import($, @args) {
   if ($flags{-signatures}) {
     Carp::croak 'Subroutine signatures require Perl 5.20+' if $] < 5.020;
     require experimental;
+    eval "package $caller; no warnings qw(experimental::signatures experimental::postderef); 1" or die $@;
     experimental->import($_) for qw(signatures postderef);
   }
 }
