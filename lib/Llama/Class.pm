@@ -155,6 +155,20 @@ sub readonly_attributes ($self) {
   wantarray ? @attributes : \@attributes;
 }
 
+sub required_attributes ($self) {
+  no strict 'refs';
+  my %attributes = %{$self->package->qualify('ATTRIBUTES')};
+  my @attributes = map { $_->name } grep { $_->is_required } values %attributes;
+  wantarray ? @attributes : \@attributes;
+}
+
+sub optional_attributes ($self) {
+  no strict 'refs';
+  my %attributes = %{$self->package->qualify('ATTRIBUTES')};
+  my @attributes = map { $_->name } grep { $_->is_optional } values %attributes;
+  wantarray ? @attributes : \@attributes;
+}
+
 sub set_attribute_value ($self, $name, $value) {
   no strict 'refs';
   my $attribute = $self->attribute($name);
