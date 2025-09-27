@@ -3,6 +3,11 @@ use Llama::Base qw(+Class::Hash :signatures);
 
 use Llama::Entity;
 
+sub import ($class, $attributes) {
+  my $caller = caller;
+  $class->new(name => $caller, attributes => $attributes);
+}
+
 sub new ($self, %attributes) {
   my $class = $self->next::method($attributes{name}); # if name is undef will be an instance of AnonymousClass
   $class->superclasses('Llama::Entity');
@@ -26,12 +31,12 @@ sub new ($self, %attributes) {
 __END__
 
 package Person;
-use Llama::Record (
+use Llama::Record {
  name  => 'Str',
  dob   => 'DateTime', # will attempt to load if it's not already
  email => 'EmailAddress',
  phone => 'PhoneNumber',
-);
+};
 
 Llama::AttributeType->add('PhoneNumber', sub { shift =~ /(\d{3}) \d{3}-\d{4}/ });
 Llama::AttributeType->add('EmailAddress', sub { shift =~ /@/ });

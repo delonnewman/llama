@@ -34,4 +34,32 @@ try {
   like $e => qr/\w+ is required/;
 }
 
+package Address {
+  sub Str :prototype() { { value => 'Str' } }
+  sub Optional ($T) { { optional => 1, %$T } }
+  sub Mutable ($T)  { { mutable  => 1, %$T } }
+  use Llama::Record {
+    street_address_1 => Str,
+    street_address_2 => Optional(Str),
+    city             => Str,
+    state            => Str,
+    postal           => Str,
+    notes            => Optional(Mutable(Str)),
+  };
+}
+
+my $address = Address->new(
+ street_address_1 => '44 Central Ave',
+ city             => 'Albuquerque',
+ state            => 'NM',
+ postal           => '87101',
+);
+
+is $address->street_address_1 => '44 Central Ave';
+is $address->street_address_2 => undef;
+is $address->city             => 'Albuquerque';
+is $address->state            => 'NM';
+is $address->postal           => '87101';
+is $address->notes            => undef;
+
 done_testing;
