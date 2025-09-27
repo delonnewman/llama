@@ -3,6 +3,10 @@ use Llama::Base qw(:base :signatures);
 
 # A set of meta objects for charaterizing Perl values implements type interface.
 
+1;
+
+__END__
+
 sub Any {}
 package Llama::ValueType::Any {}
 
@@ -67,10 +71,6 @@ package Llama::ValueType::Operator {}
 package Llama::ValueType::Operator::Negation {}
 package Llama::ValueType::Operator::Disjunction {}
 package Llama::ValueType::Operator::Conjunction {}
-
-1;
-
-__END__
 
 # Value Types
 
