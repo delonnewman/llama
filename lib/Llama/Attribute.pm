@@ -18,6 +18,8 @@ sub BUILD ($self, $name, @args) {
 
 delegate [qw(is_mutable is_optional is_valid)] => 'type';
 
+sub is_required ($self) { !$self->is_optional }
+
 sub type ($self) { $self->{type} }
 sub name ($self) { $self->{name} }
 
