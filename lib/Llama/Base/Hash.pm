@@ -23,15 +23,6 @@ sub freeze ($self, @keys) {
   $self;
 }
 
-sub assign_attributes ($self, @args) {
-  return unless @args;
-
-  my %attributes = @args > 1 ? @args : $args[0]->%*;
-  $self->$_($attributes{$_}) for $self->class->attributes;
-
-  return $self;
-}
-
 sub META ($self) {
   return $self->class unless ref $self;
   return Package->named('Llama::Object::Hash')->maybe_load->name->new($self);

@@ -1,9 +1,11 @@
 package Llama::Record;
 use Llama::Base qw(+Class::Hash :signatures);
 
+use Llama::Entity;
+
 sub new ($self, %attributes) {
   my $class = $self->next::method($attributes{name}); # if name is undef will be an instance of AnonymousClass
-  $class->superclasses('Llama::Base::Hash');
+  $class->superclasses('Llama::Entity');
 
   my %schema = ($attributes{attributes} // {})->%*;
   for my $attribute (keys %schema) {
