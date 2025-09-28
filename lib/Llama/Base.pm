@@ -122,5 +122,9 @@ sub itself ($self, @args) { $self }
 sub if ($self, @args) { $self->if_truthy(@args) }
 sub else ($self, @args) { $self->if_falsy(@args) }
 
+sub method ($self, $name)  {
+  return sub (@args) { $self->$name(@args) };
+}
+
 1;
 
