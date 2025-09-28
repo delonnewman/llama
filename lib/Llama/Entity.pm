@@ -1,9 +1,11 @@
 package Llama::Entity;
 use Llama::Base qw(+Base::Hash :signatures);
 
-sub BUILD ($self, %attributes) {
-  # $self->class->attributes->parse(\%attributes, $self);
-  $self->assign_attributes(%attributes);
+sub BUILD ($self, @args) {
+  if (!@args && (my $required = $self->class->required_attributes)) {
+    die "ArgumentError: missing required attributes " . join(', ' => @$required);
+  }
+  $self->assign_attributes(@args);
   $self->freeze;
 }
 
@@ -40,6 +42,11 @@ sub assign_attributes ($self, @args) {
   }
 
   return $self;
+}
+
+sub with ($self, %attributes) {
+  my %args = ($self->Hash, %attributes);
+  return $self->new(%args);
 }
 
 sub HashRef ($self) {
