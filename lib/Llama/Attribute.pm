@@ -18,7 +18,7 @@ sub BUILD ($self, $name, @args) {
   $self->freeze;
 }
 
-delegate [qw(is_mutable is_optional is_valid)] => 'type';
+delegate [qw(is_mutable is_optional is_valid default)] => 'type';
 
 sub is_required ($self) { !$self->is_optional }
 

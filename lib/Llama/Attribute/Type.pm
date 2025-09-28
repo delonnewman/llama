@@ -11,8 +11,9 @@ sub parse ($class, @args) {
 
   my $value = $args[0];
   my $ref   = ref $value;
-  return $class->new(%$value) if $ref eq 'HASH';
-
+  return $class->new(%$value)           if $ref eq 'HASH';
+  return $class->new(default => $value) if $ref eq 'CODE';
+  
   return $class->new(value => $value);
 }
 
@@ -20,9 +21,11 @@ sub BUILD ($self, %attributes) {
   $self->{mutable}  = $attributes{mutable}  // 0;
   $self->{value}    = $attributes{value}    // $Any;
   $self->{optional} = $attributes{optional} // 0;
+  $self->{default}  = $attributes{default};
   $self->freeze;
 }
 
+sub default ($self) { $self->{default} }
 sub value ($self) { $self->{value} }
 sub is_mutable  ($self) { $self->{mutable} }
 sub is_optional ($self) { $self->{optional} }
