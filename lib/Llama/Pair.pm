@@ -11,7 +11,19 @@ sub BUILD ($self, $key, $value) {
 sub key   ($self) { $self->[0] }
 sub value ($self) { $self->[1] }
 
-sub Str ($self) { $self->key . ' => ' . $self->value }
+sub Str ($self) {
+  $self->key . ' => ' . (defined $self->value ? $self->value : 'undef');
+}
+
+sub Array ($self) {
+  my @array = ($self->key, $self->value);
+  wantarray ? @array : \@array;
+}
+
+sub Hash ($self) {
+  my %hash = ($self->key => $self->value);
+  wantarray ? %hash : \%hash;
+}
 
 sub HashRef  ($self) {
   return {
