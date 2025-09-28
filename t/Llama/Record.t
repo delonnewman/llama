@@ -60,4 +60,16 @@ is $address->state            => 'NM';
 is $address->postal           => '87101';
 is $address->notes            => undef;
 
+package Entity {
+  use Llama::Record {
+    name => 'Str',
+    type => { default => '__name__' }
+  };
+}
+
+my $entity = Entity->new(name => 'test');
+
+is $entity->name => 'test';
+is $entity->type => 'Entity';
+
 done_testing;

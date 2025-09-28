@@ -16,11 +16,11 @@ sub freeze ($self, @keys) {
   $self;
 }
 
-my $AttributeValue = sub ($attribute, $value) {
+my $AttributeValue = sub ($self, $attribute, $value) {
   my $name    = $attribute->name;
   my $default = $attribute->default;
 
-  $value = $default->() if $default && !defined($value);
+  $value = $self->$default() if $default && !defined($value);
 
   return $value;
 };
@@ -31,7 +31,7 @@ sub assign_attributes ($self, @args) {
   my %attributes = @args > 1 ? @args : $args[0]->%*;
   for my $name ($self->class->attributes) {
     my $attribute = $self->class->attribute($name);
-    my $value     = $AttributeValue->($attribute, $attributes{$name});
+    my $value     = $AttributeValue->($self, $attribute, $attributes{$name});
     if (defined $value) {
       $self->$name($value);
       next;
@@ -48,7 +48,7 @@ sub HashRef ($self) {
 }
 
 sub Hash ($self) {
-  my %hash = (%$self);
+  my %hash = map { $_ => $self->{$_} } grep { defined $self->{$_} } keys %$self;
   wantarray ? %hash : \%hash;
 }
 
