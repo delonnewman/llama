@@ -4,9 +4,6 @@ use Llama::Base qw(:base :constructor :signatures);
 use Hash::Util ();
 
 use Llama::Package;
-sub Package :prototype() { 'Llama::Package' }
-
-use overload '%{}' => sub{shift->HashRef};
 
 sub allocate ($class, @args) {
   bless {}, $class;
@@ -25,9 +22,7 @@ sub freeze ($self, @keys) {
 
 sub META ($self) {
   return $self->class unless ref $self;
-  return Package->named('Llama::Object::Hash')->maybe_load->name->new($self);
+  return Llama::Package->named('Llama::Object::Hash')->maybe_load->name->new($self);
 }
-
-sub HashRef ($self) { $self }
 
 1;
