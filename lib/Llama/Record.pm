@@ -1,6 +1,9 @@
 package Llama::Record;
 use Llama::Base qw(+Entity :signatures);
 
+use Data::Printer;
+use Hash::Util ();
+
 use Llama::Record::Class;
 
 no warnings 'experimental::signatures';
@@ -12,19 +15,48 @@ sub import ($class, $attributes = undef) {
   }
 }
 
+sub BUILD ($self, %attributes) {
+  # $self->class->attributes->parse(\%attributes, $self);
+  $self->assign_attributes(%attributes);
+  $self->freeze;
+}
+
+sub freeze ($self, @keys) {
+  my @attributes = $self->class->attributes;
+  
+  Hash::Util::lock_keys(%$self, @attributes);
+  Hash::Util::lock_value(%$self, $_) for $self->class->readonly_attributes;
+
+  $self;
+}
+
 sub class ($self) {
   my $pkg = __PACKAGE__;
   return Llama::Class->named($pkg) if ref $self eq $pkg;
   return Llama::Record::Class->named($self->__name__);
 }
 
+my $AttributeValue = sub ($attribute, $value) {
+  my $name    = $attribute->name;
+  my $default = $attribute->default;
+
+  $value = $default->() if $default && !defined($value);
+
+  return $value;
+};
+
 sub assign_attributes ($self, @args) {
   return unless @args;
 
   my %attributes = @args > 1 ? @args : $args[0]->%*;
-  $self->$_($attributes{$_} // die "$_ is required") for $self->class->required_attributes;
-  for ($self->class->optional_attributes) {
-    $self->$_($attributes{$_}) if $attributes{$_};
+  for my $name ($self->class->attributes) {
+    my $attribute = $self->class->attribute($name);
+    my $value     = $AttributeValue->($attribute, $attributes{$name});
+    if (defined $value) {
+      $self->$name($value);
+      next;
+    }
+    die "$name is required" if $attribute->is_required;
   }
 
   return $self;
