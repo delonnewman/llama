@@ -23,12 +23,20 @@ sub BUILD ($self, %attributes) {
   $self->freeze;
 }
 
+sub value ($self) { $self->{value} }
 sub is_mutable  ($self) { $self->{mutable} }
 sub is_optional ($self) { $self->{optional} }
 
 sub is_valid ($self, $value) {
   my $validator = $self->{value} // $Any;
   return !!$validator->($value);
+}
+
+sub Str ($self) {
+  my $str = $self->value;
+  $str = "Mutable($str)"  if $self->is_mutable;
+  $str = "Optional($str)" if $self->is_optional;
+  return $str;
 }
 
 1;
