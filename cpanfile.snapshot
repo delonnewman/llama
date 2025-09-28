@@ -7,6 +7,14 @@ DISTRIBUTIONS
     requirements:
       B 0
       ExtUtils::MakeMaker 0
+  Carp-Always-0.16
+    pathname: F/FE/FERREIRA/Carp-Always-0.16.tar.gz
+    provides:
+      Carp::Always 0.16
+    requirements:
+      Carp 0
+      ExtUtils::MakeMaker 0
+      perl 5.006
   Carp-Assert-0.22
     pathname: Y/YV/YVES/Carp-Assert-0.22.tar.gz
     provides:
@@ -220,34 +228,6 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 0
       base 0
       perl 5.006
-  IO-Pager-2.10
-    pathname: J/JP/JPIERCE/IO-Pager-2.10.tgz
-    provides:
-      IO::Pager 2.10
-      IO::Pager::Buffered 1.04
-      IO::Pager::Page 1.04
-      IO::Pager::Perl 2.10
-      IO::Pager::Unbuffered 1.04
-      IO::Pager::less 2
-    requirements:
-      Config 0
-      Env 0
-      Exporter 0
-      ExtUtils::MakeMaker 0
-      File::Spec 0
-      File::Temp 0
-      File::Which 0
-      IO::Handle 0
-      PerlIO 0
-      SelectSaver 0
-      Symbol 0
-      Term::ReadKey 0
-      Test::More 0.88
-      Text::Wrap 0
-      Tie::Handle 0
-      base 0
-      bignum 0
-      perl 5.008000
   Mac-SystemDirectory-0.14
     pathname: E/ET/ETHER/Mac-SystemDirectory-0.14.tar.gz
     provides:

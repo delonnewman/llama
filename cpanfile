@@ -6,6 +6,7 @@ on 'develop' => sub {
   requires 'Proc::InvokeEditor';
   requires 'Term::ReadLine::Gnu';
   requires 'Term::ReadKey';
-  requires 'IO::Pager';
   requires 'B::Keywords';
+
+  requires 'Carp::Always';
 };
