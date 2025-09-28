@@ -10,7 +10,6 @@ sub import ($class) {
   my $pkg    = Llama::Package->named($caller);
 
   $pkg->add_sub('has', sub ($name, @args) {
-    say "adding attribute $name, @args";
     $caller->class->add_attribute($name, @args);
   });
 }
