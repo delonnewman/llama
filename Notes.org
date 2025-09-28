@@ -1,21 +1,38 @@
 #+title: Notes
 
-* Object
-** Protocol
-*** Role
-
+* Base
 ** Class
 *** Enum
 *** Record
+*** Role
 
+* Type
+** Protocol
+- Signature
+  - Value::Type
+- Attribute
+  - Attribute::Type
+    - Value::Type
+** Value::Type
+** Attribute::Type
 
-* Enumerable
-* Associative
+* Collections
+** Enumerable (Role)
+** Associative (Role)
+** Pair
+** Cons
+** List
+** LazyList
+** Dictionary
 
-* HashObject
+* Base::Hash
 ** Entity (mutable heterogenous data)
 ** Record (immutable heterogenous data)
 ** Dictionary is Enumerable (mutable homogenous key/value lookup)
 
-* ArrayObject
+* Base::Array
 ** Vector is Enumerable (immutable indexed)
+
+* Macros
+** Attributes
+** Delegation
