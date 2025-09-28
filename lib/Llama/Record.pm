@@ -15,12 +15,6 @@ sub import ($class, $attributes = undef) {
   }
 }
 
-sub BUILD ($self, %attributes) {
-  # $self->class->attributes->parse(\%attributes, $self);
-  $self->assign_attributes(%attributes);
-  $self->freeze;
-}
-
 sub class ($self) {
   my $pkg = __PACKAGE__;
   return Llama::Class->named($pkg) if ref $self eq $pkg;

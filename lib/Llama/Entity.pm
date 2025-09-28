@@ -2,7 +2,9 @@ package Llama::Entity;
 use Llama::Base qw(+Base::Hash :signatures);
 
 sub BUILD ($self, %attributes) {
+  # $self->class->attributes->parse(\%attributes, $self);
   $self->assign_attributes(%attributes);
+  $self->freeze;
 }
 
 sub freeze ($self, @keys) {
