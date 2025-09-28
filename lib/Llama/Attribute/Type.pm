@@ -1,13 +1,14 @@
 package Llama::Attribute::Type;
 use Llama::Base qw(+Base::Hash :signatures :constructor);
 
+use Carp;
 use Data::Printer;
 
 my $Any = sub{1};
 
 sub parse ($class, @args) {
-  die "wrong number of arguments expected at least 1 got ${\ int @args} instead" if @args < 1;
-  return $class->new(@args) if @args > 1;
+  return $class->new(value => 'Any') if @args < 1;
+  return $class->new(@args)          if @args > 1;
 
   my $value = $args[0];
   my $ref   = ref $value;
