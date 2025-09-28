@@ -1,31 +1,38 @@
 package Llama::Record;
-use Llama::Base qw(+Class::Hash :signatures);
+use Llama::Base qw(+Entity :signatures);
 
-use Llama::Entity;
+use Llama::Record::Class;
 
 no warnings 'experimental::signatures';
 
-sub import ($class, $attributes) {
-  my $caller = caller;
-  $class->new(name => $caller, attributes => $attributes);
+sub import ($class, $attributes = undef) {
+  if ($attributes) {
+    my $caller = caller;
+    Llama::Record::Class->create(name => $caller, attributes => $attributes);
+  }
 }
 
-sub new ($self, %attributes) {
-  my $class = $self->next::method($attributes{name}); # if name is undef will be an instance of AnonymousClass
-  $class->superclasses('Llama::Entity');
+sub class ($self) {
+  my $pkg = __PACKAGE__;
+  return Llama::Class->named($pkg) if ref $self eq $pkg;
+  return Llama::Record::Class->named($self->__name__);
+}
 
-  my %schema = ($attributes{attributes} // {})->%*;
-  for my $attribute (keys %schema) {
-    $class->add_attribute($attribute, $schema{$attribute});
-  }
+sub assign_attributes ($self, @args) {
+  return unless @args;
 
-  $class->add_method('BUILD', sub ($self, %attributes) {
-    # $self->class->attributes->parse(\%attributes, $self);
-    $self->assign_attributes(%attributes);
-    $self->freeze($self->class->readonly_attributes);
-  });
+  my %attributes = @args > 1 ? @args : $args[0]->%*;
+  $self->$_($attributes{$_} // die "$_ is required") for $self->class->required_attributes;
+  $self->$_($attributes{$_}) for $self->class->optional_attributes;
 
-  return $class;
+  return $self;
+}
+
+sub Str ($self) {
+  my $class = $self->__name__;
+  my $pairs = join ', ' => map { $_->key . ' => ' . $_->value } grep { $_->value } $self->pairs;
+
+  return "$class($pairs)";
 }
 
 1;
