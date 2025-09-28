@@ -19,6 +19,12 @@ sub freeze ($self, @keys) {
   $self;
 }
 
+sub class ($self) {
+  my $pkg = __PACKAGE__;
+  return Llama::Class->named($pkg) if ref $self eq $pkg;
+  return Llama::Package->named('Llama::Class::Hash')->maybe_load->name->named($self->__name__);
+}
+
 sub META ($self) {
   return $self->class unless ref $self;
   return Llama::Package->named('Llama::Object::Hash')->maybe_load->name->new($self);
