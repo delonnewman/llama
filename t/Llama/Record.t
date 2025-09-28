@@ -6,7 +6,7 @@ no warnings 'experimental::signatures';
 my $described_class = 'Llama::Record';
 require_ok $described_class;
 
-my $class = $described_class->new(
+my $class = Llama::Record::Class->create(
   name       => 'Person',
   attributes => {
     name     => 'Str',
@@ -36,16 +36,13 @@ try {
 }
 
 package Address {
-  sub Str :prototype() { { value => 'Str' } }
-  sub Optional ($T) { { optional => 1, %$T } }
-  sub Mutable ($T)  { { mutable  => 1, %$T } }
   use Llama::Record {
-    street_address_1 => Str,
-    street_address_2 => Optional(Str),
-    city             => Str,
-    state            => Str,
-    postal           => Str,
-    notes            => Optional(Mutable(Str)),
+    street_address_1 => 'Str',
+    street_address_2 => { optional => 1, value => 'Str' },
+    city             => 'Str',
+    state            => 'Str',
+    postal           => 'Str',
+    notes            => { value => 'Str', optional => 1, mutable => 1 },
   };
 }
 
