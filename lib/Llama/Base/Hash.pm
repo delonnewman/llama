@@ -1,6 +1,7 @@
 package Llama::Base::Hash;
 use Llama::Base qw(:base :constructor :signatures);
 
+use Data::Printer;
 use Hash::Util ();
 
 use Llama::Package;
@@ -12,10 +13,8 @@ sub allocate ($class, @args) {
 sub is_frozen ($self) { Hash::Util::hash_locked(%$self) }
 
 sub freeze ($self, @keys) {
-  my @attributes = (keys %$self, @keys);
-
-  Hash::Util::lock_keys(%$self, @attributes);
-  Hash::Util::lock_value(%$self, $_) for @attributes;
+  Hash::Util::lock_keys(%$self);
+  Hash::Util::lock_value(%$self, $_) for keys %$self;
 
   $self;
 }
