@@ -30,6 +30,11 @@ sub assign_attributes ($self, @args) {
   return $self;
 }
 
+sub HashRef ($self) {
+  my $ref = $self->Hash;
+  return $ref;
+}
+
 sub Hash ($self) {
   my %hash = (%$self);
   wantarray ? %hash : \%hash;
