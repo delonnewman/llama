@@ -28,9 +28,19 @@ sub assign_attributes ($self, @args) {
   return $self;
 }
 
+sub Hash ($self) {
+  my %hash = (%$self);
+  wantarray ? %hash : \%hash;
+}
+
+sub Array ($self) {
+  my @array = $self->META->pairs;
+  wantarray ? @array : \@array;
+}
+
 sub Str ($self) {
   my $class = $self->__name__;
-  my $pairs = join ', ' => map { $_->key . ' => ' . $_->value } grep { $_->value } $self->pairs;
+  my $pairs = join ', ' => map { $_->key . ' => ' . $_->value } grep { $_->value } $self->META->pairs;
 
   return "$class($pairs)";
 }
