@@ -3,6 +3,7 @@
 * Base
 ** Class
 *** Enum
+*** Union
 *** Record
 *** Role
 
@@ -36,3 +37,7 @@
 * Macros
 ** Attributes
 ** Delegation
+
+* TODO Make Enum::Member and Union::Member subclasses of Class *(perhaps use Union::Member as the class type for Enum::Member)
+** Override eigen_class should just be an alias for class
+** Add convienices for using class attributes as meta data
