@@ -4,6 +4,7 @@ use Llama::Base qw(+Base::Scalar :signatures);
 use Data::Printer;
 use Scalar::Util ();
 
+use Llama::Core qw(uniq);
 use Llama::Package;
 use Llama::Attribute;
 
@@ -66,14 +67,18 @@ sub subclass ($self, $name = undef) {
 }
 *inherit = \&subclass;
 
-sub append_superclasses($self, @superclasses) {
-  push $self->package->ISA->@*, @superclasses;
-  $self;
+sub append_superclasses($self, @classes) {
+  my $ISA = $self->package->ISA;
+  my @superclasses = uniq @$ISA, @classes;
+  $self->package->ISA(@superclasses);
+  return $self;
 }
 
-sub prepend_superclasses($self, @superclasses) {
-  unshift $self->package->ISA->@*, @superclasses;
-  $self;
+sub prepend_superclasses($self, @classes) {
+  my $ISA = $self->package->ISA;
+  my @superclasses = uniq @classes, @$ISA;
+  $self->package->ISA(@superclasses);
+  return $self;
 }
 
 sub add_instance_method ($self, $name, $sub) {
@@ -124,6 +129,7 @@ sub add_attribute ($self, @args) {
     : Llama::Attribute->new(@args);
 
   no strict 'refs';
+  no warnings 'once';
   ${$self->package->qualify('ATTRIBUTES')}{$attribute->name} = $attribute;
 
   $attribute;
