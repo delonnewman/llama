@@ -1,7 +1,7 @@
-package Llama::ValueType;
+package Llama::Value::Type;
 use Llama::Base qw(:base :signatures);
 
-# A set of meta objects for charaterizing Perl values implements type interface.
+# A set of meta objects for characterizing Perl values implements type interface.
 
 1;
 
