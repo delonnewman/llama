@@ -21,7 +21,7 @@ no strict 'refs';
 # Class Methods
 
 sub new ($class, $union_class, $key) {
-  bless [$union_class, uc $key], $class;
+  bless [$union_class, $key], $class;
 }
 
 # Attributes
