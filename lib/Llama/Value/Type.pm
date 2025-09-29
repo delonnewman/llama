@@ -1,27 +1,8 @@
 package Llama::Value::Type;
 use Llama::Base qw(:signatures);
+use Llama::Union qw(CODE HASH ARRAY SCALAR Regexp GLOB LVALUE FORMAT IO VSTRING SCALAR);
 
 # A set of meta objects for characterizing Perl values--implements type interface.
-
-use Llama::Union (
-  'CODE',
-  'HASH',
-  'ARRAY',
-  'SCALAR',
-  # 'Regexp',
-  # 'GLOB',
-  # 'LVALUE',
-  # 'FORMAT',
-  # 'IO',
-  # 'VSTRING',
-  # {
-  #   SCALAR => [
-  #     'Num',
-  #     'Str',
-  #     { REF => ['SCALAR', 'CODE', 'HASH', 'ARRAY', { Blessed => ['Can'] }] }
-  #   ]
-  # }
-);
 
 package Llama::Value::Type::CODE {
   sub parse ($self, $code) {
@@ -30,10 +11,6 @@ package Llama::Value::Type::CODE {
 
     die "TypeError: a code reference is expected got $type";
   }
-}
-
-package Llama::Value::Type::SCALAR {
-  sub parse ($self, $scalar) { $scalar }
 }
 
 package Llama::Value::Type::HASH {
@@ -61,6 +38,21 @@ package Llama::Value::Type::ARRAY {
     return [$args[0]];
   }
 }
+
+package Llama::Value::Type::SCALAR {
+  use Llama::Union qw(Num Str REF);
+  
+  sub parse ($self, $scalar) { $scalar }
+}
+
+package Llama::Value::Type::SCALAR::REF {
+  use Llama::Union qw(SCALAR CODE HASH ARRAY Blessed);
+}
+
+package Llama::Value::Type::SCALAR::REF::Blessed {
+  use Llama::Union qw(Can);
+}
+
 
 1;
 
