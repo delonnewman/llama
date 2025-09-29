@@ -1,7 +1,66 @@
 package Llama::Value::Type;
-use Llama::Base qw(:base :signatures);
+use Llama::Base qw(:signatures);
 
-# A set of meta objects for characterizing Perl values implements type interface.
+# A set of meta objects for characterizing Perl values--implements type interface.
+
+use Llama::Union (
+  'CODE',
+  'HASH',
+  'ARRAY',
+  'SCALAR',
+  # 'Regexp',
+  # 'GLOB',
+  # 'LVALUE',
+  # 'FORMAT',
+  # 'IO',
+  # 'VSTRING',
+  # {
+  #   SCALAR => [
+  #     'Num',
+  #     'Str',
+  #     { REF => ['SCALAR', 'CODE', 'HASH', 'ARRAY', { Blessed => ['Can'] }] }
+  #   ]
+  # }
+);
+
+package Llama::Value::Type::CODE {
+  sub parse ($self, $code) {
+    my $type = ref $code;
+    return $code if $type eq 'CODE';
+
+    die "TypeError: a code reference is expected got $type";
+  }
+}
+
+package Llama::Value::Type::SCALAR {
+  sub parse ($self, $scalar) { $scalar }
+}
+
+package Llama::Value::Type::HASH {
+  sub parse ($self, @args) {
+    die "ArgumentError: expected at least 1 argument got ${\ int @args}" if @args < 1;
+    
+    if (@args > 1) {
+      my %hash = @args;
+      return \%hash;
+    }
+
+    my $type = ref $args[0];
+    die "TypeError: a hash or hash reference is expected got $type" unless $type eq 'HASH';
+
+    return $args[0];
+  }
+}
+
+package Llama::Value::Type::ARRAY {
+  sub parse ($self, @args) {
+    die "ArgumentError: expected at least 1 argument got ${\ int @args}" if @args < 1;
+
+    return \@args    if @args > 1;
+    return  $args[0] if ref $args[0] eq 'ARRAY';
+    return [$args[0]];
+  }
+}
 
 1;
 
