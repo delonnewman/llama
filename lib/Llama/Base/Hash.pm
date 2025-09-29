@@ -79,4 +79,11 @@ sub Array ($self) {
   wantarray ? @array : \@array;
 }
 
+sub Str ($self) {
+  my $class = $self->__name__;
+  my $pairs = join ', ' => map { $_->key . ' => ' . $_->value } grep { $_->value } $self->META->pairs;
+
+  return "$class($pairs)";
+}
+
 1;
