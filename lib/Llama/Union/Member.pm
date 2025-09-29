@@ -33,6 +33,8 @@ sub name ($self) { join '::' => @$self }
 # Instance Methods
 
 sub build ($self) {
+  return if ${$self->union_class . '::MEMBERS'}{$self->key};
+
   # Make member class a subclass of the union class
   $self->subclass($self->union_class);
 
@@ -50,7 +52,7 @@ sub build ($self) {
 }
 
 sub subclass ($self, $superclass) {
-  @{$self->name . '::ISA'} = $superclass;
+  push @{$self->name . '::ISA'} => $superclass;
   return $self;
 }
 

@@ -10,7 +10,7 @@ sub import($class, @union) {
   my $name  = caller;
   my $union = Llama::Union::Class->new($name)->build($class);
 
-  $union->name->add($_) for @union;
+  $name->add($_) for @union;
 }
 
 sub add($class, $key) {

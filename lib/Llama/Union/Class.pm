@@ -10,7 +10,7 @@ sub build ($self, $baseclass) {
   my $classname = $self->name;
 
   # 1) Make enum class inherit from base class i.e. MyUnion->isa('Llama::Union')
-  $self->superclasses($baseclass);
+  $self->append_superclasses($baseclass);
 
   # 2) Add a method that references the enum parent package i.e. MyUnion->KEY->parent => 'MyEnum'
   $self->add_method(parent => sub { $classname });
