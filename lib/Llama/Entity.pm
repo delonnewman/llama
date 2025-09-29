@@ -8,30 +8,6 @@ sub BUILD ($self, @args) {
   $self->parse(@args);
 }
 
-sub freeze ($self, @keys) {
-  my @attributes = $self->class->attributes;
-  
-  Hash::Util::lock_keys(%$self, @attributes);
-  Hash::Util::lock_value(%$self, $_) for $self->class->readonly_attributes;
-
-  $self;
-}
-
-sub HashRef ($self) {
-  my $ref = $self->Hash;
-  return $ref;
-}
-
-sub Hash ($self) {
-  my %hash = map { $_ => $self->{$_} } grep { defined $self->{$_} } keys %$self;
-  wantarray ? %hash : \%hash;
-}
-
-sub Array ($self) {
-  my @array = $self->META->pairs;
-  wantarray ? @array : \@array;
-}
-
 sub Str ($self) {
   my $class = $self->__name__;
   my $pairs = join ', ' => map { $_->key . ' => ' . $_->value } grep { $_->value } $self->META->pairs;

@@ -12,9 +12,11 @@ sub allocate ($class, @args) {
 
 sub is_frozen ($self) { Hash::Util::hash_locked(%$self) }
 
-sub freeze ($self, @keys) {
-  Hash::Util::lock_keys(%$self);
-  Hash::Util::lock_value(%$self, $_) for keys %$self;
+sub freeze ($self) {
+  my @attributes = $self->class->attributes;
+  
+  Hash::Util::lock_keys(%$self, @attributes);
+  Hash::Util::lock_value(%$self, $_) for $self->class->readonly_attributes;
 
   $self;
 }
@@ -55,6 +57,26 @@ sub parse ($self, @args) {
   }
 
   return $self;
+}
+
+sub HashRef ($self) {
+  my $ref = $self->Hash;
+  return $ref;
+}
+
+{
+  no strict 'refs';
+  *DATAFY = \&HashRef;
+}
+
+sub Hash ($self) {
+  my %hash = map { $_ => $self->{$_} } grep { defined $self->{$_} } keys %$self;
+  wantarray ? %hash : \%hash;
+}
+
+sub Array ($self) {
+  my @array = $self->META->pairs;
+  wantarray ? @array : \@array;
 }
 
 1;
