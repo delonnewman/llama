@@ -3,7 +3,7 @@ use Llama::Base qw(+Base::Hash :signatures);
 
 sub BUILD ($self, @args) {
   if (!@args && (my $required = $self->class->required_attributes)) {
-    die "ArgumentError: missing required attributes " . join(', ' => @$required);
+    die "ArgumentError: missing required attributes: " . join(', ' => @$required);
   }
   $self->assign_attributes(@args);
   $self->freeze;
