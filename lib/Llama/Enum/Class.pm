@@ -46,7 +46,6 @@ sub build ($self, $baseclass) {
   });
 
   # 4) Ensure that the key and value indexes exist
-
   $self->add_key_index;
   $self->add_value_index;
 
