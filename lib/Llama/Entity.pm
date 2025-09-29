@@ -6,7 +6,6 @@ sub BUILD ($self, @args) {
     die "ArgumentError: missing required attributes: " . join(', ' => @$required);
   }
   $self->assign_attributes(@args);
-  $self->freeze;
 }
 
 sub freeze ($self, @keys) {
