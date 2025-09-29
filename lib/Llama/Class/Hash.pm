@@ -10,7 +10,9 @@ sub add_attribute ($self, @args) {
     return $self->{$name} unless @args;
 
     my $caller = caller;
-    die "can't write to readonly attribute: $name" unless $is_mutable || $self->isa($caller);
+    unless ($is_mutable || $self->isa($caller)) {
+      die "AttributeError: can't write to readonly attribute: $name";
+    }
 
     $self->{$name} = $args[0];
     return $self;
