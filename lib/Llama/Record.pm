@@ -26,6 +26,11 @@ sub class ($self) {
   return Llama::Record::Class->named($self->__name__);
 }
 
+sub with ($self, %attributes) {
+  my %args = ($self->Hash, %attributes);
+  return $self->new(%args);
+}
+
 1;
 
 __END__

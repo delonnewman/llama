@@ -160,7 +160,7 @@ sub readonly_attributes ($self) {
 sub required_attributes ($self) {
   no strict 'refs';
   my %attributes = %{$self->package->qualify('ATTRIBUTES')};
-  my @attributes = map { $_->name } grep { $_->is_required } values %attributes;
+  my @attributes = map { $_->name } grep { $_->is_required && !$_->default } values %attributes;
   wantarray ? @attributes : \@attributes;
 }
 
