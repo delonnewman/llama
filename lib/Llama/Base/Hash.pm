@@ -30,4 +30,31 @@ sub META ($self) {
   return Llama::Package->named('Llama::Object::Hash')->maybe_load->name->new($self);
 }
 
+my $AttributeValue = sub ($self, $attribute, $value) {
+  my $name    = $attribute->name;
+  my $default = $attribute->default;
+
+  $value = $self->$default() if $default && !defined($value);
+
+  return $value;
+};
+
+sub parse ($self, @args) {
+  die "ParseError: cannot parse empty value" unless @args;
+  $self = $self->new unless ref $self;
+
+  my %attributes = @args > 1 ? @args : $args[0]->%*;
+  for my $name ($self->class->attributes) {
+    my $attribute = $self->class->attribute($name);
+    my $value     = $AttributeValue->($self, $attribute, $attributes{$name});
+    if (defined $value) {
+      $self->$name($value);
+      next;
+    }
+    die "$name is required" if $attribute->is_required;
+  }
+
+  return $self;
+}
+
 1;

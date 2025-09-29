@@ -5,7 +5,7 @@ sub BUILD ($self, @args) {
   if (!@args && (my $required = $self->class->required_attributes)) {
     die "ArgumentError: missing required attribute(s): " . join(', ' => @$required);
   }
-  $self->assign_attributes(@args);
+  $self->parse(@args);
 }
 
 sub freeze ($self, @keys) {
@@ -15,32 +15,6 @@ sub freeze ($self, @keys) {
   Hash::Util::lock_value(%$self, $_) for $self->class->readonly_attributes;
 
   $self;
-}
-
-my $AttributeValue = sub ($self, $attribute, $value) {
-  my $name    = $attribute->name;
-  my $default = $attribute->default;
-
-  $value = $self->$default() if $default && !defined($value);
-
-  return $value;
-};
-
-sub assign_attributes ($self, @args) {
-  return unless @args;
-
-  my %attributes = @args > 1 ? @args : $args[0]->%*;
-  for my $name ($self->class->attributes) {
-    my $attribute = $self->class->attribute($name);
-    my $value     = $AttributeValue->($self, $attribute, $attributes{$name});
-    if (defined $value) {
-      $self->$name($value);
-      next;
-    }
-    die "$name is required" if $attribute->is_required;
-  }
-
-  return $self;
 }
 
 sub HashRef ($self) {
