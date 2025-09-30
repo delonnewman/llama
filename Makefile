@@ -7,4 +7,7 @@ console:
 clean:
 	rm -rf t/data
 
-.PHONY: test console clean
+docs:
+	pod2html --htmldir=./docs --podpath=./lib --verbose
+
+.PHONY: test console clean docs
