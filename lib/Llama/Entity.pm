@@ -1,14 +1,19 @@
 package Llama::Entity;
 use Llama::Base qw(+Base::Hash :signatures);
+use Llama::Attributes;
 
-sub assign_attributes ($self, @args) {
-  return unless @args;
+has 'id' => { default => '__id__' };
 
-  my %attributes = @args > 1 ? @args : $args[0]->%*;
-  $self->$_($attributes{$_} // die "$_ is required") for $self->class->required_attributes;
-  $self->$_($attributes{$_}) for $self->class->optional_attributes;
+sub BUILD ($self, @args) {
+  if (!@args && (my $required = $self->class->required_attributes)) {
+    die "ArgumentError: missing required attribute(s): " . join(', ' => @$required);
+  }
+  $self->parse(@args);
+}
 
-  return $self;
+sub equals ($self, $other) {
+  return !!0 unless $other->isa(__PACKAGE__);
+  return $self->id eq $other->id;
 }
 
 1;

@@ -1,14 +1,8 @@
 package Llama::Class::Test;
-use strict;
-use warnings;
-use utf8;
-use feature 'signatures';
+use Llama::Test::TestSuite;
 
-use Test::More;
-use lib qw(../../lib);
-
-use Llama::Class;
 my $described_class = 'Llama::Class';
+require_ok $described_class;
 
 subtest 'basics' => sub {
   my $named = $described_class->new('Basics');
@@ -70,8 +64,8 @@ subtest 'attributes' => sub {
   ok $attribute->is_mutable => 'is mutable';
 
   $object->META->set_attribute_value(name => 'Hosea');
-  $object->META->add_method(name => sub ($self) {
-    $self->META->get_attribute_value('name')
+  $object->META->add_method(name => sub {
+    shift->META->get_attribute_value('name')
   });
 
   is $object->name => 'Hosea'

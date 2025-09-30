@@ -10,16 +10,19 @@ use Llama::Attribute::Type;
 
 my $Any = sub{1};
 
+no warnings 'experimental::signatures';
+
 sub BUILD ($self, $name, @args) {
   $self->{name} = $name;
   $self->{type} = Llama::Attribute::Type->parse(@args);
   $self->freeze;
 }
 
-delegate [qw(is_mutable is_optional is_valid)] => 'type';
+delegate [qw(is_mutable is_optional is_valid default)] => 'type';
 
 sub is_required ($self) { !$self->is_optional }
 
+sub value_type ($self) { $self->type->value }
 sub type ($self) { $self->{type} }
 sub name ($self) { $self->{name} }
 

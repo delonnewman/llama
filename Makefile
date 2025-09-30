@@ -1,8 +1,8 @@
 test:
-	prove -r -Ilib -It/lib
+	carmel exec prove -r -Ilib -It/lib
 
 console:
-	reply -Ilib
+	carmel exec reply -Ilib
 
 clean:
 	rm -rf t/data

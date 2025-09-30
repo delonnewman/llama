@@ -13,13 +13,15 @@ A meta class for building enum classes (see L<Llama::Enum> and L<Llama::Enum::Me
 =cut
 
 use Llama::Base qw(+Class :signatures);
-no strict 'refs';
 
 use Carp ();
 use Data::Printer;
 use Sub::Util ();
 
 use Llama::Enum;
+
+no strict 'refs';
+no warnings 'experimental::signatures';
 
 sub class ($self) { $self->name }
 
@@ -44,7 +46,6 @@ sub build ($self, $baseclass) {
   });
 
   # 4) Ensure that the key and value indexes exist
-
   $self->add_key_index;
   $self->add_value_index;
 

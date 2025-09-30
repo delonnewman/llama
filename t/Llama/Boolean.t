@@ -1,14 +1,8 @@
-package Llama::Class::Test;
-use strict;
-use warnings;
-use utf8;
-use feature 'signatures';
+package Llama::Boolean::Test;
+use Llama::Test::TestSuite;
 
-use Test::More;
-use lib qw(../../lib);
-
-use Llama::Boolean;
 my $described_class = 'Llama::Boolean';
+require_ok $described_class;
 
 is $described_class->FALSE->value => 0;
 is $described_class->TRUE->value => 1;

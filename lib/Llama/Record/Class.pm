@@ -1,34 +1,28 @@
-package Llama::Record;
-use Llama::Base qw(+Entity :signatures);
-
-use Data::Printer;
-use Hash::Util ();
-
-use Llama::Record::Class;
+package Llama::Record::Class;
+use Llama::Base qw(+Class::Hash :signatures);
 
 no warnings 'experimental::signatures';
 
-sub import ($class, $attributes = undef) {
-  if ($attributes) {
-    my $caller = caller;
-    Llama::Record::Class->create(name => $caller, attributes => $attributes);
+sub create ($self, %attributes) {
+  my $class = $self->new($attributes{name}); # if name is undef will be an instance of AnonymousClass
+  $class->superclasses('Llama::Record');
+
+  my %schema = ($attributes{attributes} // {})->%*;
+  for my $attribute (keys %schema) {
+    $class->add_attribute($attribute, $schema{$attribute});
   }
+
+  return $class;
 }
 
-sub BUILD ($self, @args) {
-  $self->next::method(@args);
-  $self->freeze;
-}
+sub Str ($self) {
+  my $class = $self->name;
 
-sub class ($self) {
-  my $pkg = __PACKAGE__;
-  return Llama::Class->named($pkg) if ref $self eq $pkg;
-  return Llama::Record::Class->named($self->__name__);
-}
+  no strict 'refs';
+  my %attributes = %{$class . '::ATTRIBUTES'};
+  my $pairs = join ', ' => map { $_ . ' => ' . $attributes{$_}->type } keys %attributes;
 
-sub with ($self, %attributes) {
-  my %args = ($self->Hash, %attributes);
-  return $self->new(%args);
+  return "$class($pairs)";
 }
 
 1;

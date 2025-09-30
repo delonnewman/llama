@@ -1,6 +1,7 @@
 package Llama::Enum::Test;
 use Llama::Test::TestSuite;
 use Feature::Compat::Try;
+no warnings 'experimental::signatures';
 
 my $described_class = 'Mock::Color';
 package Mock::Color {

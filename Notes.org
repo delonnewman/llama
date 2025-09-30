@@ -1,21 +1,43 @@
 #+title: Notes
 
-* Object
-** Protocol
-*** Role
-
+* Base
 ** Class
 *** Enum
+*** Union
 *** Record
+*** Role
 
+* Type
+** Protocol
+- Signature
+  - Value::Type
+- Attribute
+  - Attribute::Type
+    - Value::Type
+** Value::Type
+** Attribute::Type
 
-* Enumerable
-* Associative
+* Collections
+** Enumerable (Role)
+** Associative (Role)
+** Pair
+** Cons
+** List
+** LazyList
+** Dictionary
 
-* HashObject
+* Base::Hash
 ** Entity (mutable heterogenous data)
 ** Record (immutable heterogenous data)
 ** Dictionary is Enumerable (mutable homogenous key/value lookup)
 
-* ArrayObject
+* Base::Array
 ** Vector is Enumerable (immutable indexed)
+
+* Macros
+** Attributes
+** Delegation
+
+* TODO Make Enum::Member and Union::Member subclasses of Class *(perhaps use Union::Member as the class type for Enum::Member)
+** Override eigen_class should just be an alias for class
+** Add convienices for using class attributes as meta data

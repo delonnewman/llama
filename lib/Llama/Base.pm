@@ -5,6 +5,7 @@ use warnings;
 use utf8;
 use feature ':5.20';
 use feature 'signatures';
+no warnings 'experimental::signatures';
 use mro;
 no strict 'refs';
 
@@ -20,8 +21,6 @@ use overload
   'bool' => sub{shift->Bool},
   '""'   => sub{shift->Str};
 
-sub Package :prototype() { 'Llama::Package' }
-
 sub import($, @args) {
   # sensible defaults
   $_->import for qw(strict warnings utf8);
@@ -31,12 +30,12 @@ sub import($, @args) {
   return unless %flags;
 
   my $caller = caller;
-  my $pkg    = Package->named($caller);
+  my $pkg    = Llama::Package->named($caller);
 
   # subclassing
   my @parents = $flags{-base} ? (__PACKAGE__) : @args;
   if (@parents) {
-    Package->named($_)->maybe_load for @parents;
+    Llama::Package->named($_)->maybe_load for @parents;
     $pkg->ISA(@parents);
   }
 
@@ -74,11 +73,11 @@ sub new ($self, @args) {
 
 sub META ($self) {
   return $self->class unless ref $self;
-  return Package->named('Llama::Object')->maybe_load->name->new($self);
+  return Llama::Package->named('Llama::Object')->maybe_load->name->new($self);
 }
 
 sub class ($self) {
-  Package->named('Llama::Class')->maybe_load->name->named($self->__name__);
+  Llama::Package->named('Llama::Class')->maybe_load->name->named($self->__name__);
 }
 
 sub __name__ ($self) { ref($self) || $self }
@@ -122,6 +121,10 @@ sub itself ($self, @args) { $self }
 
 sub if ($self, @args) { $self->if_truthy(@args) }
 sub else ($self, @args) { $self->if_falsy(@args) }
+
+sub method ($self, $name)  {
+  return sub (@args) { $self->$name(@args) };
+}
 
 1;
 
