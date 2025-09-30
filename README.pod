@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-Llama - An alternative core library for Perl
+Llama - A smaller member of the Camel family
 
 =head1 AUTHOR
 
