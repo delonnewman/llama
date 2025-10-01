@@ -3,6 +3,9 @@ use Llama::Base qw(:signatures);
 use Llama::Union qw(CODE HASH ARRAY SCALAR Regexp GLOB LVALUE FORMAT IO VSTRING SCALAR);
 
 # A set of meta objects for characterizing Perl values--implements type interface.
+# see https://blogs.perl.org/users/leon_timmermans/2025/02/a-deep-dive-into-the-perl-type-systems.html
+# see also https://theweeklychallenge.org/blog/unary-operator/
+# for an example of the need for Perl's other type system Expression Types
 
 package Llama::Value::Type::CODE {
   sub parse ($self, $code) {
@@ -40,19 +43,16 @@ package Llama::Value::Type::ARRAY {
 }
 
 package Llama::Value::Type::SCALAR {
-  use Llama::Union qw(Num Str REF);
+  use Llama::Union qw(REF);
+  # TODO: add subtypes Num and Str
   
   sub parse ($self, $scalar) { $scalar }
 }
 
 package Llama::Value::Type::SCALAR::REF {
   use Llama::Union qw(SCALAR CODE HASH ARRAY Blessed);
+  # TODO: add subtype Blessed::Can
 }
-
-package Llama::Value::Type::SCALAR::REF::Blessed {
-  use Llama::Union qw(Can);
-}
-
 
 1;
 
