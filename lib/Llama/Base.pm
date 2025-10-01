@@ -67,6 +67,7 @@ sub new ($self, @args) {
   my $object = $class->allocate(@args);
 
   $object->try('BUILD', @args);
+  $object->try('ADJUST');
 
   return $object;
 }
