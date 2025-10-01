@@ -16,12 +16,15 @@ sub import ($class, $attributes = undef) {
   }
 }
 
+sub new_class ($class, @args) { Llama::Record::Class->build(@args) }
+
 sub BUILD ($self, @args) {
   $self->next::method(@args);
   $self->freeze;
 }
 
 sub class ($self) {
+  return Llama::Class->named(__PACKAGE__) if !ref($self) && $self eq __PACKAGE__;
   return Llama::Record::Class->named($self->__name__);
 }
 
