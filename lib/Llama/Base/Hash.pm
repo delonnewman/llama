@@ -10,6 +10,13 @@ sub allocate ($class, @args) {
   bless {}, $class;
 }
 
+sub BUILD ($self, @args) {
+  if (!@args && (my $required = $self->class->required_attributes)) {
+    die "ArgumentError: missing required attribute(s): " . join(', ' => @$required);
+  }
+  $self->parse(@args);
+}
+
 sub is_frozen ($self) { Hash::Util::hash_locked(%$self) }
 
 sub freeze ($self) {
