@@ -1,5 +1,6 @@
 package Llama::Class;
 use Llama::Base qw(+Base::Scalar :signatures);
+use Feature::Compat::Try;
 
 use Data::Printer;
 use Scalar::Util ();
@@ -22,10 +23,9 @@ sub named ($class, $name) {
   $object;
 }
 
-sub new ($class, $name = undef) {
-  return Llama::Class::AnonymousClass->new unless $name;
-
+sub new ($class, $name) {
   my $object = bless \$name, $class;
+
   $object->mro($DEFAULT_MRO);
   $object;
 }
@@ -68,16 +68,12 @@ sub subclass ($self, $name = undef) {
 *inherit = \&subclass;
 
 sub append_superclasses($self, @classes) {
-  my $ISA = $self->package->ISA;
-  my @superclasses = uniq @$ISA, @classes;
-  $self->package->ISA(@superclasses);
+  push $self->package->ISA->@*, @classes;
   return $self;
 }
 
 sub prepend_superclasses($self, @classes) {
-  my $ISA = $self->package->ISA;
-  my @superclasses = uniq @classes, @$ISA;
-  $self->package->ISA(@superclasses);
+  unshift $self->package->ISA->@*, @classes;
   return $self;
 }
 

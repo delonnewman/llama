@@ -94,7 +94,7 @@ sub of($class, $value) {
     my $valid = join ', ' => sort(keys %members_by_value);
     Carp::croak "invalid $class value ($value) valid values are ($valid)";
   };
-};
+}
 
 sub keyed($class, $key) {
   Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;

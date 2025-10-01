@@ -9,8 +9,8 @@ subtest 'basics' => sub {
   is $named->name => 'Basics';
   is $named->mro => 'c3';
 
-  my $anon = $described_class->new;
-  isa_ok $anon, 'Llama::Class::AnonymousClass';
+  # my $anon = $described_class->new;
+  # isa_ok $anon, 'Llama::Class::AnonymousClass';
 };
 
 subtest 'caching' => sub {

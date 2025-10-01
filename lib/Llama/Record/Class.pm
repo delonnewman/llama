@@ -1,10 +1,13 @@
 package Llama::Record::Class;
 use Llama::Base qw(+Class::Hash :signatures);
 
+use Data::Printer;
+
 no warnings 'experimental::signatures';
 
-sub create ($self, %attributes) {
-  my $class = $self->new($attributes{name}); # if name is undef will be an instance of AnonymousClass
+sub build ($self, %attributes) {
+  my $name  = ref($self) || $self;
+  my $class = $name->new($attributes{name} // die "name is required");
   $class->superclasses('Llama::Record');
 
   my %schema = ($attributes{attributes} // {})->%*;
@@ -22,7 +25,7 @@ sub Str ($self) {
   my %attributes = %{$class . '::ATTRIBUTES'};
   my $pairs = join ', ' => map { $_ . ' => ' . $attributes{$_}->type } keys %attributes;
 
-  return "$class($pairs)";
+  return $pairs ? "$class($pairs)" : $class;
 }
 
 1;

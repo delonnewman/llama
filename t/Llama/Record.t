@@ -1,4 +1,4 @@
-package Llama::Pair::Test;
+package Llama::Record::Test;
 use Llama::Test::TestSuite;
 use Feature::Compat::Try;
 no warnings 'experimental::signatures';
@@ -6,7 +6,7 @@ no warnings 'experimental::signatures';
 my $described_class = 'Llama::Record';
 require_ok $described_class;
 
-my $class = Llama::Record::Class->create(
+my $class = $described_class->class->build(
   name       => 'Person',
   attributes => {
     name     => 'Str',
@@ -17,6 +17,9 @@ my $class = Llama::Record::Class->create(
   }
 );
 
+isa_ok $class => 'Llama::Record::Class';
+isa_ok $class->name => 'Llama::Record';
+
 my $jackie = $class->name->new(
   name  => 'Jackie',
   email => 'jackie@example.com',
@@ -24,6 +27,7 @@ my $jackie = $class->name->new(
   dob   => [1992, 2, 5]
 );
 
+isa_ok $jackie => $class->name;
 is $jackie->name => 'Jackie';
 is $jackie->email => 'jackie@example.com';
 

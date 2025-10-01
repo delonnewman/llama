@@ -3,6 +3,7 @@ use Llama::Base qw(+Entity :signatures);
 
 use Data::Printer;
 use Hash::Util ();
+use Scalar::Util ();
 
 use Llama::Record::Class;
 
@@ -11,7 +12,7 @@ no warnings 'experimental::signatures';
 sub import ($class, $attributes = undef) {
   if ($attributes) {
     my $caller = caller;
-    Llama::Record::Class->create(name => $caller, attributes => $attributes);
+    Llama::Record::Class->build(name => $caller, attributes => $attributes);
   }
 }
 
@@ -21,8 +22,6 @@ sub BUILD ($self, @args) {
 }
 
 sub class ($self) {
-  my $pkg = __PACKAGE__;
-  return Llama::Class->named($pkg) if ref $self eq $pkg;
   return Llama::Record::Class->named($self->__name__);
 }
 
