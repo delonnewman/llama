@@ -6,13 +6,17 @@ use Llama::Union;
 no strict 'refs';
 no warnings 'experimental::signatures';
 
-sub build ($self, $baseclass) {
+sub build ($self, %attributes) {
+  $self = $self->new($attributes{name}) unless ref $self;
+  my @members   = ($attributes{members} // die "members are required")->@*;
+  my $baseclass = $attributes{supertype} // 'Llama::Union';
+  
   my $classname = $self->name;
 
   # 1) Make enum class inherit from base class i.e. MyUnion->isa('Llama::Union')
   $self->append_superclasses($baseclass);
 
-  # 2) Add a method that references the enum parent package i.e. MyUnion->KEY->parent => 'MyEnum'
+  # 2) Add a method that references the enum parent package i.e. MyUnion->KEY->parent => 'MyUnion'
   $self->add_method(parent => sub { $classname });
 
   # 3) Override import method in enum class to support aliasing e.g. "use MyUnion -alias => 'My'"
@@ -26,8 +30,11 @@ sub build ($self, $baseclass) {
     *{$importer . '::' . $alias} = sub :prototype() { $class };
   });
 
-  # 4) Ensure that the key and value indexes exist
+  # 4) Ensure that the members index exists
   %{$self->name . '::MEMBERS'} = ();
+
+  # 5) Add members
+  $self->name->add($_) for @members;
 
   return $self;
 }

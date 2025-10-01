@@ -12,52 +12,31 @@ A meta class for building enum members (see L<Llama::Union> and L<Llama::Union::
 
 =cut
 
-use Llama::Base qw(:base :signatures);
+use Llama::Base qw(+Class :signatures);
 
 use Scalar::Util qw(blessed);
 
 no strict 'refs';
 
-# Class Methods
-
-sub new ($class, $union_class, $key) {
-  bless [$union_class, $key], $class;
-}
-
-# Attributes
-
-sub union_class ($self) { $self->[0] }
-sub key ($self) { $self->[1] }
-sub name ($self) { join '::' => @$self }
-
 # Instance Methods
 
-sub build ($self) {
-  return if ${$self->union_class . '::MEMBERS'}{$self->key};
+sub build ($self, $union_class, $key) {
+  return if ${$union_class . '::MEMBERS'}{$key};
+  $self = $self->new(join '::' => $union_class, $key) unless blessed($self);
 
   # Make member class a subclass of the union class
-  $self->subclass($self->union_class);
+  $self->superclasses($union_class);
 
   # Create member instance
-  my $name     = $self->name;
+  my $name     = join '::' => $union_class, $key;
   my $instance = bless \$name, $name;
 
   # Add enum class method for accessing this instance e.g MyEnum->KEY
-  $self->add_accessor_method($instance);
+  $self->add_method($name, sub { $instance });
 
   # Update index
-  ${$self->union_class . '::MEMBERS'}{$self->key} = $instance;
+  ${$union_class . '::MEMBERS'}{$key} = $instance;
 
-  return $self;
-}
-
-sub subclass ($self, $superclass) {
-  push @{$self->name . '::ISA'} => $superclass;
-  return $self;
-}
-
-sub add_accessor_method ($self, $instance) {
-  *{$self->name} = sub :prototype() { $instance };
   return $self;
 }
 
