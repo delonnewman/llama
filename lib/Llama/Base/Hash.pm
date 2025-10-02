@@ -11,8 +11,8 @@ sub allocate ($class, @args) {
 }
 
 sub BUILD ($self, @args) {
-  if (!@args && (my $required = $self->class->required_attributes)) {
-    die "ArgumentError: missing required attribute(s): " . join(', ' => @$required);
+  if (!@args && (my @required = $self->class->required_attributes)) {
+    die "ArgumentError: missing required attribute(s): " . join(', ' => @required);
   }
   $self->parse(@args);
 }

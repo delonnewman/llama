@@ -133,9 +133,15 @@ sub add_attribute ($self, @args) {
 
 sub attribute ($self, $name) {
   no strict 'refs';
-  my $attribute = ${$self->package->qualify('ATTRIBUTES')}{$name};
+
+  my $attribute;
+  for ($self->ancestry) {
+    $attribute = ${$_ . '::ATTRIBUTES'}{$name};
+    last if $attribute;
+  }
+
   Carp::confess "unknown attribute '$name'" unless $attribute;
-  $attribute;
+  return $attribute;
 }
 
 =pod
@@ -148,28 +154,29 @@ head2 attributes
 
 sub attributes ($self) {
   no strict 'refs';
-  my @attributes = keys %{$self->package->qualify('ATTRIBUTES')};
+  my @attributes = map { $_->name } $self->ATTRIBUTES;
   wantarray ? @attributes : \@attributes;
 }
 
 sub readonly_attributes ($self) {
   no strict 'refs';
-  my %attributes = %{$self->package->qualify('ATTRIBUTES')};
-  my @attributes = map { $_->name } grep { !$_->is_mutable } values %attributes;
+  my @attributes = map { $_->name } grep { !$_->is_mutable } $self->ATTRIBUTES;
   wantarray ? @attributes : \@attributes;
 }
 
 sub required_attributes ($self) {
-  no strict 'refs';
-  my %attributes = %{$self->package->qualify('ATTRIBUTES')};
-  my @attributes = map { $_->name } grep { $_->is_required && !$_->default } values %attributes;
+  my @attributes = map { $_->name } grep { $_->is_required && !$_->default } $self->ATTRIBUTES;
   wantarray ? @attributes : \@attributes;
 }
 
 sub optional_attributes ($self) {
+  my @attributes = map { $_->name } grep { $_->is_optional } $self->ATTRIBUTES;
+  wantarray ? @attributes : \@attributes;
+}
+
+sub ATTRIBUTES ($self) {
   no strict 'refs';
-  my %attributes = %{$self->package->qualify('ATTRIBUTES')};
-  my @attributes = map { $_->name } grep { $_->is_optional } values %attributes;
+  my @attributes = map { values %{Llama::Package->named($_)->qualify('ATTRIBUTES')} } $self->ancestry;
   wantarray ? @attributes : \@attributes;
 }
 
