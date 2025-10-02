@@ -1,5 +1,5 @@
 package Llama::Base::Hash;
-use Llama::Base qw(:base :constructor :signatures);
+use Llama::Base qw(:base :signatures);
 
 use Data::Printer;
 use Hash::Util ();
@@ -94,8 +94,11 @@ sub Array ($self) {
 
 sub Str ($self) {
   my $class = $self->__name__;
-  my $pairs = join ', ' => map { $_->key . ' => ' . $_->value } grep { $_->value } $self->META->pairs;
 
+  my @pairs = $self->META->pairs;
+  return $class unless @pairs;
+
+  my $pairs = join ', ' => map { $_->key . ' => ' . $_->value } grep { $_->value } @pairs;
   return "$class($pairs)";
 }
 
