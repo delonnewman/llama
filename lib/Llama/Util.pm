@@ -10,7 +10,7 @@ no warnings 'experimental::signatures';
 use Scalar::Util qw(reftype);
 
 use Exporter 'import';
-our @EXPORT_OK = qw(valid_value_type extract_flags);
+our @EXPORT_OK = qw(valid_value_type extract_flags extract_block);
 
 # see https://github.com/moose/Package-Stash/blob/ac478644bb18a32e2f968138e2d651e47b843423/lib/Package/Stash/PP.pm#L135
 sub valid_value_type ($value, $type) {
@@ -28,14 +28,29 @@ sub valid_value_type ($value, $type) {
   wantarray ? ($is_valid, $value_type) : $is_valid;
 }
 
+=item extract_flags
+
+Remove key / value pairs where the key starts with a '-' and return
+a hash reference of those key / value pairs in scalar context. In list
+context return a list of the key / value pairs.
+
+  my @args = ('one', 'two', '-three' => 3);
+  my $flags = extract_flags \@args; # => { '-three' => 3 };
+  @args; # => ('one', 'two')
+
+=cut
+
 sub extract_flags ($arrayref) {
   my %flags = ();
 
-  for (my $i = 0; $i < @$arrayref; $i++) {
+  my $len = int @$arrayref;
+  for (my $i = 0; $i < $len; $i++) {
     my $item = $arrayref->[$i];
     if ($item =~ /^-/) {
+      my $value = $arrayref->[$i + 1];
       delete $arrayref->[$i];
-      my $value = delete $arrayref->[$i + 1];
+      delete $arrayref->[$i + 1];
+      $i++;
       $flags{$item} = $value;
     }
     if ($item =~ /^:/) {
@@ -51,6 +66,19 @@ sub extract_flags ($arrayref) {
   }
 
   wantarray ? %flags : {%flags};
+}
+
+=item extract_block
+
+Remove and return a code block from the end of the array ref. If a code
+block is not present return L<undef>. When the code block is removed the
+array is modified in place.
+
+=cut
+
+sub extract_block ($arrayref) {
+  return delete $arrayref->[-1] if ref $arrayref->[-1] eq 'CODE';
+  return undef;
 }
 
 1;
