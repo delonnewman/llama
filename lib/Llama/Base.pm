@@ -64,8 +64,8 @@ sub DESTROY { }
 
 sub new ($self, @args) {
   my $class = ref($self) || $self;
-  my $object = $class->allocate(@args);
 
+  my $object = $class->allocate(@args);
   $object->try('BUILD', @args);
   $object->try('ADJUST');
 
