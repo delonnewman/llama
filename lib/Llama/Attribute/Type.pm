@@ -19,10 +19,11 @@ sub parse ($class, @args) {
 }
 
 sub BUILD ($self, %attributes) {
-  $self->{mutable}  = $attributes{mutable}  // 0;
-  $self->{value}    = $attributes{value}    // $Any;
-  $self->{optional} = $attributes{optional} // 0;
-  $self->{default}  = $attributes{default};
+  $self->{mutable}  = delete $attributes{mutable}  // 0;
+  $self->{value}    = delete $attributes{value}    // $Any;
+  $self->{optional} = delete $attributes{optional} // 0;
+  $self->{default}  = delete $attributes{default};
+  $self->{options}  = {%attributes};
   $self->freeze;
 }
 
@@ -30,6 +31,7 @@ sub default ($self) { $self->{default} }
 sub value ($self) { $self->{value} }
 sub is_mutable  ($self) { $self->{mutable} }
 sub is_optional ($self) { $self->{optional} }
+sub options ($self) { $self->{options} }
 
 sub is_valid ($self, $value) {
   my $validator = $self->{value} // $Any;
