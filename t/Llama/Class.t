@@ -22,7 +22,10 @@ subtest 'caching' => sub {
 
 subtest 'eigen classes' => sub {
   package EigenTest {
-    use Llama::Base qw(+Base::Hash :constructor);
+    use Llama::Base qw(+Base :constructor);
+    sub allocate ($class, @args) {
+      bless {}, $class;
+    }
   }
 
   my $object = EigenTest->new;

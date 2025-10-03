@@ -24,7 +24,7 @@ sub BUILD ($self, @args) {
 }
 
 sub class ($self) {
-  return Llama::Class->named(__PACKAGE__) if !ref($self) && $self eq __PACKAGE__;
+  # return Llama::Class->named(__PACKAGE__) if !ref($self) && $self eq __PACKAGE__;
   return Llama::Record::Class->named($self->__name__);
 }
 
