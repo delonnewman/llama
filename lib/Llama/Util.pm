@@ -40,28 +40,27 @@ context return a list of the key / value pairs.
 
 =cut
 
-sub extract_flags ($arrayref) {
+sub extract_flags ($arrayref, %options) {
+  my $prefix = delete $options{prefix} // 'Llama';
   my %flags = ();
 
-  my $len = int @$arrayref;
-  for (my $i = 0; $i < $len; $i++) {
+  for (my $i = 0; $i < @$arrayref; $i++) {
     my $item = $arrayref->[$i];
     if ($item =~ /^-/) {
-      my $value = $arrayref->[$i + 1];
-      delete $arrayref->[$i];
-      delete $arrayref->[$i + 1];
-      $i++;
-      $flags{$item} = $value;
+      $flags{$item} = $arrayref->[$i + 1];
+      splice @$arrayref, $i => 2;
+      $i -= 2; next;
     }
     if ($item =~ /^:/) {
-      my $name = delete $arrayref->[$i];
-      $name =~ s/^://;
-      $flags{"-$name"} = 1;
+      $item =~ s/^:/-/;
+      $flags{"$item"} = 1;
+      splice @$arrayref, $i => 1;
+      $i--;
     }
     if ($item =~ /^\+/) {
       my $name = $arrayref->[$i];
       $name =~ s/^\+//;
-      $arrayref->[$i] = "Llama::$name";
+      $arrayref->[$i] = "$prefix\::$name";
     }
   }
 

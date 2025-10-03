@@ -1,31 +1,75 @@
 package Llama::Util::Test;
-use strict;
-use warnings;
-use utf8;
+use Llama::Test::TestSuite;
 
-use Test::More;
-use lib qw(../../lib);
+use Llama::Util qw(extract_flags extract_block);
 
-use Llama::Util qw(extract_flags);
+subtest 'extract_block returns a code reference if one is present' => sub {
+  my $args = [1, 2, 3, sub { 4 }];
+  my $block = extract_block($args);
 
-subtest 'extract_flags' => sub {
+  is $block->(), 4, 'invoke code reference';
+};
+
+subtest 'extract_block removes the code reference from the array when present' => sub {
+  my $args = [1, 2, 3, sub { 4 }];
+  extract_block($args);
+
+  is_deeply $args, [1, 2, 3], 'block is removed';
+};
+
+subtest 'extract_block returns undef if a code reference is not present' => sub {
+  my $args = [1, 2, 3, 4];
+  my $block = extract_block($args);
+
+  ok !defined($block), 'block is undefined';
+};
+
+subtest 'extract_block returns undef if a code reference is present but not at the end of the array' => sub {
+  my $args = [1, 2, sub { 3 }, 4];
+  my $block = extract_block($args);
+
+  ok !defined($block), 'block is undefined';
+};
+
+subtest 'extract_block does not modify the array when a code block is not present' => sub {
+  my $args = [1, 2, 3, 4];
+  extract_block($args);
+
+  is_deeply $args, [1, 2, 3, 4], 'array is unmodified';
+};
+
+subtest 'extract_flags - extracts key / value pairs' => sub {
   my @args  = (qw(name age), -to => 'person');
   my %flags = extract_flags \@args;
 
   is $flags{-to} => 'person';
-  is_deeply [qw(name age)], \@args;
+  is_deeply [qw(name age)], \@args, 'flags are extracted';
+};
 
-  @args  = ('Llama::Object',  ':constructor');
-  %flags = extract_flags \@args;
+subtest 'extract_flags - extracts boolean flags' => sub {
+  my @args  = (qw(name age), -to => 'person', ':on');
+  my %flags = extract_flags \@args;
 
-  is $flags{-constructor} => 1;
-  is_deeply ['Llama::Object'], \@args;
+  is $flags{-on} => 1;
+  is $flags{-to} => 'person';
+  is_deeply [qw(name age)], \@args, 'flags are extracted';
+};
 
-  @args  = qw(+Object  Llama::Protocol);
-  %flags = extract_flags \@args;
+subtest 'extract_flags - "+" to a prefix value' => sub {
+  my @args  = qw(+Object  Llama::Protocol);
+  my %flags = extract_flags \@args;
 
   ok !%flags;
   is_deeply [qw(Llama::Object Llama::Protocol)], \@args;
+};
+
+subtest 'regression - undef values in flags' => sub {
+  my @args  = (-active => 1, -link => { class => 'text-warning' }, class => 'text-center flex-grow-1', data => { test_id => "person-tab" } => sub { 4 });
+
+  my %flags = extract_flags \@args;
+  my @undef = grep { !defined $_ } @args;
+
+  ok !@undef, 'no undefined values';
 };
 
 done_testing;
