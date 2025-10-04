@@ -4,6 +4,7 @@ use Llama::Base qw(:base :abstract);
 *if_null   = \&Llama::Base::tap;
 *if_falsy  = \&Llama::Base::tap;
 *if_truthy = \&Llama::Base::itself;
+*then      = \&Llama::Base::itself;
 
 sub Bool { 0 }
 
