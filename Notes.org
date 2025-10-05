@@ -56,3 +56,15 @@ https://en.wikipedia.org/wiki/Comparison_of_programming_languages_(algebraic_dat
 http://cml.cs.uchicago.edu
 https://wingolog.org/archives/2017/06/29/a-new-concurrent-ml
 https://en.wikipedia.org/wiki/Concurrent_ML
+
+* Class
+** Class::Sum
+** Class::Product
+** ::or -> Class::Sum (Union, Enum)
+** ::and -> Class::Product (Tuple, Record)
+
+* Base
+** Base::Symbol (stateless, singleton)
+** Base::Scalar
+** Base::Array
+** Base::Hash
