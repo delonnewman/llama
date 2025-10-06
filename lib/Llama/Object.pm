@@ -37,8 +37,8 @@ sub add_attribute ($self, @args) {
   $self;
 }
 
-delegate [qw(attributes set_attribute_value get_attribute_value)] => 'class';
-delegate add_method => 'eigen_class';
+delegate [qw(attributes get_attribute_value)] => 'class';
+delegate [qw(add_method set_attribute_value)] => 'eigen_class';
 
 sub eigen_class ($self) {
   return $self->class if $self->class->isa('Llama::Class::EigenClass');
@@ -47,7 +47,7 @@ sub eigen_class ($self) {
     ->named('Llama::Class::EigenClass')
     ->maybe_load
     ->name
-    ->new($self)
+    ->build($self)
 }
 
 sub class ($self) {

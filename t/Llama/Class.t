@@ -26,6 +26,29 @@ subtest 'caching' => sub {
   is $first->__addr__ => $second->__addr__;
 };
 
+subtest 'kinds' => sub {
+  my $class = $described_class->new;
+  $class->append_superclasses('Llama::Base');
+  my $instance = bless {}, $class->name;
+
+  is $class->kind => $described_class;
+  isa_ok $instance => $class->name;
+  isa_ok $instance->class => $described_class;
+
+  my $kind = $described_class->new;
+  $kind->append_superclasses('Llama::Class');
+  $class->kind($kind->name);
+  my $class2 = $described_class->new($class->name);
+  my $class3 = $described_class->named($class->name);
+  my $instance2 = bless {}, $class2->name;
+
+  isa_ok $class2 => $kind->name;
+  isa_ok $class3 => $kind->name;
+  is $class->kind => $kind->name;
+  isa_ok $instance2->class => $kind->name;
+  isa_ok $instance->class => $kind->name;
+};
+
 subtest 'eigen classes' => sub {
   package EigenTest {
     use Llama::Base qw(+Base :constructor);
@@ -38,6 +61,7 @@ subtest 'eigen classes' => sub {
   isa_ok $object => 'EigenTest';
 
   my $eigen_class = $object->META->eigen_class;
+  isa_ok $eigen_class => 'Llama::Class::EigenClass';
   $eigen_class->add_method(translate => sub { 'eigen means own' });
 
   ok !(EigenTest->new->can('translate'));
