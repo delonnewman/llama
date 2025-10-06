@@ -1,5 +1,5 @@
 package Llama::Union;
-use Llama::Base qw(+Base :signatures);
+use Llama::Base qw(+Base::Symbol :signatures);
 
 use Data::Printer;
 use Llama::Class;
@@ -16,17 +16,30 @@ sub import($class, @union) {
   if (@union) {
     for my $subtype (@union) {
       my $member_name = $name . '::' . $subtype;
-      p $member_name;
       my $class = Llama::Class->named($member_name);
-      $class->append_superclasses('Llama::Base::Symbol');
-      $union->add_member($class);
-      $union->add_method($subtype, sub :prototype() { $class->name->new });
+
+      $union->add_member($class, $subtype);
+      $union->add_method($subtype, sub ($class) { "$class\::$subtype"->new });
     }
   }
 }
 
 sub class ($self) {
   return Llama::Class::Sum->named($self->__name__);
+}
+
+sub members ($self, @keys) {
+  return $self->class->members(@keys) unless wantarray;
+  return map { $_->name->new } $self->class->members(@keys);
+}
+
+sub all ($self, @keys) {
+  my @members = map { $_->name->new } $self->class->all(@keys);
+  return wantarray ? @members : \@members;
+}
+
+sub of ($self, $key) {
+  return $self->class->of($key)->name->new;
 }
 
 1;
