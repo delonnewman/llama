@@ -17,14 +17,14 @@ sub add_member ($self, $member, $name = $member->name) {
   return $self;
 }
 
-sub members($class, @keys) {
+sub members ($class, @keys) {
   my %members = %{$class . '::MEMBERS'};
   my @members = @keys ? map { $members{$_} } @keys : values %members;
 
   return wantarray ? @members : int @members;
 }
 
-sub all($class, @keys) {
+sub all ($class, @keys) {
   return wantarray ? $class->members(@keys) : [$class->members(@keys)];
 }
 
@@ -33,12 +33,14 @@ sub names ($class) {
   return wantarray ? @names : \@names;
 }
 
-sub of($class, $type) {
+sub of ($class, $type) {
   my %members = %{$class . '::MEMBERS'};
   return $members{$type} // do {
     my $valid = join ', ' => sort(keys %members);
     Carp::croak "invalid $class type ($type) valid values are ($valid)";
   };
 }
+
+sub new_of ($class, $type, @args) { $class->of($type)->new(@args) }
 
 1;
