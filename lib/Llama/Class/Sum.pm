@@ -18,7 +18,6 @@ sub add_member ($self, $member) {
 }
 
 sub members($class, @keys) {
-  no strict 'refs';
   my %members = %{$class . '::MEMBERS'};
   my @members = @keys ? map { $members{$_} } @keys : values %members;
 
@@ -26,15 +25,10 @@ sub members($class, @keys) {
 }
 
 sub all($class, @keys) {
-  Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
-
   return wantarray ? $class->members(@keys) : [$class->members(@keys)];
 }
 
 sub of($class, $type) {
-  Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
-
-  no strict 'refs';
   my %members = %{$class . '::MEMBERS'};
   return $members{$type} // do {
     my $valid = join ', ' => sort(keys %members);
