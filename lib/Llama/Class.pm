@@ -42,7 +42,6 @@ sub name ($self) { $$self }
 *Str = \&name;
 
 sub kind ($self, @args) {
-  # Carp::confess "no name" unless $self->name;
   if (@args) {
     Llama::Class::InstanceCache->invalidate($self->name);
     ${$self->package->qualify('ATTRIBUTE_DATA')}{__kind__} = $args[0];
@@ -51,6 +50,9 @@ sub kind ($self, @args) {
 
   return ${$self->package->qualify('ATTRIBUTE_DATA')}{__kind__} // $self->__name__;
 }
+
+# Create a new instance this class
+sub make ($self, @args) { $self->name->new(@args) }
 
 sub version ($self) { $self->package->version }
 
