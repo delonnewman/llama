@@ -6,11 +6,17 @@ require_ok $described_class;
 
 subtest 'basics' => sub {
   my $named = $described_class->new('Basics');
+  isa_ok $named => $described_class;
   is $named->name => 'Basics';
   is $named->mro => 'c3';
 
-  # my $anon = $described_class->new;
-  # isa_ok $anon, 'Llama::Class::AnonymousClass';
+  my $anon = $described_class->new;
+  isa_ok $anon => $described_class;
+  like $anon->name => qr/$described_class=OBJECT/;
+  is $named->mro => 'c3';
+
+  my $anon2 = $described_class->new;
+  isnt $anon->name => $anon2->name;
 };
 
 subtest 'caching' => sub {

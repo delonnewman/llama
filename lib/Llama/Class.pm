@@ -23,8 +23,10 @@ sub named ($class, $name) {
   $object;
 }
 
-sub new ($class, $name) {
+sub new ($class, $name = undef) {
+  $name = '' unless defined $name;
   my $object = bless \$name, $class;
+  $name .= "$class=OBJECT(" . sprintf("0x%06X", $object->__addr__) . ')' unless $name;
 
   $object->mro($DEFAULT_MRO);
   $object;
