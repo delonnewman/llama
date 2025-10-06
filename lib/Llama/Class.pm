@@ -1,7 +1,8 @@
 package Llama::Class;
-use Llama::Base qw(+Base::Scalar :signatures);
+use Llama::Base qw(+Base :signatures);
 use Feature::Compat::Try;
 
+use Carp ();
 use Data::Printer;
 use Scalar::Util ();
 
@@ -9,13 +10,13 @@ use Llama::Core qw(uniq);
 use Llama::Package;
 use Llama::Attribute;
 
-use Llama::Class::AnonymousClass;
 use Llama::Class::EigenClass;
 use Llama::Class::InstanceCache;
 
 our $DEFAULT_MRO = 'c3';
 
-no warnings 'experimental::signatures';
+no strict 'refs';
+no warnings qw(experimental::signatures once);
 
 sub named ($class, $name) {
   my $object = Llama::Class::InstanceCache->get($name);
@@ -24,16 +25,32 @@ sub named ($class, $name) {
 }
 
 sub new ($class, $name = undef) {
-  $name = '' unless defined $name;
-  my $object = bless \$name, $class;
-  $name .= "$class=OBJECT(" . sprintf("0x%06X", $object->__addr__) . ')' unless $name;
+  my $kind = $name ? ${$name . '::ATTRIBUTE_DATA'}{__kind__} // $class : $class;
+  $name //= '';
 
-  $object->mro($DEFAULT_MRO);
-  $object;
+  my $self = bless \$name, $kind;
+
+  # generate name
+  $name .= "$class=OBJECT(" . sprintf("0x%06X", $self->__addr__) . ')' unless $name;
+
+  $self->mro($DEFAULT_MRO);
+
+  return $self;
 }
 
 sub name ($self) { $$self }
 *Str = \&name;
+
+sub kind ($self, @args) {
+  # Carp::confess "no name" unless $self->name;
+  if (@args) {
+    Llama::Class::InstanceCache->invalidate($self->name);
+    ${$self->package->qualify('ATTRIBUTE_DATA')}{__kind__} = $args[0];
+    return $self;
+  }
+
+  return ${$self->package->qualify('ATTRIBUTE_DATA')}{__kind__} // $self->__name__;
+}
 
 sub version ($self) { $self->package->version }
 
@@ -201,5 +218,6 @@ sub get_attribute_value ($self, $name) {
   no strict 'refs';
   ${$self->package->qualify('ATTRIBUTE_DATA')}{$name};
 }
+
 
 1;
