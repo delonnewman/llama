@@ -30,16 +30,16 @@ sub class ($self) {
 
 sub members ($self, @keys) {
   return $self->class->members(@keys) unless wantarray;
-  return map { $_->name->new } $self->class->members(@keys);
+  return map { $_->make } $self->class->members(@keys);
 }
 
 sub all ($self, @keys) {
-  my @members = map { $_->name->new } $self->class->all(@keys);
+  my @members = map { $_->make } $self->class->all(@keys);
   return wantarray ? @members : \@members;
 }
 
 sub of ($self, $key) {
-  return $self->class->of($key)->name->new;
+  return $self->class->new_of($key);
 }
 
 1;
