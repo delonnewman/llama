@@ -1,5 +1,5 @@
 package Llama::Class::EigenClass;
-use Llama::Base qw(+Class::AnonymousClass :signatures);
+use Llama::Base qw(+Class :signatures);
 
 sub new($class, $how) {
   my $new_class  = $class->next::method;
