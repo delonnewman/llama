@@ -1,5 +1,5 @@
 test:
-	prove -r -Ilib -It/lib
+	prove -r -MCarp::Always -Ilib -It/lib
 
 console:
 	reply -Ilib
