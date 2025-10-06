@@ -51,7 +51,7 @@ subtest 'kinds' => sub {
 
 subtest 'eigen classes' => sub {
   package EigenTest {
-    use Llama::Base qw(+Base :constructor);
+    use Llama::Base qw(+Base :constructor :signatures);
     sub allocate ($class, @args) {
       bless {}, $class;
     }
