@@ -176,15 +176,23 @@ sub optional_attributes ($self) {
 
 sub ATTRIBUTES ($self) {
   no strict 'refs';
-  my @attributes = map { values %{Llama::Package->named($_)->qualify('ATTRIBUTES')} } $self->ancestry;
+
+  my @attributes =
+    sort { $a->order <=> $b->order }
+    map { values %{Llama::Package->named($_)->qualify('ATTRIBUTES')} }
+    $self->ancestry;
+
   wantarray ? @attributes : \@attributes;
 }
 
 sub set_attribute_value ($self, $name, $value) {
   no strict 'refs';
+
   my $attribute = $self->attribute($name);
   $attribute->validate_writable->validate($value);
   ${$self->package->qualify('ATTRIBUTE_DATA')}{$name} = $value;
+
+  return $self;
 }
 
 sub get_attribute_value ($self, $name) {

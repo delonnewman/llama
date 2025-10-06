@@ -22,16 +22,18 @@ sub BUILD ($self, %attributes) {
   $self->{mutable}  = delete $attributes{mutable}  // 0;
   $self->{value}    = delete $attributes{value}    // $Any;
   $self->{optional} = delete $attributes{optional} // 0;
+  $self->{order}    = delete $attributes{order}    // 0;
   $self->{default}  = delete $attributes{default};
   $self->{options}  = {%attributes};
   $self->freeze;
 }
 
-sub default ($self) { $self->{default} }
-sub value ($self) { $self->{value} }
+sub default     ($self) { $self->{default} }
+sub value       ($self) { $self->{value} }
 sub is_mutable  ($self) { $self->{mutable} }
 sub is_optional ($self) { $self->{optional} }
-sub options ($self) { $self->{options} }
+sub order       ($self) { $self->{order} }
+sub options     ($self) { $self->{options} }
 
 sub is_valid ($self, $value) {
   my $validator = $self->{value} // $Any;
