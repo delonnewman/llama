@@ -1,23 +1,23 @@
 package Llama::Class::EigenClass;
 use Llama::Base qw(+Class :signatures);
 
-sub new($class, $how) {
-  my $new_class  = $class->next::method;
-  my $orig_class = $how->class;
+use Data::Printer;
+
+sub build($class, $mirror) {
+  my $new_class  = $class->new;
+  my $orig_class = $mirror->class;
+  my $name = $orig_class->name;
 
   # make original class a super class
   $new_class->append_superclasses($orig_class->name);
 
+  # set class 'kind' to package
+  $new_class->kind(__PACKAGE__);
+
   # bless object into new class
-  $how->BLESS($new_class->name);
+  $mirror->BLESS($new_class->name);
 
-  # copy attributes from original class
-  for my $name ($orig_class->attributes) {
-    my $attribute = $orig_class->attribute($name);
-    $new_class->add_attribute($attribute);
-  }
-
-  $new_class;
+  return $new_class;
 }
 
 1;
