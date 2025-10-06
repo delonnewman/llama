@@ -49,6 +49,7 @@ my $AttributeValue = sub ($self, $attribute, $value) {
 };
 
 sub parse ($self, @args) {
+  die "can't parse an empty value" unless @args || ref $self;
   return unless @args;
   $self = $self->new unless ref $self;
 
