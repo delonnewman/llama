@@ -10,9 +10,9 @@ sub new ($class, $name) {
   return $self;
 }
 
-sub add_member ($self, $member) {
+sub add_member ($self, $member, $name = $member->name) {
   $member->append_superclasses($self->name);
-  ${$self->package->qualify('MEMBERS')}{$member->name} = $member;
+  ${$self->package->qualify('MEMBERS')}{$name} = $member;
 
   return $self;
 }
@@ -26,6 +26,11 @@ sub members($class, @keys) {
 
 sub all($class, @keys) {
   return wantarray ? $class->members(@keys) : [$class->members(@keys)];
+}
+
+sub names ($class) {
+  my @names = keys %{$class . '::MEMBERS'};
+  return wantarray ? @names : \@names;
 }
 
 sub of($class, $type) {
