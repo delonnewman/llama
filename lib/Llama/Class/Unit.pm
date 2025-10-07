@@ -7,15 +7,17 @@ no strict 'refs';
 my %UNITS = ();
 
 sub new ($class, @args) {
-  my ($name, $value) = @args > 1 ? @args[0..1] : (undef, $args[0]);
+  my ($name, $value, $base) = @args > 1 ? @args[0..2] : (undef, $args[0], undef);
   Carp::croak "a value is required" unless defined $value;
 
   my $self = $class->next::method($name);
-  $self->append_superclasses('Llama::Base');
+  $name //= $self->name;
+  $base //= 'Llama::Base';
+
+  $self->superclasses($base);
   $self->kind($class);
   $self->unit($value);
 
-  $name //= $self->name;
   $self->add_method('new', sub ($class) {
     $UNITS{$name} //= bless \$value, $class;
   });
