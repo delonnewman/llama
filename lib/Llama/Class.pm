@@ -34,6 +34,7 @@ sub new ($class, $name = undef) {
   $name .= "$class=OBJECT(" . sprintf("0x%06X", $self->__addr__) . ')' unless $name;
 
   $self->mro($DEFAULT_MRO);
+  $self->kind($kind);
 
   return $self;
 }

@@ -7,7 +7,6 @@ sub new ($class, @args) {
   my $self = $class->next::method(@args);
 
   %{$self->package->qualify('MEMBERS')} = ();
-  $self->kind($class);
 
   return $self;
 }

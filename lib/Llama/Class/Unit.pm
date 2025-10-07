@@ -15,7 +15,6 @@ sub new ($class, @args) {
   $base //= 'Llama::Base';
 
   $self->superclasses($base);
-  $self->kind($class);
   $self->unit($value);
 
   $self->add_method('new', sub ($class) {

@@ -11,9 +11,6 @@ sub build($class, $mirror) {
   # make original class a super class
   $new_class->append_superclasses($orig_class->name);
 
-  # set class 'kind' to package
-  $new_class->kind(__PACKAGE__);
-
   # bless object into new class
   $mirror->BLESS($new_class->name);
 
