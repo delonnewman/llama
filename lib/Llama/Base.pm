@@ -22,12 +22,12 @@ use overload
   '""'   => sub{shift->Str};
 
 sub import($, @args) {
+  my %flags = extract_flags \@args;
+  return unless @args || %flags;
+
   # sensible defaults
   $_->import for qw(strict warnings utf8);
   feature->import(':5.20');
-
-  my %flags = extract_flags \@args;
-  return unless %flags;
 
   my $caller = caller;
   my $pkg    = Llama::Package->named($caller);
