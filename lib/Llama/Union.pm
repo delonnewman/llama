@@ -16,16 +16,25 @@ sub import($class, @args) {
 
   my $name  = caller;
   my $not_symbolic = ref $args[0] eq 'HASH';
-  my %union = $not_symbolic ? expand_members($name, $args[0])->%* : symbolic_members($name, \@args)->%*;
+  my $data = $not_symbolic ? $args[0] : symbolic_members(\@args);
 
+  return make_union($name, $data);
+}
+
+sub make_union ($name, $data, %options) {
   my $union = Llama::Class::Sum->named($name);
   $union->superclasses('Llama::Base');
 
+  my %union = expand_members($name, $data)->%*;
   for my $name (keys %union) {
     my $member = $union{$name};
     $union->add_member($member, $name);
-    $union->add_method($name, sub ($class, @args) { "$class\::$name"->new(@args) });
+    unless ($member->isa('Llama::Class::Sum')) {
+      $union->add_method($name, sub ($class, @args) { "$class\::$name"->new(@args) });
+    }
   }
+
+  return $union;
 }
 
 sub expand_members ($name, $data) {
@@ -41,15 +50,15 @@ sub expand_members ($name, $data) {
     if ($options->{-symbol}) {
       $members{$symbol} = symbolic_member($name, $symbol);
     }
+    if (my $union = $options->{-union}) {
+      $members{$symbol} = make_union("$name\::$symbol", $union);
+    }
   }
   return \%members;
 }
 
-sub symbolic_members ($name, $symbols) {
-  my %members;
-  for my $symbol (@$symbols) {
-    $members{$symbol} = symbolic_member($name, $symbol);
-  }
+sub symbolic_members ($symbols) {
+  my %members = map { $_ => { -symbol => 1 } } @$symbols;
   return \%members;
 }
 

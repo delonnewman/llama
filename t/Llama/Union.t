@@ -72,4 +72,25 @@ subtest 'mixed members' => sub {
   isa_ok $subject->Nothing, 'Llama::Base::Symbol';
 };
 
+package NestedResult {
+  use Llama::Union {
+    Error => { -record => { message => 'Str' } },
+    Ok    => { -union  => {
+      Nothing => { -symbol =>  1 },
+      Data    => { -record => { value => 'Any' } },
+    } },
+  };
+}
+$subject = 'NestedResult';
+
+subtest 'union members' => sub {
+  isa_ok $subject->Error(message => 'Doh!')->class, 'Llama::Class::Record';
+  isa_ok "$subject\::Ok"->Data(value => 1)->class, 'Llama::Class::Record';
+  isa_ok "$subject\::Ok"->Nothing->class, 'Llama::Class';
+
+  isa_ok $subject->Error(message => 'Doh!'), 'Llama::Base';
+  isa_ok "$subject\::Ok"->Data(value => 1), 'Llama::Base::Hash';
+  isa_ok "$subject\::Ok"->Nothing, 'Llama::Base::Symbol';
+};
+
 done_testing;
