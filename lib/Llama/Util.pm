@@ -7,6 +7,7 @@ use feature ':5.20';
 use feature 'signatures';
 no warnings 'experimental::signatures';
 
+use Data::Printer;
 use Scalar::Util qw(reftype);
 
 use Exporter 'import';
@@ -45,6 +46,7 @@ sub extract_flags ($arrayref, %options) {
   my %flags = ();
 
   for (my $i = 0; $i < @$arrayref; $i++) {
+    last unless @$arrayref;
     my $item = $arrayref->[$i];
     if ($item =~ /^-/) {
       $flags{$item} = $arrayref->[$i + 1];
