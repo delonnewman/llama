@@ -9,8 +9,9 @@ sub import ($class) {
   my $caller = caller;
   my $pkg    = Llama::Package->named($caller);
 
-  $pkg->add_sub('has', sub ($name, @args) {
-    $caller->class->add_attribute($name, @args);
+  my $order = 0;
+  $pkg->add_sub('has', sub ($name, $options) {
+    $caller->class->add_attribute($name, { order => $order++, %$options });
   });
 }
 
