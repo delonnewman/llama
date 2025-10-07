@@ -3,9 +3,11 @@ use Llama::Base qw(+Class :signatures);
 
 no strict 'refs';
 
-sub new ($class, $name) {
-  my $self = $class->next::method($name);
+sub new ($class, @args) {
+  my $self = $class->next::method(@args);
+
   %{$self->package->qualify('MEMBERS')} = ();
+  $self->kind($class);
 
   return $self;
 }
