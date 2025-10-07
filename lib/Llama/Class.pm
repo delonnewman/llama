@@ -82,6 +82,10 @@ sub superclasses ($self, @superclasses) {
 }
 *parents = \&superclasses;
 
+sub is_subclass ($self, $class) {
+  return $self->name->isa($class);
+}
+
 sub subclass ($self, $name = undef) {
   Llama::Class->new($name)->superclasses($self->name);
 }
