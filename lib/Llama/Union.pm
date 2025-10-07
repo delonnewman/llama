@@ -24,17 +24,13 @@ sub import($class, @union) {
   }
 }
 
-sub class ($self) {
-  return Llama::Class::Sum->named($self->__name__);
-}
-
 sub members ($self, @keys) {
   return $self->class->members(@keys) unless wantarray;
-  return map { $_->make } $self->class->members(@keys);
+  return map { $_->new_instance } $self->class->members(@keys);
 }
 
 sub all ($self, @keys) {
-  my @members = map { $_->make } $self->class->all(@keys);
+  my @members = map { $_->new_instance } $self->class->all(@keys);
   return wantarray ? @members : \@members;
 }
 

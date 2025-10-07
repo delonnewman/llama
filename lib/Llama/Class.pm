@@ -51,8 +51,7 @@ sub kind ($self, @args) {
   return ${$self->package->qualify('ATTRIBUTE_DATA')}{__kind__} // $self->__name__;
 }
 
-# Create a new instance this class
-sub make ($self, @args) { $self->name->new(@args) }
+sub new_instance ($self, @args) { $self->name->new(@args) }
 
 sub version ($self) { $self->package->version }
 
