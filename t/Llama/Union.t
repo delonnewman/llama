@@ -28,5 +28,29 @@ package Color {
     Blue  => { -unit => 2 },
   };
 }
+$subject = 'Color';
+
+subtest 'unit members' => sub {
+  ok $_->isa('Llama::Class::Unit') for $subject->class->members;
+};
+
+package Result {
+  use Llama::Union {
+    Ok    => { -record => { value => 'Any' } },
+    Error => { -record => { message => 'Str' } },
+  };
+}
+$subject = 'Result';
+
+subtest 'record members' => sub {
+  isa_ok $_ => 'Llama::Class::Product', "$_ is a Llama::Class::Product" for $subject->class->members;
+  ok $_->is_subclass('Llama::Base::Hash'), "$_ subclasses Llama::Base::Hash" for $subject->class->members;
+
+  my $ok = Result->Ok(value => 1);
+  is $ok->value => 1;
+
+  my $error = Result->Error(message => 'Hey!');
+  is $error->message => 'Hey!';
+};
 
 done_testing;

@@ -1,41 +1,96 @@
 package Llama::Union;
-use Llama::Base qw(+Base::Symbol :signatures);
+use Llama::Base qw(+Base :signatures);
 
 use Data::Printer;
+use Llama::Base::Symbol;
 use Llama::Class;
 use Llama::Class::Sum;
-use Llama::Base::Symbol;
+use Llama::Class::Unit;
+use Llama::Class::Product;
+use Llama::Class::Record;
 
 no warnings 'experimental::signatures';
 
-sub import($class, @union) {
+sub import($class, @args) {
+  return unless @args;
+
   my $name  = caller;
+  my $not_symbolic = ref $args[0] eq 'HASH';
+  my %union = $not_symbolic ? expand_members($name, $args[0])->%* : symbolic_members($name, \@args)->%*;
+
   my $union = Llama::Class::Sum->named($name);
-  $union->append_superclasses(__PACKAGE__);
+  $union->superclasses('Llama::Base');
 
-  if (@union) {
-    for my $subtype (@union) {
-      my $member_name = $name . '::' . $subtype;
-      my $class = Llama::Class->named($member_name);
-
-      $union->add_member($class, $subtype);
-      $union->add_method($subtype, sub ($class) { "$class\::$subtype"->new });
-    }
+  for my $name (keys %union) {
+    my $member = $union{$name};
+    $union->add_member($member, $name);
+    $union->add_method($name, sub ($class, @args) { "$class\::$name"->new(@args) });
   }
 }
 
-sub members ($self, @keys) {
-  return $self->class->members(@keys) unless wantarray;
-  return map { $_->new_instance } $self->class->members(@keys);
+sub expand_members ($name, $data) {
+  my %members;
+  for my $symbol (keys %$data) {
+    my $options = $data->{$symbol};
+    if (defined(my $value = $options->{-unit})) {
+      $members{$symbol} = unit_member($name, $symbol, $value);
+    }
+    if (my $fields = $options->{-record}) {
+      $members{$symbol} = record_members($name, $symbol, $fields);
+    }
+  }
+  return \%members;
 }
 
-sub all ($self, @keys) {
-  my @members = map { $_->new_instance } $self->class->all(@keys);
-  return wantarray ? @members : \@members;
+sub symbolic_members ($name, $symbols) {
+  my %members;
+  for my $symbol (@$symbols) {
+    $members{$symbol} = symbolic_member($name, $symbol);
+  }
+  return \%members;
 }
 
-sub of ($self, $key) {
-  return $self->class->new_of($key);
+sub symbolic_member ($name, $subtype) {
+  my $member_name = $name . '::' . $subtype;
+
+  my $class = Llama::Class->named($member_name);
+  $class->superclasses('Llama::Base::Symbol');
+
+  return $class;
+}
+
+sub record_members ($name, $subtype, $fields) {
+  my $member_name = $name . '::' . $subtype;
+  my $class = Llama::Class::Record->new($member_name);
+  $class->append_superclasses('Llama::Base::Hash');
+
+  for my $name (keys %$fields) {
+    my $type = $fields->{$name};
+    $class->add_member($type, $name);
+  }
+  return $class;
+}
+
+sub unit_member ($name, $subtype, $value) {
+  my $member_name = $name . '::' . $subtype;
+  return Llama::Class::Unit->new($member_name, $value);
 }
 
 1;
+
+__END__
+
+package Color {
+  use Llama::Union {
+    Red   => { -unit => 0 },
+    Green => { -unit => 1 },
+    Blue  => { -unit => 2 },
+  };
+}
+
+package Result {
+  use Llama::Union {
+    Ok    => { -tuple  => ['Any'] },
+    Error => { -record => { message => 'Str' } },
+  };
+}
