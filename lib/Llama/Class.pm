@@ -78,7 +78,8 @@ sub superclasses ($self, @superclasses) {
     return $self
   }
 
-  $self->package->ISA
+  my @isa = $self->package->ISA;
+  return wantarray ? @isa : \@isa;
 }
 *parents = \&superclasses;
 
