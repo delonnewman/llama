@@ -36,7 +36,10 @@ sub expand_members ($name, $data) {
       $members{$symbol} = unit_member($name, $symbol, $value);
     }
     if (my $fields = $options->{-record}) {
-      $members{$symbol} = record_members($name, $symbol, $fields);
+      $members{$symbol} = record_member($name, $symbol, $fields);
+    }
+    if ($options->{-symbol}) {
+      $members{$symbol} = symbolic_member($name, $symbol);
     }
   }
   return \%members;
@@ -59,7 +62,7 @@ sub symbolic_member ($name, $subtype) {
   return $class;
 }
 
-sub record_members ($name, $subtype, $fields) {
+sub record_member ($name, $subtype, $fields) {
   my $member_name = $name . '::' . $subtype;
   my $class = Llama::Class::Record->new($member_name);
   $class->append_superclasses('Llama::Base::Hash');
@@ -68,6 +71,7 @@ sub record_members ($name, $subtype, $fields) {
     my $type = $fields->{$name};
     $class->add_member($type, $name);
   }
+
   return $class;
 }
 
