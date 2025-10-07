@@ -13,7 +13,7 @@ sub new ($class, @args) {
 }
 
 sub add_member ($self, $member, $name = $member->name) {
-  $member->append_superclasses($self->name);
+  $member->prepend_superclasses($self->name);
   ${$self->package->qualify('MEMBERS')}{$name} = $member;
 
   return $self;
