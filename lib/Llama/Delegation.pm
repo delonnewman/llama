@@ -1,5 +1,5 @@
 package Llama::Delegation;
-use Llama::Base qw(:signatures);
+use Llama::Prelude qw(:signatures);
 
 use Carp ();
 
