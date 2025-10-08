@@ -11,8 +11,6 @@ sub import ($class, $attributes = undef) {
   my $caller = caller;
   if ($attributes) {
     $class->new_class(name => $caller, attributes => $attributes);
-  } else {
-    $class->new_class(name => $caller);
   }
 }
 
@@ -35,10 +33,9 @@ sub BUILD ($self, @args) {
   $self->freeze;
 }
 
-# sub class ($self) {
-#   # return Llama::Class->named(__PACKAGE__) if !ref($self) && $self eq __PACKAGE__;
-#   return Llama::Record::Class->named($self->__name__);
-# }
+sub class ($self) {
+  return Llama::Class::Record->named($self->__name__);
+}
 
 sub with ($self, %attributes) {
   my %args = ($self->Hash, %attributes);

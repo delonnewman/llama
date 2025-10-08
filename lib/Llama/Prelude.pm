@@ -37,9 +37,4 @@ sub import($, @args) {
   }
 }
 
-my $add_abstract_method = sub ($package, $name, $message = undef) {
-  $message //= "${package}::$name - abstract methods cannot be invoked";
-  $package->add_sub($name, sub { Carp::confess $message });
-};
-
 1;

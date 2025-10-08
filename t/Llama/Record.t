@@ -87,7 +87,7 @@ is $entity->name => 'test';
 is $entity->type => $subject;
 
 package Contact {
-  use Llama::Record;
+  use Llama::Prelude qw(+Record);
   use Llama::Attributes;
 
   has 'name';
