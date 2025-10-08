@@ -9,6 +9,8 @@ use Llama::Class::Unit;
 use Llama::Class::Product;
 use Llama::Class::Record;
 
+use experimental 'lexical_subs';
+
 sub import($class, @args) {
   return unless @args;
 
@@ -18,23 +20,34 @@ sub import($class, @args) {
   return make_union($name, $data);
 }
 
-sub make_union ($name, $data, %options) {
-  my $union = Llama::Class::Sum->named($name);
-  $union->superclasses('Llama::Base');
+my sub symbolic_member ($name, $subtype) {
+  my $member_name = $name . '::' . $subtype;
 
-  my %union = expand_members($name, $data)->%*;
-  for my $name (keys %union) {
-    my $member = $union{$name};
-    $union->add_member($member, $name);
-    unless ($member->isa('Llama::Class::Sum')) {
-      $union->add_method($name, sub ($class, @args) { "${class}::$name"->new(@args) });
-    }
-  }
+  my $class = Llama::Class->named($member_name);
+  $class->superclasses('Llama::Base::Symbol');
 
-  return $union;
+  return $class;
 }
 
-sub expand_members ($name, $data) {
+my sub record_member ($name, $subtype, $fields) {
+  my $member_name = $name . '::' . $subtype;
+  my $class = Llama::Class::Record->new($member_name);
+  $class->append_superclasses('Llama::Base::Hash');
+
+  for my $name (keys %$fields) {
+    my $type = $fields->{$name};
+    $class->add_member($type, $name);
+  }
+
+  return $class;
+}
+
+my sub unit_member ($name, $subtype, $value) {
+  my $member_name = $name . '::' . $subtype;
+  return Llama::Class::Unit->new($member_name, $value);
+}
+
+my sub expand_members ($name, $data) {
   my %members;
   for my $symbol (keys %$data) {
     my $options = $data->{$symbol};
@@ -54,31 +67,20 @@ sub expand_members ($name, $data) {
   return \%members;
 }
 
-sub symbolic_member ($name, $subtype) {
-  my $member_name = $name . '::' . $subtype;
+sub make_union ($name, $data, %options) {
+  my $union = Llama::Class::Sum->named($name);
+  $union->superclasses('Llama::Base');
 
-  my $class = Llama::Class->named($member_name);
-  $class->superclasses('Llama::Base::Symbol');
-
-  return $class;
-}
-
-sub record_member ($name, $subtype, $fields) {
-  my $member_name = $name . '::' . $subtype;
-  my $class = Llama::Class::Record->new($member_name);
-  $class->append_superclasses('Llama::Base::Hash');
-
-  for my $name (keys %$fields) {
-    my $type = $fields->{$name};
-    $class->add_member($type, $name);
+  my %union = expand_members($name, $data)->%*;
+  for my $name (keys %union) {
+    my $member = $union{$name};
+    $union->add_member($member, $name);
+    unless ($member->isa('Llama::Class::Sum')) {
+      $union->add_method($name, sub ($class, @args) { "${class}::$name"->new(@args) });
+    }
   }
 
-  return $class;
-}
-
-sub unit_member ($name, $subtype, $value) {
-  my $member_name = $name . '::' . $subtype;
-  return Llama::Class::Unit->new($member_name, $value);
+  return $union;
 }
 
 1;
