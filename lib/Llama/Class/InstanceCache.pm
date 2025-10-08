@@ -1,9 +1,9 @@
 package Llama::Class::InstanceCache;
+
 use strict;
 use warnings;
 use utf8;
-use feature 'signatures';
-no warnings 'experimental::signatures';
+use experimental 'signatures';
 no strict 'refs';
 
 sub KEY :prototype() { '__META_CLASS__' }
