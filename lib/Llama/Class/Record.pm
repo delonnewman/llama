@@ -4,19 +4,8 @@ use Llama::Prelude qw(+Class::Product :signatures);
 sub add_attribute ($self, @args) {
   my $attribute  = $self->next::method(@args);
   my $name       = $attribute->name;
-  my $is_mutable = $attribute->is_mutable;
 
-  $self->add_method($name => sub ($self, @args) {
-    return $self->{$name} unless @args;
-
-    my $caller = caller;
-    unless ($is_mutable || $self->isa($caller)) {
-      die "AttributeError: can't write to readonly attribute: $name";
-    }
-
-    $self->{$name} = $args[0];
-    return $self;
-  });
+  $self->add_method($name => sub ($self) { $self->{$name} });
 
   return $attribute;
 }

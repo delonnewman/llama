@@ -1,5 +1,5 @@
 package Llama::Record;
-use Llama::Prelude qw(+Base::Hash :signatures);
+use Llama::Prelude qw(+Item :signatures);
 
 use Data::Printer;
 use Hash::Util ();
@@ -27,21 +27,11 @@ sub new_class ($class, %attributes) {
 }
 
 sub BUILD ($self, @args) {
-  if (!@args && (my @required = $self->class->required_attributes)) {
-    die "ArgumentError: missing required attribute(s): " . join(', ' => @required);
-  }
-  $self->parse(@args);
+  $self->next::method(@args);
   $self->freeze;
 }
 
-sub class ($self) {
-  return Llama::Class::Record->named($self->__name__);
-}
-
-sub with ($self, %attributes) {
-  my %args = ($self->Hash, %attributes);
-  return $self->new(%args);
-}
+sub __kind__ { 'Llama::Class::Record' }
 
 1;
 
