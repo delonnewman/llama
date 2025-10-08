@@ -34,11 +34,15 @@ sub new ($self, @args) {
 
 sub META ($self) {
   return $self->class unless ref $self;
-  return Llama::Package->named('Llama::Object')->maybe_load->name->new($self);
+  return $self->instance;
 }
 
 sub class ($self) {
-  Llama::Package->named('Llama::Class')->maybe_load->name->named($self->__name__);
+  return Llama::Package->named('Llama::Class')->maybe_load->name->named($self->__name__);
+}
+
+sub instance ($self) {
+  return Llama::Package->named('Llama::Object')->maybe_load->name->new($self);
 }
 
 sub __name__ ($self) { ref($self) || $self }
