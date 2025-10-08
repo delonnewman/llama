@@ -1,7 +1,5 @@
 package Llama::Class::EigenClass;
-use Llama::Base qw(+Class :signatures);
-
-use Data::Printer;
+use Llama::Prelude qw(+Class :signatures);
 
 sub build($class, $mirror) {
   my $new_class  = $class->new;
