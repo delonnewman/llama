@@ -1,15 +1,6 @@
 package Llama::Class::Record;
 use Llama::Prelude qw(+Class::Product :signatures);
 
-use Llama::Record;
-
-sub new ($self, @args) {
-  my $class = $self->next::method(@args);
-  $class->superclasses('Llama::Record');
-
-  return $class;
-}
-
 sub add_attribute ($self, @args) {
   my $attribute  = $self->next::method(@args);
   my $name       = $attribute->name;

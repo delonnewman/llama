@@ -14,15 +14,16 @@ sub import ($class, $attributes = undef) {
   }
 }
 
-sub new_class ($, %attributes) {
-  my $class = Llama::Class::Record->new($attributes{name} // die "name is required");
+sub new_class ($class, %attributes) {
+  my $self = Llama::Class::Record->new($attributes{name} // die "name is required");
+  $self->superclasses($class);
 
   my %schema = ($attributes{attributes} // {})->%*;
   for my $attribute (keys %schema) {
-    $class->add_attribute($attribute, $schema{$attribute});
+    $self->add_attribute($attribute, $schema{$attribute});
   }
 
-  return $class;
+  return $self;
 }
 
 sub BUILD ($self, @args) {
