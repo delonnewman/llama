@@ -121,7 +121,7 @@ sub eigen_class ($self) { $self }
 
 sub methods ($self) {
   my %methods = map {
-    $_ => [Llama::Package->named($_)->symbol_names('CODE')]
+    $_ => [sort Llama::Package->named($_)->symbol_names('CODE')]
   } $self->ancestry;
 
   wantarray ? %methods : \%methods;
