@@ -14,49 +14,10 @@ use Scalar::Util ();
 
 use Llama::Package;
 use Llama::Util qw(extract_flags);
-use Llama::Base::Util;
 
 use overload
   'bool' => sub{shift->Bool},
   '""'   => sub{shift->Str};
-
-sub import($, @args) {
-  my %flags = extract_flags \@args;
-  return unless @args || %flags;
-
-  # sensible defaults
-  $_->import for qw(strict warnings utf8);
-  feature->import(':5.20');
-
-  my $caller = caller;
-  my $pkg    = Llama::Package->named($caller);
-
-  # subclassing
-  my @parents = $flags{-base} ? (__PACKAGE__) : @args;
-  if (@parents) {
-    Llama::Package->named($_)->maybe_load for @parents;
-    $pkg->ISA(@parents);
-  }
-
-  # disallow allocation for abstract classes
-  if ($flags{-abstract}) {
-    my $add_abstract_method = \&Llama::Base::Util::add_abstract_method;
-    $pkg->$add_abstract_method('allocate', 'abstract classes cannot be allocated');
-  }
-
-  # create default constructor
-  if ($flags{-constructor}) {
-    my $add_constructor = \&Llama::Base::Util::add_constructor;
-    $pkg->$add_constructor();
-  }
-
-  # enable signatures
-  if ($flags{-signatures}) {
-    Carp::croak 'Subroutine signatures require Perl 5.20+' if $] < 5.020;
-    require experimental;
-    experimental->import($_) for qw(signatures postderef);
-  }
-}
 
 # Protect subclasses using AUTOLOAD
 sub DESTROY { }
