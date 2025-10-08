@@ -1,5 +1,5 @@
 package Llama::Value::Type;
-use Llama::Base qw(:signatures);
+use Llama::Prelude qw(:signatures);
 use Llama::Union qw(CODE HASH ARRAY SCALAR Regexp GLOB LVALUE FORMAT IO VSTRING SCALAR);
 
 # A set of meta objects for characterizing Perl values--implements type interface.
@@ -79,22 +79,22 @@ see ref
   - REF
     - SCALAR
     - CODE
-      - CODE(@IN => @OUT)
+      - Of(@IN => @OUT)
     - HASH
-      - HASH($V)
-      - HASH($K => $V)
+      - Of($V)
+      - Of($K => $V)
     - ARRAY
-      - ARRAY($V)
+      - Of($V)
     - Blessed
-      - Blessed($ISA)
+      - ISA($CLASS)
       - Can(@METHODS)
 - CODE
-  - CODE(@IN => @OUT)
+  - Of(@IN => @OUT)
 - HASH
-  - HASH($V)
-  - HASH($K => $V)
+  - Of($V)
+  - Of($K => $V)
 - ARRAY
-  - ARRAY($V)
+  - Of($V)
 - Regexp
 - GLOB
 - LVALUE
