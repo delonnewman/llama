@@ -1,13 +1,11 @@
 package Llama::Record;
-use Llama::Base qw(+Base::Hash :signatures);
+use Llama::Prelude qw(+Base::Hash :signatures);
 
 use Data::Printer;
 use Hash::Util ();
 use Scalar::Util ();
 
 use Llama::Record::Class;
-
-no warnings 'experimental::signatures';
 
 sub import ($class, $attributes = undef) {
   if ($attributes) {
