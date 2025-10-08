@@ -1,5 +1,5 @@
 package Llama::Union;
-use Llama::Base qw(+Base :signatures);
+use Llama::Prelude qw(+Base :signatures);
 
 use Data::Printer;
 use Llama::Base::Symbol;
@@ -8,8 +8,6 @@ use Llama::Class::Sum;
 use Llama::Class::Unit;
 use Llama::Class::Product;
 use Llama::Class::Record;
-
-no warnings 'experimental::signatures';
 
 sub import($class, @args) {
   return unless @args;
