@@ -14,7 +14,8 @@ my $subject = $described_class->new('Sum::Light')
   ->add_member(Sum::Light::Green->class);
 
 subtest 'kind' => sub {
-  is Llama::Class->named($subject->name)->kind => $described_class;
+  my $kind = Llama::Class->named($subject->name)->kind;
+  is $kind => $described_class;
 };
 
 subtest 'class hierarchy' => sub {
