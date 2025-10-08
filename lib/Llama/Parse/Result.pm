@@ -1,5 +1,5 @@
 package Llama::Parse::Result;
-use Llama::Base qw(:signatures);
+use Llama::Prelude qw(:signatures);
 
 package Llama::Parse::Result::Ok {
   our @ISA = qw(Llama::Parse::Result);
