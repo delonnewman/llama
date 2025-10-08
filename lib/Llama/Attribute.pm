@@ -1,5 +1,5 @@
 package Llama::Attribute;
-use Llama::Base qw(+Base::Hash :constructor :signatures);
+use Llama::Prelude qw(+Base::Hash :signatures);
 
 # Attribute meta object
 
@@ -9,8 +9,6 @@ use Llama::Delegation;
 use Llama::Attribute::Type;
 
 my $Any = sub{1};
-
-no warnings 'experimental::signatures';
 
 sub BUILD ($self, $name, @args) {
   $self->{name} = $name;
