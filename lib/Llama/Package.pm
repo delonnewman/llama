@@ -4,7 +4,7 @@ use utf8;
 use strict;
 use warnings;
 use feature ':5.20';
-use experimental 'signatures';
+use experimental qw(signatures postderef);
 no strict 'refs';
 
 use Carp ();
