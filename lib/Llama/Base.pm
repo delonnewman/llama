@@ -38,8 +38,15 @@ sub META ($self) {
 }
 
 sub class ($self) {
-  return Llama::Package->named('Llama::Class')->maybe_load->name->named($self->__name__);
+  Carp::croak "TypeError: a kind must be an instance of Llama::Class" unless $self->__kind__->isa('Llama::Class');
+  my $mirror = Llama::Package->named($self->__kind__)->maybe_load;
+  my $class  = $mirror->name->named($self->__name__);
+
+  return $class unless $mirror->isa('Llama::Class::EigenClass');
+  return $mirror->name->named($mirror->progenitor)
 }
+
+sub __kind__ { 'Llama::Class' }
 
 sub instance ($self) {
   return Llama::Package->named('Llama::Object')->maybe_load->name->new($self);
