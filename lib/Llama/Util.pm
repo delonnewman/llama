@@ -4,8 +4,7 @@ use strict;
 use warnings;
 use utf8;
 use feature ':5.20';
-use feature 'signatures';
-no warnings 'experimental::signatures';
+use experimental qw(signatures postderef);
 
 use Data::Printer;
 use Scalar::Util qw(reftype);
@@ -42,7 +41,7 @@ context return a list of the key / value pairs.
 =cut
 
 sub extract_flags ($arrayref, %options) {
-  my $prefix = delete $options{prefix} // 'Llama';
+  my $prefix = $options{prefix} // 'Llama';
   my %flags = ();
 
   for (my $i = 0; $i < @$arrayref; $i++) {
@@ -66,7 +65,7 @@ sub extract_flags ($arrayref, %options) {
     }
   }
 
-  wantarray ? %flags : {%flags};
+  wantarray ? %flags : \%flags;
 }
 
 =item extract_block
