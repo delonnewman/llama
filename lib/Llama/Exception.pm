@@ -3,8 +3,8 @@ package Llama::Exception;
 use utf8;
 use strict;
 use warnings;
-use feature qw(:5.20 signatures);
-no warnings 'experimental::signatures';
+use feature qw(:5.20);
+use experimental qw(signatures);
 
 use overload '""' => sub{shift->Str}, 'bool' => sub{1};
 
