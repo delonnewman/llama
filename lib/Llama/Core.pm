@@ -1,5 +1,5 @@
 package Llama::Core;
-use Llama::Base qw(:signatures);
+use Llama::Prelude qw(:signatures);
 
 use Exporter 'import';
 our @EXPORT_OK = qw(chomped uniq slurp spit);
