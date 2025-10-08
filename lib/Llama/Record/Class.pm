@@ -1,9 +1,7 @@
 package Llama::Record::Class;
-use Llama::Base qw(+Class::Hash :signatures);
+use Llama::Prelude qw(+Class::Hash :signatures);
 
 use Data::Printer;
-
-no warnings 'experimental::signatures';
 
 sub build ($self, %attributes) {
   my $name  = ref($self) || $self;
