@@ -34,8 +34,8 @@ Remove key / value pairs where the key starts with a '-' and return
 a hash reference of those key / value pairs in scalar context. In list
 context return a list of the key / value pairs.
 
-  my @args = ('one', 'two', '-three' => 3);
-  my $flags = extract_flags \@args; # => { '-three' => 3 };
+  my @args = ('one', 'two', '-three' => 3, ':four');
+  my $flags = extract_flags \@args; # => { '-three' => 3, '-four' => 1 };
   @args; # => ('one', 'two')
 
 =cut
