@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use utf8;
 use feature ':5.20';
-use experimental 'signatures';
+use experimental qw(signatures postderef);
 
 use Carp ();
 use Data::Printer;
