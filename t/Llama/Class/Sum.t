@@ -1,4 +1,4 @@
-package Llama::Sum::Test;
+package Llama::Class::Sum::Test;
 use Llama::Test::TestSuite;
 
 my $described_class = 'Llama::Class::Sum';
