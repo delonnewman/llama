@@ -1,22 +1,18 @@
 package Llama::Class;
-use Llama::Base qw(+Base :signatures);
-use Feature::Compat::Try;
+use Llama::Prelude qw(+Base :signatures);
 
 use Carp ();
 use Data::Printer;
 use Scalar::Util ();
 
-use Llama::Core qw(uniq);
 use Llama::Package;
 use Llama::Attribute;
-
-use Llama::Class::EigenClass;
 use Llama::Class::InstanceCache;
 
 our $DEFAULT_MRO = 'c3';
 
 no strict 'refs';
-no warnings qw(experimental::signatures once);
+no warnings qw(once);
 
 sub named ($class, $name) {
   my $object = Llama::Class::InstanceCache->get($name);
