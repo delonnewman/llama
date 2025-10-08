@@ -1,5 +1,5 @@
 package Llama::Class::Product;
-use Llama::Base qw(+Class :signatures);
+use Llama::Prelude qw(+Class :signatures);
 
 sub add_member ($self, $member, $name = undef) {
   $name //= $member->name;
