@@ -1,4 +1,4 @@
 package Llama::Collection::Map;
-use Llama::Base qw(+Base::Hash +Associative);
+use Llama::Prelude qw(+Base::Hash +Associative);
 
 1;
