@@ -1,5 +1,5 @@
 package Llama::Entity;
-use Llama::Base qw(+Base::Hash :signatures);
+use Llama::Prelude qw(+Base::Hash :signatures);
 use Llama::Attributes;
 
 has 'id' => { default => '__id__' };

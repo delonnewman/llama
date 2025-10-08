@@ -1,5 +1,5 @@
 package Llama::Class::Record;
-use Llama::Base qw(+Class::Product :signatures);
+use Llama::Prelude qw(+Class::Product :signatures);
 
 sub add_attribute ($self, @args) {
   my $attribute  = $self->next::method(@args);

@@ -1,5 +1,5 @@
 package Llama::Base::Hash;
-use Llama::Base qw(:base :signatures);
+use Llama::Prelude qw(+Base :signatures);
 
 use Data::Printer;
 use Hash::Util ();
