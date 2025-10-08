@@ -4,8 +4,7 @@ use strict;
 use warnings;
 use utf8;
 use feature ':5.20';
-use feature 'signatures';
-no warnings 'experimental::signatures';
+use experimental 'signatures';
 use mro;
 no strict 'refs';
 
@@ -106,11 +105,11 @@ sub try ($self, $method_name, @args) {
 }
 
 sub then ($self, $sub_or_method_name, @args) {
-  return $self->$sub_or_method_name(@args);
+  return $_->$sub_or_method_name(@args) for $self;
 }
 
 sub tap ($self, $sub_or_method_name, @args) {
-  $self->$sub_or_method_name(@args);
+  $_->$sub_or_method_name(@args) for $self;
   return $self;
 }
 
