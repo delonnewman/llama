@@ -3,6 +3,7 @@ use Llama::Prelude qw(+Base :signatures);
 
 use Data::Printer;
 use Llama::Base::Symbol;
+use Llama::Record;
 use Llama::Class;
 use Llama::Class::Sum;
 use Llama::Class::Unit;
@@ -32,7 +33,7 @@ my sub symbolic_member ($name, $subtype) {
 my sub record_member ($name, $subtype, $fields) {
   my $member_name = $name . '::' . $subtype;
   my $class = Llama::Class::Record->new($member_name);
-  $class->append_superclasses('Llama::Base::Hash');
+  $class->append_superclasses('Llama::Record');
 
   for my $name (keys %$fields) {
     my $type = $fields->{$name};
