@@ -1,5 +1,5 @@
 package Llama::Pair;
-use Llama::Base qw(+Base::Array :signatures);
+use Llama::Prelude qw(+Base::Array :signatures);
 
 use overload '%{}' => sub{shift->HashRef};
 
