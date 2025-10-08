@@ -12,7 +12,7 @@ A meta class for building enum members (see L<Llama::Enum> and L<Llama::Enum::Cl
 
 =cut
 
-use Llama::Base qw(:base :signatures);
+use Llama::Prelude qw(+Base :signatures);
 no strict 'refs';
 
 use Scalar::Util qw(blessed);

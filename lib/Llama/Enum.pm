@@ -1,5 +1,5 @@
 package Llama::Enum;
-use Llama::Base qw(+Base::Scalar :signatures);
+use Llama::Prelude qw(+Base::Scalar :signatures);
 
 use Carp ();
 use Scalar::Util qw(blessed);
@@ -7,8 +7,6 @@ use Data::Printer;
 
 use Llama::Enum::Class;
 use Llama::Enum::Member;
-
-no warnings 'experimental::signatures';
 
 use overload (
   "cmp"  => sub($self, $other, $) { $self->key   cmp $self->parent->coerce($other)->key },
