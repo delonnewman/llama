@@ -1,6 +1,6 @@
 package Llama::Boolean;
-use Llama::Base qw(:signatures);
-use Llama::Util qw(extract_flags);
+use Llama::Prelude qw(:signatures);
+# use Llama::Util qw(extract_flags);
 
 use Llama::Enum {
   FALSE => 0,
