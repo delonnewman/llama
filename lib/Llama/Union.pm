@@ -14,7 +14,7 @@ no warnings 'experimental::signatures';
 sub import($class, @args) {
   return unless @args;
 
-  my $name  = caller;
+  my $name = caller;
   my $not_symbolic = ref $args[0] eq 'HASH';
   my $data = $not_symbolic ? $args[0] : symbolic_members(\@args);
 
