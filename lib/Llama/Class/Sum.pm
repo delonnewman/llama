@@ -1,5 +1,5 @@
 package Llama::Class::Sum;
-use Llama::Base qw(+Class :signatures);
+use Llama::Prelude qw(+Class :signatures);
 
 no strict 'refs';
 
