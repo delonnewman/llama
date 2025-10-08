@@ -5,26 +5,40 @@ use Data::Printer;
 use Hash::Util ();
 use Scalar::Util ();
 
-use Llama::Record::Class;
+use Llama::Class::Record;
 
 sub import ($class, $attributes = undef) {
+  my $caller = caller;
   if ($attributes) {
-    my $caller = caller;
-    Llama::Record::Class->build(name => $caller, attributes => $attributes);
+    $class->new_class(name => $caller, attributes => $attributes);
+  } else {
+
   }
 }
 
-sub new_class ($class, @args) { Llama::Record::Class->build(@args) }
+sub new_class ($, %attributes) {
+  my $class = Llama::Class::Record->new($attributes{name} // die "name is required");
+
+  my %schema = ($attributes{attributes} // {})->%*;
+  for my $attribute (keys %schema) {
+    $class->add_attribute($attribute, $schema{$attribute});
+  }
+
+  return $class;
+}
 
 sub BUILD ($self, @args) {
-  $self->next::method(@args);
+  if (!@args && (my @required = $self->class->required_attributes)) {
+    die "ArgumentError: missing required attribute(s): " . join(', ' => @required);
+  }
+  $self->parse(@args);
   $self->freeze;
 }
 
-sub class ($self) {
-  # return Llama::Class->named(__PACKAGE__) if !ref($self) && $self eq __PACKAGE__;
-  return Llama::Record::Class->named($self->__name__);
-}
+# sub class ($self) {
+#   # return Llama::Class->named(__PACKAGE__) if !ref($self) && $self eq __PACKAGE__;
+#   return Llama::Record::Class->named($self->__name__);
+# }
 
 sub with ($self, %attributes) {
   my %args = ($self->Hash, %attributes);
