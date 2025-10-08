@@ -1,5 +1,5 @@
 package Llama::Class::Unit;
-use Llama::Base qw(+Class :signatures);
+use Llama::Prelude qw(+Class :signatures);
 
 use Carp ();
 no strict 'refs';
