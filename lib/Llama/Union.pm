@@ -30,7 +30,7 @@ sub make_union ($name, $data, %options) {
     my $member = $union{$name};
     $union->add_member($member, $name);
     unless ($member->isa('Llama::Class::Sum')) {
-      $union->add_method($name, sub ($class, @args) { "$class\::$name"->new(@args) });
+      $union->add_method($name, sub ($class, @args) { "${class}::$name"->new(@args) });
     }
   }
 
