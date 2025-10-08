@@ -1,5 +1,5 @@
 package Llama::Object;
-use Llama::Base qw(:base :signatures);
+use Llama::Prelude qw(+Base :signatures);
 
 use Carp ();
 use Data::Printer;
