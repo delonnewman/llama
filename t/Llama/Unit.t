@@ -21,7 +21,7 @@ subtest 'base' => sub {
   is $default_named->name => 'PI';
   isa_ok $default_named->new_instance => 'Llama::Base';
 
-  package MyBase { use Llama::Base qw(+Base) }
+  package MyBase { use Llama::Prelude qw(+Base) }
   my $explicit = $described_class->new('PI', 3.14159, 'MyBase');
   isa_ok $explicit->new_instance => 'MyBase';
 };

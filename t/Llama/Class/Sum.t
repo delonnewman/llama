@@ -4,9 +4,9 @@ use Llama::Test::TestSuite;
 my $described_class = 'Llama::Class::Sum';
 require_ok $described_class;
 
-package Sum::Light::Red { use Llama::Base qw(+Base::Symbol) }
-package Sum::Light::Yellow { use Llama::Base qw(+Base::Symbol) }
-package Sum::Light::Green { use Llama::Base qw(+Base::Symbol) }
+package Sum::Light::Red { use Llama::Prelude qw(+Base::Symbol) }
+package Sum::Light::Yellow { use Llama::Prelude qw(+Base::Symbol) }
+package Sum::Light::Green { use Llama::Prelude qw(+Base::Symbol) }
 
 my $subject = $described_class->new('Sum::Light')
   ->add_member(Sum::Light::Red->class)

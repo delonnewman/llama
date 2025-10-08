@@ -51,8 +51,8 @@ subtest 'kinds' => sub {
 
 subtest 'eigen classes' => sub {
   package EigenTest {
-    use Llama::Base qw(+Base :constructor :signatures);
-    sub allocate ($class, @args) {
+    use Llama::Prelude qw(+Base :signatures);
+    sub new ($class, @args) {
       bless {}, $class;
     }
   }
@@ -82,7 +82,7 @@ subtest 'attributes' => sub {
   is $class->get_attribute_value('testing') => $AttributesTest::ATTRIBUTE_DATA{testing};
 
   package ObjectAttributes {
-    use Llama::Base qw(+Base::Scalar :constructor);
+    use Llama::Prelude qw(+Base::Scalar);
   }
   ObjectAttributes->META->add_attribute(name => (mutable => 1));
   my $object = ObjectAttributes->new(1);

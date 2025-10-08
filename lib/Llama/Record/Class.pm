@@ -50,7 +50,7 @@ Llama::Package->named('DateTime')->is_loaded
 
 # in Llama/Record.pm
 package Llama::Record;
-use Llama::Base '+Class', -signatures;
+use Llama::Prelude qw(+Class :signatures);
 
 sub new ($self, %attributes) {
   my $class = $self->SUPER::new($attributes{name}); # if name is undef will be an instance of AnonymousClass
