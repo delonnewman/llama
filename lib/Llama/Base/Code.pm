@@ -1,5 +1,5 @@
 package Llama::Base::Code;
-use Llama::Base qw(:base :constructor :signatures);
+use Llama::Prelude qw(+Base :signatures);
 
 use Carp ();
 

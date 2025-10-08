@@ -1,8 +1,5 @@
 package Llama::Attribute::Type;
-use Llama::Base qw(+Base::Hash :signatures :constructor);
-
-use Carp;
-use Data::Printer;
+use Llama::Prelude qw(+Base::Hash :signatures);
 
 my $Any = sub{1};
 

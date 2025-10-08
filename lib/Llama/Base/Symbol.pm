@@ -1,5 +1,5 @@
 package Llama::Base::Symbol;
-use Llama::Base qw(+Base :signatures);
+use Llama::Prelude qw(+Base :signatures);
 
 my %SYMBOLS = ();
 
