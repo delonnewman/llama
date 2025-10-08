@@ -26,18 +26,49 @@ sub new_class ($class, %attributes) {
   return $self;
 }
 
+sub __kind__ { 'Llama::Class::Record' }
+
 sub BUILD ($self, @args) {
   if (!@args && (my @required = $self->class->required_attributes)) {
     die "ArgumentError: missing required attribute(s): " . join(', ' => @required);
   }
   $self->parse(@args);
-  $self->freeze;
+  # $self->freeze;
 }
 
-sub class ($self) {
-  return Llama::Class::Record->named($self->__name__);
-}
+my $AttributeValue = sub ($self, $attribute, $value) {
+  my $name    = $attribute->name;
+  my $default = $attribute->default;
 
+  $value = $self->$default() if $default && !defined($value);
+
+  return $value;
+};
+
+sub parse ($self, @args) {
+  die "can't parse an empty value" unless @args || ref $self;
+  return unless @args;
+  $self = $self->new unless ref $self;
+
+  my %errors = ();
+  my %attributes = @args > 1 ? @args : $args[0]->%*;
+  for my $name ($self->class->attributes) {
+    my $attribute = $self->class->attribute($name);
+    my $value     = $AttributeValue->($self, $attribute, $attributes{$name});
+    if (defined $value) {
+      $self->$name($value);
+      next;
+    }
+    $errors{$name} = 'is required' if $attribute->is_required;
+  }
+
+  if (%errors) {
+    my $messages   = join "\n" => map { "$_ $errors{$_}" } keys %errors;
+    die "ParseError: $messages\n from data: " . np(@args);
+  }
+
+  return $self;
+}
 sub with ($self, %attributes) {
   my %args = ($self->Hash, %attributes);
   return $self->new(%args);

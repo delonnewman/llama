@@ -48,41 +48,6 @@ sub META ($self) {
   return Llama::Package->named('Llama::Object::Hash')->maybe_load->name->new($self);
 }
 
-my $AttributeValue = sub ($self, $attribute, $value) {
-  my $name    = $attribute->name;
-  my $default = $attribute->default;
-
-  $value = $self->$default() if $default && !defined($value);
-
-  return $value;
-};
-
-# TODO: move to Record
-sub parse ($self, @args) {
-  die "can't parse an empty value" unless @args || ref $self;
-  return unless @args;
-  $self = $self->new unless ref $self;
-
-  my %errors = ();
-  my %attributes = @args > 1 ? @args : $args[0]->%*;
-  for my $name ($self->class->attributes) {
-    my $attribute = $self->class->attribute($name);
-    my $value     = $AttributeValue->($self, $attribute, $attributes{$name});
-    if (defined $value) {
-      $self->$name($value);
-      next;
-    }
-    $errors{$name} = 'is required' if $attribute->is_required;
-  }
-
-  if (%errors) {
-    my $messages   = join "\n" => map { "$_ $errors{$_}" } keys %errors;
-    die "ParseError: $messages\n from data: " . np(@args);
-  }
-
-  return $self;
-}
-
 sub HashRef ($self) {
   my $ref = $self->Hash;
   return $ref;
