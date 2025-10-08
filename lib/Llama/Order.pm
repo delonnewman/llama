@@ -1,5 +1,5 @@
 package Llama::Order;
-use Llama::Base;
+use Llama::Prelude;
 use Llama::Enum {
   LESS => -1,
   SAME =>  0,

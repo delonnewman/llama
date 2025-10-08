@@ -14,12 +14,12 @@ use Llama::Package;
 use Llama::Util qw(extract_flags);
 
 sub import($, @args) {
-  my %flags = extract_flags \@args;
-  return unless @args || %flags;
-
   # sensible defaults
   $_->import for qw(strict warnings utf8);
   feature->import(':5.20');
+
+  my %flags = extract_flags \@args;
+  return unless @args || %flags;
 
   my $caller = caller;
   my $pkg    = Llama::Package->named($caller);
