@@ -33,8 +33,6 @@ sub import($, @args) {
 
   # enable signatures
   if ($flags{-signatures}) {
-    Carp::croak 'Subroutine signatures require Perl 5.20+' if $] < 5.020;
-    require experimental;
     experimental->import($_) for qw(signatures postderef);
   }
 }
