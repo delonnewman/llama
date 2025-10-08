@@ -9,36 +9,14 @@ use Llama::Package;
 use Llama::Delegation;
 
 sub new ($class, $object) {
+  Carp::croak "TypeError: can only reflect on objects, got " . np($object) unless Scalar::Util::blessed($object);
   bless \$object, $class;
 }
 
 sub subject ($self) { $$self }
 
-sub add_attribute ($self, @args) {
-  my $class     = $self->eigen_class;
-  my $attribute = $class->add_attribute(@args);
-  my $name      = $attribute->name;
-
-  unless ($attribute->is_mutable) {
-    $class->add_instance_method($name => sub ($self) {
-      return $class->get_attribute_value($name);
-    });
-    return $self;
-  }
-
-  $class->add_instance_method($name => sub ($self, @args) {
-    if (@args) {
-      $class->set_attribute_value($name, $args[0]);
-      return $self;
-    }
-    return $class->get_attribute_value($name);
-  });
-
-  $self;
-}
-
-delegate [qw(attributes get_attribute_value)] => 'class';
-delegate [qw(add_method set_attribute_value)] => 'eigen_class';
+delegate [qw(attributes get_attribute_value methods)] => 'class';
+delegate [qw(add_attribute add_method set_attribute_value)] => 'eigen_class';
 
 sub eigen_class ($self) {
   return $self->class if $self->class->isa('Llama::Class::EigenClass');
