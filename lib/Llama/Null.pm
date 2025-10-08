@@ -1,5 +1,5 @@
 package Llama::Null;
-use Llama::Base qw(:base :abstract);
+use Llama::Prelude qw(+Base :abstract);
 
 *if_null   = \&Llama::Base::tap;
 *if_falsy  = \&Llama::Base::tap;
@@ -25,19 +25,19 @@ sub CODE {
 }
 
 package Llama::Null::Scalar {
-  use Llama::Base qw(+Base::Scalar +Null);
+  use Llama::Prelude qw(+Base::Scalar +Null);
 }
 
 package Llama::Null::Hash {
-  use Llama::Base qw(+Base::Hash +Null);
+  use Llama::Prelude qw(+Base::Hash +Null);
 }
 
 package Llama::Null::Array {
-  use Llama::Base qw(+Base::Array +Null);
+  use Llama::Prelude qw(+Base::Array +Null);
 }
 
 package Llama::Null::Code {
-  use Llama::Base qw(+Base::Code +Null);
+  use Llama::Prelude qw(+Base::Code +Null);
 }
 
 1;
