@@ -13,7 +13,7 @@ sub import($class, @args) {
   return unless @args;
 
   my $name = caller;
-  my $data = ref $args[0] eq 'HASH' ? $args[0] : symbolic_members(\@args);
+  my $data = ref $args[0] eq 'HASH' ? $args[0] : {map { $_ => { -symbol => 1 } } @args};
 
   return make_union($name, $data);
 }
@@ -51,11 +51,6 @@ sub expand_members ($name, $data) {
       $members{$symbol} = make_union("$name\::$symbol", $union);
     }
   }
-  return \%members;
-}
-
-sub symbolic_members ($symbols) {
-  my %members = map { $_ => { -symbol => 1 } } @$symbols;
   return \%members;
 }
 
