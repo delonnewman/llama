@@ -12,7 +12,7 @@ sub import ($class, $attributes = undef) {
   if ($attributes) {
     $class->new_class(name => $caller, attributes => $attributes);
   } else {
-
+    $class->new_class(name => $caller);
   }
 }
 
