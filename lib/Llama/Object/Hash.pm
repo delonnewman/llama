@@ -1,9 +1,7 @@
 package Llama::Object::Hash;
-use Llama::Base qw(+Object :signatures);
+use Llama::Prelude qw(+Object :signatures);
 
 use Llama::Pair;
-
-no warnings 'experimental::signatures';
 
 sub keys ($self) {
   my @keys = CORE::keys $self->subject->%*;
