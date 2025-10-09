@@ -38,12 +38,12 @@ sub META ($self) {
 }
 
 sub class ($self) {
-  my $kind = $self->try('__kind__') // 'Llama::Class';
+  my $kind   = $self->try('__kind__') // 'Llama::Class';
   my $mirror = Llama::Package->named($kind)->maybe_load;
   my $class  = $mirror->name->named($self->__name__);
 
-  return $class unless $mirror->isa('Llama::Class::EigenClass');
-  return $mirror->name->named($mirror->progenitor)
+  return $class unless $class->isa('Llama::Class::EigenClass');
+  return $mirror->name->named($class->progenitor)
 }
 
 sub __kind__ { 'Llama::Class' }
