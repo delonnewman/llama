@@ -70,7 +70,7 @@ my sub expand_members ($name, $data) {
 
 sub make_union ($name, $data, %options) {
   my $union = Llama::Class::Sum->named($name);
-  $union->superclasses('Llama::Base');
+  $union->superclasses(__PACKAGE__);
 
   my %union = expand_members($name, $data)->%*;
   for my $name (keys %union) {
