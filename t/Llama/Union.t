@@ -21,8 +21,8 @@ sub isa_union_member ($value, $superclass, @args) {
 
 sub members_are_ok ($member_class, $superclass = undef) {
   for ($member_class->class->members) {
-    isa_union_member $_ => $member_class, $_;
-    isa_ok $_ => $superclass if $superclass;
+    isa_union_member $_->name => $member_class, $_;
+    isa_ok $_->class->name => $superclass if $superclass;
   }
 }
 
