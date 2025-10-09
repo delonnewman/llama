@@ -54,4 +54,14 @@ sub Array ($self) {
   wantarray ? @array : \@array;
 }
 
+sub Str ($self) {
+  my $class = $self->name;
+
+  no strict 'refs';
+  my %attributes = %{$class . '::ATTRIBUTES'};
+  my $pairs = join ', ' => map { $_ . ' => ' . $attributes{$_}->type } keys %attributes;
+
+  return $pairs ? "$class($pairs)" : $class;
+}
+
 1;
