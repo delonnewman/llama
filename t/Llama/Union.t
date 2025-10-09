@@ -1,20 +1,40 @@
 package Llama::Union::Test;
 use Llama::Test::TestSuite;
 
+use Carp::Always;
 use Feature::Compat::Try;
 
 no strict 'refs';
 no warnings 'experimental::signatures';
 
-package TrafficLight { use Llama::Union qw(Red Yellow Green) }
-
 my $described_class = 'Llama::Union';
+require_ok $described_class;
+
+sub isa_union ($value, @args) {
+  isa_ok $value, $described_class, "$value";
+}
+
+sub isa_union_member ($value, $superclass, @args) {
+  isa_ok $value, $described_class, "$value";
+  isa_ok $value, $superclass, "$value";
+}
+
+sub members_are_ok ($member_class, $superclass = undef) {
+  for ($member_class->class->members) {
+    isa_union_member $_ => $member_class, $_;
+    isa_ok $_ => $superclass if $superclass;
+  }
+}
+
+package TrafficLight { use Llama::Union qw(Red Yellow Green) }
 my $subject = 'TrafficLight';
+isa_union $subject;
+members_are_ok $subject;
 
 subtest 'accessor methods' => sub {
-  isa_ok $subject->Red => $subject;
-  isa_ok $subject->Yellow => $subject;
-  isa_ok $subject->Green => $subject;
+  isa_union_member $subject->Red => $subject;
+  isa_union_member $subject->Yellow => $subject;
+  isa_union_member $subject->Green => $subject;
 
   ok $subject->Red->identical($subject->Red);
   ok $subject->Yellow->identical($subject->Yellow);
@@ -29,10 +49,8 @@ package Color {
   };
 }
 $subject = 'Color';
-
-subtest 'unit members' => sub {
-  ok $_->isa('Llama::Class::Unit') for $subject->class->members;
-};
+isa_union $subject;
+members_are_ok $subject => 'Llama::Class::Unit';
 
 package Result {
   use Llama::Union {
@@ -41,9 +59,10 @@ package Result {
   };
 }
 $subject = 'Result';
+isa_union $subject;
+members_are_ok $subject => 'Llama::Class::Product';
 
 subtest 'record members' => sub {
-  isa_ok $_ => 'Llama::Class::Product', "$_ is a Llama::Class::Product" for $subject->class->members;
   ok $_->is_subclass('Llama::Base::Hash'), "$_ subclasses Llama::Base::Hash" for $subject->class->members;
 
   my $ok = $subject->Ok(value => 1);
@@ -61,6 +80,8 @@ package TripleResult {
   };
 }
 $subject = 'TripleResult';
+isa_union $subject;
+members_are_ok $subject;
 
 subtest 'mixed members' => sub {
   isa_ok $subject->Ok(value => 1)->class, 'Llama::Class::Record';
@@ -82,6 +103,8 @@ package NestedResult {
   };
 }
 $subject = 'NestedResult';
+isa_union $subject;
+members_are_ok $subject;
 
 subtest 'union members' => sub {
   isa_ok $subject->Error(message => 'Doh!')->class, 'Llama::Class::Record';
@@ -92,5 +115,32 @@ subtest 'union members' => sub {
   isa_ok "$subject\::Ok"->Data(value => 1), 'Llama::Base::Hash';
   isa_ok "$subject\::Ok"->Nothing, 'Llama::Base::Symbol';
 };
+
+package Type {
+  use Llama::Union {
+    Undef => { -symbol => 1 },
+    Num   => { -symbol => 1 },
+    Str   => { -symbol => 1 },
+    Ref   => { -union  => {
+      Scalar  => { -symbol => 1 },
+      Code    => { -symbol => 1 },
+      Hash    => { -symbol => 1 },
+      Array   => { -symbol => 1 },
+      Blessed => { -symbol => 1 },
+    } },
+  };
+}
+$subject = 'Type';
+isa_union $subject;
+members_are_ok $subject;
+
+Type->Undef;
+Type->Num;
+Type->Str;
+Type::Ref->Scalar;
+Type::Ref->Code;
+Type::Ref->Hash;
+Type::Ref->Array;
+Type::Ref->Blessed;
 
 done_testing;
