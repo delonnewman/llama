@@ -15,6 +15,10 @@ sub import ($class) {
   $pkg->add_sub('has', sub ($name, $options = $EMPTY_HASH) {
     $caller->class->add_attribute($name, { order => $order++, %$options });
   });
+
+  $pkg->add_sub('has_many', sub ($name, $options = $EMPTY_HASH) {
+    $caller->class->add_attribute($name, { optional => 1, associated => 1, cardinality => 'many', order => $order++, %$options });
+  });
 }
 
 1;
