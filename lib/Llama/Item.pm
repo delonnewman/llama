@@ -24,7 +24,7 @@ my sub attribute_value ($self, $attribute, $value) {
 sub parse ($self, @args) {
   Carp::croak "can't parse an empty value" unless @args || ref $self;
   return unless @args;
-  $self = $self->new unless ref $self;
+  $self = $self->allocate unless ref $self;
 
   my %errors = ();
   my %attributes = @args > 1 ? @args : $args[0]->%*;
