@@ -7,6 +7,6 @@ sub allocate ($class, @args) {
   bless [], $class;
 }
 
-sub ArrayRef ($self) { $self }
+sub toArrayRef ($self) { $self }
 
 1;

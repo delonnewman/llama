@@ -37,7 +37,7 @@ sub is_valid ($self, $value) {
   return !!$validator->($value);
 }
 
-sub Str ($self) {
+sub toStr ($self) {
   my $str = $self->value;
   $str = "Mutable($str)"  if $self->is_mutable;
   $str = "Optional($str)" if $self->is_optional;

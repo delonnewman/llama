@@ -34,7 +34,7 @@ sub instance ($self) {
   return Llama::Package->named('Llama::Object::Hash')->maybe_load->name->new($self);
 }
 
-sub HashRef ($self) {
+sub toHashRef ($self) {
   my $ref = $self->Hash;
   return $ref;
 }
@@ -44,17 +44,17 @@ sub HashRef ($self) {
   *DATAFY = \&HashRef;
 }
 
-sub Hash ($self) {
+sub toHash ($self) {
   my %hash = map { $_ => $self->{$_} } grep { defined $self->{$_} } keys %$self;
   wantarray ? %hash : \%hash;
 }
 
-sub Array ($self) {
+sub toArray ($self) {
   my @array = $self->META->pairs;
   wantarray ? @array : \@array;
 }
 
-sub Str ($self) {
+sub toStr ($self) {
   my $class = $self->name;
 
   no strict 'refs';

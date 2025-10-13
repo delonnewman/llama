@@ -17,8 +17,8 @@ sub looks_like_number ($self) {
   Scalar::Util::looks_like_number($self->value)
 }
 
-sub Num ($self) { 0+$self->value }
-sub Int ($self) { int $self->value }
-sub ScalarRef ($self) { $self }
+sub toNum ($self) { 0+$self->value }
+sub toInt ($self) { int $self->value }
+sub toScalarRef ($self) { $self }
 
 1;

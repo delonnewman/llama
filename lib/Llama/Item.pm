@@ -51,7 +51,7 @@ sub with ($self, %attributes) {
   return $self->new(%args);
 }
 
-sub Str ($self) {
+sub toStr ($self) {
   my $class = $self->__name__;
 
   my @pairs = $self->META->pairs;

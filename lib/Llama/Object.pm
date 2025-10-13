@@ -45,7 +45,7 @@ sub BLESS ($self, $class_name) {
   $self;
 }
 
-sub Str ($self) {
+sub toStr ($self) {
   my $class   = $self->__name__;
   my $subject = $self->subject;
 

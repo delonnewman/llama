@@ -26,7 +26,7 @@ sub stacktrace ($self) { $self->{stacktrace} }
   *__name__ = \&name;  
 }
 
-sub Str ($self) {
+sub toStr ($self) {
   my $name    = $self->name;
   my $message = $self->message;
   my $trace   = join "\n" => map { "  $_" } $self->stacktrace->@*;

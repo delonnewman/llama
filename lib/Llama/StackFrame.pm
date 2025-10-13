@@ -61,7 +61,7 @@ sub hint_hash  ($self) { $self->[10] }
 
 sub is_empty ($self) { !@$self }
 
-sub Str ($self) {
+sub toStr ($self) {
   my $file = $self->file;
   my $line = $self->line;
   my $pkg  = $self->pkg;

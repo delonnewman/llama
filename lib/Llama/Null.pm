@@ -6,7 +6,7 @@ use Llama::Prelude qw(+Base :abstract);
 *if_truthy = \&Llama::Base::itself;
 *then      = \&Llama::Base::itself;
 
-sub Bool { 0 }
+sub toBool { 0 }
 
 sub SCALAR {
   state $SCALAR = Llama::Null::Scalar->new('');

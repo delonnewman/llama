@@ -16,8 +16,8 @@ use Llama::Package;
 use Llama::Util qw(extract_flags);
 
 use overload
-  'bool' => sub{shift->Bool},
-  '""'   => sub{shift->Str};
+  'bool' => sub{shift->toBool},
+  '""'   => sub{shift->toStr};
 
 # Protect subclasses using AUTOLOAD
 sub DESTROY { }
@@ -61,9 +61,9 @@ sub identical ($self, $other) { $self->__id__ eq $other->__id__ }
 *equals  = \&identical;
 *matches = \&identical;
 
-sub Bool { 1 }
+sub toBool { 1 }
 
-sub Str ($self) {
+sub toStr ($self) {
   my $class = $self->__name__;
   my $id = sprintf("0x%06X", $self->__id__);
 

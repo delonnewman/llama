@@ -141,7 +141,7 @@ sub equals($self, $other) {
   return $self->key eq $other->key;
 }
 
-sub Str ($self) {
+sub toStr ($self) {
   my $str = $self->parent . '(';
   $str .= $self->key eq $self->value ? $self->key : $self->key . ' => ' . $self->value;
   $str .= ")";
