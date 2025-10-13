@@ -4,8 +4,8 @@ use Llama::Prelude qw(+Base :signatures);
 use Scalar::Util ();
 
 use overload
-  '0+' => sub{shift->Num},
-  '${}' => sub{shift->ScalarRef};
+  '0+' => sub{shift->toNum},
+  '${}' => sub{shift->toScalarRef};
 
 sub allocate ($class, $value) {
   bless \$value, $class;
