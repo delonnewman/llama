@@ -1,7 +1,7 @@
 package Llama::Base::Array;
 use Llama::Prelude qw(+Base :signatures);
 
-use overload '@{}' => sub{shift->ArrayRef};
+use overload '@{}' => sub{shift->toArrayRef};
 
 sub allocate ($class, @args) {
   bless [], $class;
