@@ -40,7 +40,7 @@ sub parse ($self, @args) {
 
   if (%errors) {
     my $messages   = join "\n" => map { "$_ $errors{$_}" } keys %errors;
-    Carp::croak "ParseError: $messages\n from data: " . np(@args);
+    Carp::croak "ParseError: $messages\n from data: " . np(%attributes);
   }
 
   return $self;
