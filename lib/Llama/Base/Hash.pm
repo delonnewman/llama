@@ -35,7 +35,7 @@ sub instance ($self) {
 }
 
 sub toHashRef ($self) {
-  my $ref = $self->Hash;
+  my $ref = $self->toHash;
   return $ref;
 }
 

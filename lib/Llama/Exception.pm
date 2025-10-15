@@ -6,7 +6,7 @@ use warnings;
 use feature qw(:5.20);
 use experimental qw(signatures);
 
-use overload '""' => sub{shift->Str}, 'bool' => sub{1};
+use overload '""' => sub{shift->toStr}, 'bool' => sub{1};
 
 use Llama::StackFrame;
 

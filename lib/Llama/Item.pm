@@ -47,7 +47,7 @@ sub parse ($self, @args) {
 }
 
 sub with ($self, %attributes) {
-  my %args = ($self->Hash, %attributes);
+  my %args = ($self->toHash, %attributes);
   return $self->new(%args);
 }
 
