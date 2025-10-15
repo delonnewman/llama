@@ -50,21 +50,24 @@ my sub unit_member ($name, $subtype, $value) {
 
 my sub expand_members ($name, $data) {
   my %members;
+
   for my $symbol (keys %$data) {
     my $options = $data->{$symbol};
-    if (defined(my $value = $options->{-unit})) {
+    if (defined(my $value = delete $options->{-unit})) {
       $members{$symbol} = unit_member($name, $symbol, $value);
     }
-    if (my $fields = $options->{-record}) {
+    if (my $fields = delete $options->{-record}) {
       $members{$symbol} = record_member($name, $symbol, $fields);
     }
-    if ($options->{-symbol}) {
+    if (delete $options->{-symbol}) {
       $members{$symbol} = symbolic_member($name, $symbol);
     }
-    if (my $union = $options->{-union}) {
+    if (my $union = delete $options->{-union}) {
       $members{$symbol} = make_union("$name\::$symbol", $union);
     }
+    die "invalid options: " . np($options) if %$options;
   }
+  
   return \%members;
 }
 

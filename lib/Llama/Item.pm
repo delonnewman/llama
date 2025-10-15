@@ -24,7 +24,7 @@ my sub attribute_value ($self, $attribute, $value) {
 sub parse ($self, @args) {
   Carp::croak "can't parse an empty value" unless @args || ref $self;
   return unless @args;
-  $self = $self->new unless ref $self;
+  $self = $self->allocate unless ref $self;
 
   my %errors = ();
   my %attributes = @args > 1 ? @args : $args[0]->%*;
@@ -40,7 +40,7 @@ sub parse ($self, @args) {
 
   if (%errors) {
     my $messages   = join "\n" => map { "$_ $errors{$_}" } keys %errors;
-    Carp::croak "ParseError: $messages\n from data: " . np(@args);
+    Carp::croak "ParseError: $messages\n from data: " . np(%attributes);
   }
 
   return $self;
@@ -51,7 +51,7 @@ sub with ($self, %attributes) {
   return $self->new(%args);
 }
 
-sub Str ($self) {
+sub toStr ($self) {
   my $class = $self->__name__;
 
   my @pairs = $self->META->pairs;
