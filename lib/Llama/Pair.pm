@@ -1,7 +1,7 @@
 package Llama::Pair;
 use Llama::Prelude qw(+Base::Array :signatures);
 
-use overload '%{}' => sub{shift->HashRef};
+use overload '%{}' => sub{shift->toHashRef};
 
 sub BUILD ($self, $key, $value) {
   $self->[0] = $key;
