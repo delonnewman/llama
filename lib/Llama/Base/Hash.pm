@@ -41,7 +41,7 @@ sub toHashRef ($self) {
 
 {
   no strict 'refs';
-  *DATAFY = \&HashRef;
+  *DATAFY = \&toHashRef;
 }
 
 sub toHash ($self) {
