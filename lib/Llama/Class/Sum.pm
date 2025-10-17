@@ -18,8 +18,8 @@ sub add_member ($self, $member, $name = $member->name) {
   return $self;
 }
 
-sub members ($class, @keys) {
-  my %members = %{$class . '::MEMBERS'};
+sub members ($self, @keys) {
+  my %members = %{$self->name . '::MEMBERS'};
   my @members = @keys ? map { $members{$_} } @keys : values %members;
 
   return wantarray ? @members : int @members;
@@ -29,16 +29,16 @@ sub all ($class, @keys) {
   return wantarray ? $class->members(@keys) : [$class->members(@keys)];
 }
 
-sub names ($class) {
-  my @names = keys %{$class . '::MEMBERS'};
+sub names ($self) {
+  my @names = keys %{$self->name . '::MEMBERS'};
   return wantarray ? @names : \@names;
 }
 
-sub of ($class, $type) {
-  my %members = %{$class . '::MEMBERS'};
+sub of ($self, $type) {
+  my %members = %{$self->name . '::MEMBERS'};
   return $members{$type} // do {
     my $valid = join ', ' => sort(keys %members);
-    Carp::croak "invalid $class type ($type) valid values are ($valid)";
+    Carp::croak "invalid $self type ($type) valid values are ($valid)";
   };
 }
 
