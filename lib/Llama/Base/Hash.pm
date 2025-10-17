@@ -3,6 +3,7 @@ use Llama::Prelude qw(+Base :signatures);
 
 use Data::Printer;
 use Hash::Util ();
+use Scalar::Util qw(blessed);
 
 use Llama::Package;
 use Llama::Util qw(string_hash hash_combine);
@@ -43,6 +44,11 @@ sub __hash__ ($self) {
       : hash_combine($hash, hash_combine(string_hash($_), string_hash($self->{$_}))) for keys %$self;
     $hash;
   };
+}
+
+sub equals ($self, $other) {
+  return !!0 unless blessed($other) && $other->isa(__PACKAGE__);
+  return $self->__hash__ eq $other->__hash__;
 }
 
 sub toHashRef ($self) {

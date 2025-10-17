@@ -16,4 +16,6 @@ my $second = BaseHashTestClass->new(name => 1);
 is $subject->__hash__ => $second->__hash__;
 isnt $subject->__id__ => $second->__id__;
 
+ok $subject->equals($second);
+
 done_testing;
