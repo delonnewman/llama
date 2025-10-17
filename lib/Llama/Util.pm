@@ -8,9 +8,10 @@ use experimental qw(signatures postderef);
 
 use Data::Printer;
 use Scalar::Util qw(reftype);
+use POSIX qw(pow);
 
 use Exporter 'import';
-our @EXPORT_OK = qw(valid_value_type extract_flags extract_block);
+our @EXPORT_OK = qw(valid_value_type extract_flags extract_block hash_code hash_combine);
 
 # see https://github.com/moose/Package-Stash/blob/ac478644bb18a32e2f968138e2d651e47b843423/lib/Package/Stash/PP.pm#L135
 sub valid_value_type ($value, $type) {
@@ -79,6 +80,41 @@ array is modified in place.
 sub extract_block ($arrayref) {
   return delete $arrayref->[-1] if ref $arrayref->[-1] eq 'CODE';
   return undef;
+}
+
+sub string_hash ($string) {
+  my $len = length $string;
+  return 0           if $len == 0;
+  return ord $string if $len == 1;
+
+  my $code = 0;
+  my @string = split '' => $string;
+  for (my $i = 0; $i < $#string; $i++) {
+    for (my $j = $#string; $j > 0; $j--) {
+      $code += pow(ord $string[$i], $j);
+    }
+  }
+
+  return $code;
+}
+
+sub hash_combine ($seed, $hash) {
+  $seed ^= $hash + 0x9e3779b9 + ($seed << 6) + ($seed >> 2);
+  return $seed;
+}
+
+sub hash_code ($val) {
+  my $hash;
+  if (ref $val eq 'ARRAY') {
+    $hash = !$hash ? string_hash($_) : hash_combine($hash, string_hash($_)) for @$val;
+  } elsif (ref $val eq 'HASH') {
+    $hash = !$hash
+      ? hash_combine(string_hash($_), string_hash($val->{$_}))
+      : hash_combine($hash, hash_combine(string_hash($_), string_hash($val->{$_}))) for keys %$val;
+  } else {
+    $hash = string_hash($val);
+  }
+  return $hash;
 }
 
 1;
