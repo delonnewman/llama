@@ -14,7 +14,7 @@ sub add_attribute ($self, @args) {
       die "AttributeError: can't write to readonly attribute: $name";
     }
 
-    $self->{$name} = $args[0];
+    $self->{$name} = $self->class->attribute($name)->type->parse($args[0]);
     return $self;
   });
 
