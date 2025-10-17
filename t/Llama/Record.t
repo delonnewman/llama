@@ -3,6 +3,8 @@ use Llama::Test::TestSuite;
 use Feature::Compat::Try;
 no warnings 'experimental::signatures';
 
+use Data::Printer;
+
 my $described_class = 'Llama::Record';
 require_ok $described_class;
 
@@ -100,5 +102,9 @@ isa_record_instance $contact => $subject;
 
 is $contact->name => 'Paul';
 is $contact->email => 'paul@example.com';
+
+my $dup = $subject->new(name => 'Paul', email => 'paul@example.com');
+is $contact->__hash__ => $dup->__hash__;
+ok $contact->equals($dup), 'equality';
 
 done_testing;

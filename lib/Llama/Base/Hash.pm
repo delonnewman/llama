@@ -22,8 +22,8 @@ sub unfreeze ($self) {
 }
 
 sub freeze ($self) {
-  my @attributes = $self->class->attributes;
-  
+  my @attributes = ($self->class->attributes, keys %$self, '__hash__');
+
   Hash::Util::lock_keys(%$self, @attributes);
   Hash::Util::lock_value(%$self, $_) for $self->class->readonly_attributes;
 
@@ -41,7 +41,7 @@ sub __hash__ ($self) {
     my $hash;
     $hash = !$hash
       ? hash_combine(string_hash($_), string_hash($self->{$_}))
-      : hash_combine($hash, hash_combine(string_hash($_), string_hash($self->{$_}))) for keys %$self;
+      : hash_combine($hash, hash_combine(string_hash($_), string_hash($self->{$_}))) for sort keys %$self;
     $hash;
   };
 }
