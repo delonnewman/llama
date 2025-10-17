@@ -22,7 +22,7 @@ my sub attribute_value ($self, $attribute, $value) {
 }
 
 sub parse ($self, @args) {
-  Carp::croak "can't parse an empty value" unless @args || ref $self;
+  Carp::croak "ParseError: can't parse an empty value" unless @args || ref $self;
   return unless @args;
   $self = $self->allocate unless ref $self;
 
@@ -32,7 +32,7 @@ sub parse ($self, @args) {
     my $attribute = $self->class->attribute($name);
     my $value     = attribute_value($self, $attribute, $attributes{$name});
     if (defined $value) {
-      $self->{$name} = $value;
+      $self->{$name} = $attribute->type->parse($value);
       next;
     }
     $errors{$name} = 'is required' if $attribute->is_required;

@@ -12,7 +12,7 @@ my $Any = sub{1};
 
 sub BUILD ($self, $name, @args) {
   $self->{name} = $name;
-  $self->{type} = Llama::Attribute::Type->parse(@args);
+  $self->{type} = Llama::Attribute::Type->build(@args);
   $self->freeze;
 }
 
