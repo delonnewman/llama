@@ -56,6 +56,7 @@ sub __name__ ($self) { ref($self) || $self }
 sub __type__ ($self) { Scalar::Util::reftype($self) }
 sub __addr__ ($self) { Scalar::Util::refaddr($self) }
 *__id__ = \&__addr__;
+*__hash__ = \&__addr__;
 
 sub identical ($self, $other) { $self->__id__ eq $other->__id__ }
 *equals  = \&identical;

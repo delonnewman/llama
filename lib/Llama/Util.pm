@@ -11,7 +11,15 @@ use Scalar::Util qw(reftype);
 use POSIX qw(pow);
 
 use Exporter 'import';
-our @EXPORT_OK = qw(valid_value_type extract_flags extract_block hash_code hash_combine);
+
+our @EXPORT_OK = qw(
+  valid_value_type
+  extract_flags
+  extract_block
+  hash_code
+  hash_combine
+  string_hash
+);
 
 # see https://github.com/moose/Package-Stash/blob/ac478644bb18a32e2f968138e2d651e47b843423/lib/Package/Stash/PP.pm#L135
 sub valid_value_type ($value, $type) {
@@ -83,9 +91,8 @@ sub extract_block ($arrayref) {
 }
 
 sub string_hash ($string) {
-  my $len = length $string;
-  return 0           if $len == 0;
-  return ord $string if $len == 1;
+  return 0 unless $string;
+  return ord $string if length $string == 1;
 
   my $code = 0;
   my @string = split '' => $string;

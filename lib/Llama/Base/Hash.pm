@@ -5,6 +5,7 @@ use Data::Printer;
 use Hash::Util ();
 
 use Llama::Package;
+use Llama::Util qw(string_hash hash_combine);
 
 sub allocate ($class, @args) {
   bless {}, $class;
@@ -32,6 +33,16 @@ sub __kind__ { 'Llama::Class::Hash' }
 
 sub instance ($self) {
   return Llama::Package->named('Llama::Object::Hash')->maybe_load->name->new($self);
+}
+
+sub __hash__ ($self) {
+  $self->{__hash__} //= do {
+    my $hash;
+    $hash = !$hash
+      ? hash_combine(string_hash($_), string_hash($self->{$_}))
+      : hash_combine($hash, hash_combine(string_hash($_), string_hash($self->{$_}))) for keys %$self;
+    $hash;
+  };
 }
 
 sub toHashRef ($self) {
