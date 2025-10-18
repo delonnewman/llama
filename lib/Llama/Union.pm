@@ -1,24 +1,107 @@
 package Llama::Union;
-use Llama::Base qw(:base :signatures);
+use Llama::Prelude qw(+Base :signatures);
 
-use Llama::Union::Class;
-use Llama::Union::Member;
+use Data::Printer;
+use Llama::Base::Symbol;
+use Llama::Record;
+use Llama::Class;
+use Llama::Class::Sum;
+use Llama::Class::Unit;
+use Llama::Class::Product;
+use Llama::Class::Record;
 
-no warnings 'experimental::signatures';
+use experimental 'lexical_subs';
 
-sub import($class, @union) {
-  my $name  = caller;
-  my $union = Llama::Union::Class->new($name)->build($class);
+sub import($class, @args) {
+  return unless @args;
 
-  $name->add($_) for @union;
+  my $name = caller;
+  my $data = ref $args[0] eq 'HASH' ? $args[0] : {map { $_ => { -symbol => 1 } } @args};
+
+  return make_union($name, $data);
 }
 
-sub add($class, $key) {
-  Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
+my sub symbolic_member ($name, $subtype) {
+  my $member_name = $name . '::' . $subtype;
 
-  Llama::Union::Member->new($class, $key)->build;
+  my $class = Llama::Class->named($member_name);
+  $class->superclasses('Llama::Base::Symbol');
 
   return $class;
-};
+}
+
+my sub record_member ($name, $subtype, $fields) {
+  my $member_name = $name . '::' . $subtype;
+  my $class = Llama::Class::Record->new($member_name);
+  $class->append_superclasses('Llama::Record');
+
+  for my $name (keys %$fields) {
+    my $type = $fields->{$name};
+    $class->add_member($type, $name);
+  }
+
+  return $class;
+}
+
+my sub unit_member ($name, $subtype, $value) {
+  my $member_name = $name . '::' . $subtype;
+  return Llama::Class::Unit->new($member_name, $value);
+}
+
+my sub expand_members ($name, $data) {
+  my %members;
+
+  for my $symbol (keys %$data) {
+    my $options = $data->{$symbol};
+    if (defined(my $value = delete $options->{-unit})) {
+      $members{$symbol} = unit_member($name, $symbol, $value);
+    }
+    if (my $fields = delete $options->{-record}) {
+      $members{$symbol} = record_member($name, $symbol, $fields);
+    }
+    if (delete $options->{-symbol}) {
+      $members{$symbol} = symbolic_member($name, $symbol);
+    }
+    if (my $union = delete $options->{-union}) {
+      $members{$symbol} = make_union("$name\::$symbol", $union);
+    }
+    die "invalid options: " . np($options) if %$options;
+  }
+  
+  return \%members;
+}
+
+sub make_union ($name, $data, %options) {
+  my $union = Llama::Class::Sum->named($name);
+  $union->superclasses(__PACKAGE__);
+
+  my %union = expand_members($name, $data)->%*;
+  for my $name (keys %union) {
+    my $member = $union{$name};
+    $union->add_member($member, $name);
+    unless ($member->isa('Llama::Class::Sum')) {
+      $union->add_method($name, sub ($class, @args) { "${class}::$name"->new(@args) });
+    }
+  }
+
+  return $union;
+}
 
 1;
+
+__END__
+
+package Color {
+  use Llama::Union {
+    Red   => { -unit => 0 },
+    Green => { -unit => 1 },
+    Blue  => { -unit => 2 },
+  };
+}
+
+package Result {
+  use Llama::Union {
+    Ok    => { -tuple  => ['Any'] },
+    Error => { -record => { message => 'Str' } },
+  };
+}

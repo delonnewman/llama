@@ -1,7 +1,7 @@
 package Llama::Pair;
-use Llama::Base qw(+Base::Array :signatures);
+use Llama::Prelude qw(+Base::Array :signatures);
 
-use overload '%{}' => sub{shift->HashRef};
+use overload '%{}' => sub{shift->toHashRef};
 
 sub BUILD ($self, $key, $value) {
   $self->[0] = $key;
@@ -11,21 +11,21 @@ sub BUILD ($self, $key, $value) {
 sub key   ($self) { $self->[0] }
 sub value ($self) { $self->[1] }
 
-sub Str ($self) {
+sub toStr ($self) {
   $self->key . ' => ' . (defined $self->value ? $self->value : 'undef');
 }
 
-sub Array ($self) {
+sub toArray ($self) {
   my @array = ($self->key, $self->value);
   wantarray ? @array : \@array;
 }
 
-sub Hash ($self) {
+sub toHash ($self) {
   my %hash = ($self->key => $self->value);
   wantarray ? %hash : \%hash;
 }
 
-sub HashRef  ($self) {
+sub toHashRef  ($self) {
   return {
     $self->key => $self->value
   };

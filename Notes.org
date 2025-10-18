@@ -38,6 +38,33 @@
 ** Attributes
 ** Delegation
 
+* Prelude
+
 * TODO Make Enum::Member and Union::Member subclasses of Class *(perhaps use Union::Member as the class type for Enum::Member)
 ** Override eigen_class should just be an alias for class
 ** Add convienices for using class attributes as meta data
+
+* References
+** Types & Contracts
+https://theweeklychallenge.org/blog/unary-operator/
+https://blogs.perl.org/users/leon_timmermans/2025/02/a-deep-dive-into-the-perl-type-systems.html
+https://docs.racket-lang.org/reference/contracts.html
+https://docs.racket-lang.org/guide/contract-boundaries.html
+https://en.wikipedia.org/wiki/Comparison_of_programming_languages_(algebraic_data_type)
+
+** Concurrency
+http://cml.cs.uchicago.edu
+https://wingolog.org/archives/2017/06/29/a-new-concurrent-ml
+https://en.wikipedia.org/wiki/Concurrent_ML
+
+* Class
+** Class::Sum
+** Class::Product
+** ::or -> Class::Sum (Union, Enum)
+** ::and -> Class::Product (Tuple, Record)
+
+* Base
+** Base::Symbol (stateless, singleton)
+** Base::Scalar
+** Base::Array
+** Base::Hash

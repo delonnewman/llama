@@ -1,10 +1,12 @@
 package Llama::Base::Hash;
-use Llama::Base qw(:base :constructor :signatures);
+use Llama::Prelude qw(+Base :signatures);
 
 use Data::Printer;
 use Hash::Util ();
+use Scalar::Util qw(blessed);
 
 use Llama::Package;
+use Llama::Util qw(string_hash hash_combine);
 
 sub allocate ($class, @args) {
   bless {}, $class;
@@ -12,78 +14,71 @@ sub allocate ($class, @args) {
 
 sub is_frozen ($self) { Hash::Util::hash_locked(%$self) }
 
-sub freeze ($self) {
-  my @attributes = $self->class->attributes;
-  
-  Hash::Util::lock_keys(%$self, @attributes);
-  Hash::Util::lock_value(%$self, $_) for $self->class->readonly_attributes;
-
-  $self;
-}
-
-sub class ($self) {
-  my $pkg = __PACKAGE__;
-  return Llama::Class->named($pkg) if ref $self eq $pkg;
-  return Llama::Package->named('Llama::Class::Hash')->maybe_load->name->named($self->__name__);
-}
-
-sub META ($self) {
-  return $self->class unless ref $self;
-  return Llama::Package->named('Llama::Object::Hash')->maybe_load->name->new($self);
-}
-
-my $AttributeValue = sub ($self, $attribute, $value) {
-  my $name    = $attribute->name;
-  my $default = $attribute->default;
-
-  $value = $self->$default() if $default && !defined($value);
-
-  return $value;
-};
-
-sub parse ($self, @args) {
-  die "ParseError: cannot parse empty value" unless @args;
-  $self = $self->new unless ref $self;
-
-  my %attributes = @args > 1 ? @args : $args[0]->%*;
-  for my $name ($self->class->attributes) {
-    my $attribute = $self->class->attribute($name);
-    my $value     = $AttributeValue->($self, $attribute, $attributes{$name});
-    if (defined $value) {
-      $self->$name($value);
-      next;
-    }
-    die "$name is required" if $attribute->is_required;
-  }
+sub unfreeze ($self) {
+  Hash::Util::unlock_keys(%$self);
+  Hash::Util::unlock_value(%$self, $_) for $self->class->readonly_attributes;
 
   return $self;
 }
 
-sub HashRef ($self) {
-  my $ref = $self->Hash;
+sub freeze ($self) {
+  my @attributes = ($self->class->attributes, keys %$self, '__hash__');
+
+  Hash::Util::lock_keys(%$self, @attributes);
+  Hash::Util::lock_value(%$self, $_) for $self->class->readonly_attributes;
+
+  return $self;
+}
+
+sub __kind__ { 'Llama::Class::Hash' }
+
+sub instance ($self) {
+  return Llama::Package->named('Llama::Object::Hash')->maybe_load->name->new($self);
+}
+
+sub __hash__ ($self) {
+  $self->{__hash__} //= do {
+    my $hash;
+    $hash = !$hash
+      ? hash_combine(string_hash($_), string_hash($self->{$_}))
+      : hash_combine($hash, hash_combine(string_hash($_), string_hash($self->{$_}))) for sort keys %$self;
+    $hash;
+  };
+}
+
+sub equals ($self, $other) {
+  return !!0 unless blessed($other) && $other->isa(__PACKAGE__);
+  return $self->__hash__ eq $other->__hash__;
+}
+
+sub toHashRef ($self) {
+  my $ref = $self->toHash;
   return $ref;
 }
 
 {
   no strict 'refs';
-  *DATAFY = \&HashRef;
+  *DATAFY = \&toHashRef;
 }
 
-sub Hash ($self) {
+sub toHash ($self) {
   my %hash = map { $_ => $self->{$_} } grep { defined $self->{$_} } keys %$self;
   wantarray ? %hash : \%hash;
 }
 
-sub Array ($self) {
+sub toArray ($self) {
   my @array = $self->META->pairs;
   wantarray ? @array : \@array;
 }
 
-sub Str ($self) {
-  my $class = $self->__name__;
-  my $pairs = join ', ' => map { $_->key . ' => ' . $_->value } grep { $_->value } $self->META->pairs;
+sub toStr ($self) {
+  my $class = $self->name;
 
-  return "$class($pairs)";
+  no strict 'refs';
+  my %attributes = %{$class . '::ATTRIBUTES'};
+  my $pairs = join ', ' => map { $_ . ' => ' . $attributes{$_}->type } keys %attributes;
+
+  return $pairs ? "$class($pairs)" : $class;
 }
 
 1;

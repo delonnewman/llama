@@ -4,8 +4,7 @@ use utf8;
 use strict;
 use warnings;
 use feature ':5.20';
-use feature 'signatures';
-no warnings 'experimental::signatures';
+use experimental qw(signatures postderef);
 no strict 'refs';
 
 use Carp ();
@@ -20,11 +19,13 @@ use constant META_PKG => '__META_PKG__';
 sub named($class, $name) {
   my $sym = $name . '::' . META_PKG;
   my $pkg = ${$sym};
+
   unless ($pkg) {
     $pkg = $class->new($name);
     ${$sym} = $pkg;
   }
-  $pkg;
+
+  return $pkg;
 }
 
 sub new ($class, $name) {

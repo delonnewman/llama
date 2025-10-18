@@ -1,13 +1,16 @@
 test:
-	carmel exec prove -r -Ilib -It/lib
+	prove -r -MCarp::Always -Ilib -It/lib
 
 console:
-	carmel exec reply -Ilib
+	reply -Ilib
 
 clean:
 	rm -rf t/data
 
 docs:
 	pod2html --htmldir=./docs --podpath=./lib --verbose
+
+deps:
+	cpm install --with-develop -g
 
 .PHONY: test console clean docs

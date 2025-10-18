@@ -1,5 +1,5 @@
 package Llama::Enum;
-use Llama::Base qw(+Base::Scalar :signatures);
+use Llama::Prelude qw(+Base::Scalar :signatures);
 
 use Carp ();
 use Scalar::Util qw(blessed);
@@ -7,8 +7,6 @@ use Data::Printer;
 
 use Llama::Enum::Class;
 use Llama::Enum::Member;
-
-no warnings 'experimental::signatures';
 
 use overload (
   "cmp"  => sub($self, $other, $) { $self->key   cmp $self->parent->coerce($other)->key },
@@ -94,7 +92,7 @@ sub of($class, $value) {
     my $valid = join ', ' => sort(keys %members_by_value);
     Carp::croak "invalid $class value ($value) valid values are ($valid)";
   };
-};
+}
 
 sub keyed($class, $key) {
   Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
@@ -143,7 +141,7 @@ sub equals($self, $other) {
   return $self->key eq $other->key;
 }
 
-sub Str ($self) {
+sub toStr ($self) {
   my $str = $self->parent . '(';
   $str .= $self->key eq $self->value ? $self->key : $self->key . ' => ' . $self->value;
   $str .= ")";

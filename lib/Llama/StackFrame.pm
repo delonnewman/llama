@@ -3,10 +3,10 @@ package Llama::StackFrame;
 use utf8;
 use strict;
 use warnings;
-use feature qw(:5.20 signatures);
-no warnings 'experimental::signatures';
+use feature qw(:5.20);
+use experimental qw(signatures);
 
-use overload '""' => sub{shift->Str}, 'bool' => sub{1};
+use overload '""' => sub{shift->toStr}, 'bool' => sub{1};
 
 sub current ($class) {
   return $class->at(1);
@@ -61,7 +61,7 @@ sub hint_hash  ($self) { $self->[10] }
 
 sub is_empty ($self) { !@$self }
 
-sub Str ($self) {
+sub toStr ($self) {
   my $file = $self->file;
   my $line = $self->line;
   my $pkg  = $self->pkg;

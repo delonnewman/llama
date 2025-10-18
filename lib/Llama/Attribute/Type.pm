@@ -1,12 +1,13 @@
 package Llama::Attribute::Type;
-use Llama::Base qw(+Base::Hash :signatures :constructor);
+use Llama::Prelude qw(+Base::Hash :signatures);
 
-use Carp;
+use Carp ();
 use Data::Printer;
+use Feature::Compat::Try;
 
 my $Any = sub{1};
 
-sub parse ($class, @args) {
+sub build ($class, @args) {
   return $class->new(value => 'Any') if @args < 1;
   return $class->new(@args)          if @args > 1;
 
@@ -19,25 +20,44 @@ sub parse ($class, @args) {
 }
 
 sub BUILD ($self, %attributes) {
-  $self->{mutable}  = $attributes{mutable}  // 0;
-  $self->{value}    = $attributes{value}    // $Any;
-  $self->{optional} = $attributes{optional} // 0;
-  $self->{default}  = $attributes{default};
+  $self->{mutable}     = delete $attributes{mutable}  // 0;
+  $self->{value}       = delete $attributes{value};
+  $self->{optional}    = delete $attributes{optional} // 0;
+  $self->{order}       = delete $attributes{order}    // 0;
+  $self->{default}     = delete $attributes{default};
+  $self->{class}       = delete $attributes{class};
+  $self->{cardinality} = delete $attributes{cardinality};
+  $self->{options}     = {%attributes};
   $self->freeze;
 }
 
-sub default ($self) { $self->{default} }
-sub value ($self) { $self->{value} }
+sub default     ($self) { $self->{default} }
+sub value       ($self) { $self->{value} }
 sub is_mutable  ($self) { $self->{mutable} }
 sub is_optional ($self) { $self->{optional} }
+sub order       ($self) { $self->{order} }
+sub options     ($self) { $self->{options} }
+sub class_name  ($self) { $self->{class} }
+sub cardinality ($self) { $self->{cardinality} }
 
-sub is_valid ($self, $value) {
-  my $validator = $self->{value} // $Any;
-  return !!$validator->($value);
+sub parse ($self, $value) {
+  return $value unless $self->class_name;
+
+  return $self->class_name->parse($value) unless $self->cardinality eq 'many';
+  return [map { $self->class_name->parse($_) } @$value];
 }
 
-sub Str ($self) {
-  my $str = $self->value;
+sub is_valid ($self, $value) {
+  try {
+    $self->parse($value);
+    return 1;
+  } catch ($e_) {
+    return 0;
+  }
+}
+
+sub toStr ($self) {
+  my $str = $self->value || $self->class_name;
   $str = "Mutable($str)"  if $self->is_mutable;
   $str = "Optional($str)" if $self->is_optional;
   return $str;

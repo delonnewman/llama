@@ -1,12 +1,19 @@
-package Llama::Pair::Test;
+package Llama::Record::Test;
 use Llama::Test::TestSuite;
 use Feature::Compat::Try;
 no warnings 'experimental::signatures';
 
+use Data::Printer;
+
 my $described_class = 'Llama::Record';
 require_ok $described_class;
 
-my $class = Llama::Record::Class->create(
+sub isa_record_instance ($instance, $class) {
+  isa_ok $instance => $class;
+  isa_ok $instance => $described_class;
+}
+
+my $class = $described_class->new_class(
   name       => 'Person',
   attributes => {
     name     => 'Str',
@@ -17,6 +24,9 @@ my $class = Llama::Record::Class->create(
   }
 );
 
+isa_ok $class => 'Llama::Class::Record';
+isa_ok $class->name => $described_class;
+
 my $jackie = $class->name->new(
   name  => 'Jackie',
   email => 'jackie@example.com',
@@ -24,6 +34,7 @@ my $jackie = $class->name->new(
   dob   => [1992, 2, 5]
 );
 
+isa_record_instance $jackie => $class->name;
 is $jackie->name => 'Jackie';
 is $jackie->email => 'jackie@example.com';
 
@@ -45,13 +56,16 @@ package Address {
     notes            => { value => 'Str', optional => 1, mutable => 1 },
   };
 }
+my $subject = 'Address';
+isa_ok $subject => $described_class;
 
-my $address = Address->new(
+my $address = $subject->new(
  street_address_1 => '44 Central Ave',
  city             => 'Albuquerque',
  state            => 'NM',
  postal           => '87101',
 );
+isa_record_instance $address => $subject;
 
 is $address->street_address_1 => '44 Central Ave';
 is $address->street_address_2 => undef;
@@ -66,10 +80,31 @@ package Entity {
     type => { default => '__name__' }
   };
 }
+$subject = 'Entity';
 
-my $entity = Entity->new(name => 'test');
+my $entity = $subject->new(name => 'test');
+isa_record_instance $entity => $subject;
 
 is $entity->name => 'test';
-is $entity->type => 'Entity';
+is $entity->type => $subject;
+
+package Contact {
+  use Llama::Prelude qw(+Record);
+  use Llama::Attributes;
+
+  has 'name';
+  has 'email';
+}
+$subject = 'Contact';
+
+my $contact = $subject->new(name => 'Paul', email => 'paul@example.com');
+isa_record_instance $contact => $subject;
+
+is $contact->name => 'Paul';
+is $contact->email => 'paul@example.com';
+
+my $dup = $subject->new(name => 'Paul', email => 'paul@example.com');
+is $contact->__hash__ => $dup->__hash__;
+ok $contact->equals($dup), 'equality';
 
 done_testing;

@@ -1,5 +1,5 @@
 package Llama::Value::Type;
-use Llama::Base qw(:signatures);
+use Llama::Prelude qw(:signatures);
 use Llama::Union qw(CODE HASH ARRAY SCALAR Regexp GLOB LVALUE FORMAT IO VSTRING SCALAR);
 
 # A set of meta objects for characterizing Perl values--implements type interface.
@@ -41,90 +41,32 @@ package Llama::Value::Type::ARRAY {
 }
 
 package Llama::Value::Type::SCALAR {
-  use Llama::Union qw(Num Str REF);
+  use Llama::Union qw(REF);
+  # TODO: add subtypes Num and Str
   
   sub parse ($self, $scalar) { $scalar }
 }
 
 package Llama::Value::Type::SCALAR::REF {
   use Llama::Union qw(SCALAR CODE HASH ARRAY Blessed);
+  # TODO: add subtype Blessed::Can
 }
-
-package Llama::Value::Type::SCALAR::REF::Blessed {
-  use Llama::Union qw(Can);
-}
-
 
 1;
 
 __END__
 
-sub Any {}
-package Llama::ValueType::Any {}
+Exp::Type
+Val::Type (scalar types?)
+Var::Type
 
-sub SCALAR {}
-package Llama::ValueType::SCALAR {
-  sub Num {}
-  sub Str {}
-  sub REF {}
-}
+See https://blogs.perl.org/users/leon_timmermans/2025/02/a-deep-dive-into-the-perl-type-systems.html
 
-package Llama::ValueType::SCALAR::REF {
-  sub SCALAR {}
-  sub CODE ($IN, $OUT) {}
-  sub HASH ($K, $V = undef) {}
-  sub ARRAY ($V) {}
-  sub Blessed ($ISA) {}
-}
+See also https://theweeklychallenge.org/blog/unary-operator/
+for an example of the need for Perl's other type system Expression Types
 
-package Llama::ValueType::SCALAR::REF::SCALAR {}
-package Llama::ValueType::SCALAR::REF::CODE {}
-package Llama::ValueType::SCALAR::REF::HASH {}
-package Llama::ValueType::SCALAR::REF::ARRAY {}
-package Llama::ValueType::SCALAR::REF::Blessed {
-  sub Can (@METHODS) {}
-}
-
-sub CODE ($IN, $OUT) {}
-package Llama::ValueType::CODE {}
-
-sub HASH ($K, $V = undef) {}
-package Llama::ValueType::HASH {}
-
-sub ARRAY ($V) {}
-package Llama::ValueType::ARRAY {}
-
-sub Regexp {}
-package Llama::ValueType::Regexp {}
-
-sub GLOB {}
-package Llama::ValueType::GLOB {}
-
-sub LVALUE {}
-package Llama::ValueType::LVALUE {}
-
-sub FORMAT {}
-package Llama::ValueType::FORMAT {}
-
-sub IO {}
-package Llama::ValueType::IO {}
-
-sub VSTRING {}
-package Llama::ValueType::VSTRING {}
-
-package Llama::ValueType::Literal {}
-package Llama::ValueType::Literal::Number {}
-package Llama::ValueType::Literal::String {}
-package Llama::ValueType::Literal::Regexp {}
-package Llama::ValueType::Literal::Array {}
-package Llama::ValueType::Literal::Hash {}
-
-package Llama::ValueType::Operator {}
-package Llama::ValueType::Operator::Negation {}
-package Llama::ValueType::Operator::Disjunction {}
-package Llama::ValueType::Operator::Conjunction {}
-
-# Value Types
+See also https://docs.racket-lang.org/reference/contracts.html
+for what is probably what we want dynamic checks
 
 # Base
 
@@ -138,22 +80,22 @@ see ref
   - REF
     - SCALAR
     - CODE
-      - CODE(@IN => @OUT)
+      - Of(@IN => @OUT)
     - HASH
-      - HASH($V)
-      - HASH($K => $V)
+      - Of($V)
+      - Of($K => $V)
     - ARRAY
-      - ARRAY($V)
+      - Of($V)
     - Blessed
-      - Blessed($ISA)
+      - ISA($CLASS)
       - Can(@METHODS)
 - CODE
-  - CODE(@IN => @OUT)
+  - Of(@IN => @OUT)
 - HASH
-  - HASH($V)
-  - HASH($K => $V)
+  - Of($V)
+  - Of($K => $V)
 - ARRAY
-  - ARRAY($V)
+  - Of($V)
 - Regexp
 - GLOB
 - LVALUE

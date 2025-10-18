@@ -1,20 +1,18 @@
 package Llama::Class;
-use Llama::Base qw(+Base::Scalar :signatures);
+use Llama::Prelude qw(+Base :signatures);
 
+use Carp ();
 use Data::Printer;
 use Scalar::Util ();
 
-use Llama::Core qw(uniq);
 use Llama::Package;
 use Llama::Attribute;
-
-use Llama::Class::AnonymousClass;
-use Llama::Class::EigenClass;
 use Llama::Class::InstanceCache;
 
 our $DEFAULT_MRO = 'c3';
 
-no warnings 'experimental::signatures';
+no strict 'refs';
+no warnings qw(once);
 
 sub named ($class, $name) {
   my $object = Llama::Class::InstanceCache->get($name);
@@ -23,15 +21,34 @@ sub named ($class, $name) {
 }
 
 sub new ($class, $name = undef) {
-  return Llama::Class::AnonymousClass->new unless $name;
+  my $kind = $name ? ${$name . '::ATTRIBUTE_DATA'}{__kind__} // $class : $class;
+  $name //= '';
 
-  my $object = bless \$name, $class;
-  $object->mro($DEFAULT_MRO);
-  $object;
+  my $self = bless \$name, $kind;
+
+  # generate name
+  $name .= "$class=OBJECT(" . sprintf("0x%06X", $self->__addr__) . ')' unless $name;
+
+  $self->mro($DEFAULT_MRO);
+  $self->kind($kind);
+
+  return $self;
 }
 
 sub name ($self) { $$self }
 *Str = \&name;
+
+sub kind ($self, @args) {
+  if (@args) {
+    Llama::Class::InstanceCache->invalidate($self->name);
+    ${$self->package->qualify('ATTRIBUTE_DATA')}{__kind__} = $args[0];
+    return $self;
+  }
+
+  return ${$self->package->qualify('ATTRIBUTE_DATA')}{__kind__} // $self->__name__;
+}
+
+sub new_instance ($self, @args) { $self->name->new(@args) }
 
 sub version ($self) { $self->package->version }
 
@@ -58,9 +75,14 @@ sub superclasses ($self, @superclasses) {
     return $self
   }
 
-  $self->package->ISA
+  my @isa = $self->package->ISA;
+  return wantarray ? @isa : \@isa;
 }
 *parents = \&superclasses;
+
+sub is_subclass ($self, $class) {
+  return $self->name->isa($class);
+}
 
 sub subclass ($self, $name = undef) {
   Llama::Class->new($name)->superclasses($self->name);
@@ -68,16 +90,12 @@ sub subclass ($self, $name = undef) {
 *inherit = \&subclass;
 
 sub append_superclasses($self, @classes) {
-  my $ISA = $self->package->ISA;
-  my @superclasses = uniq @$ISA, @classes;
-  $self->package->ISA(@superclasses);
+  push $self->package->ISA->@*, @classes;
   return $self;
 }
 
 sub prepend_superclasses($self, @classes) {
-  my $ISA = $self->package->ISA;
-  my @superclasses = uniq @classes, @$ISA;
-  $self->package->ISA(@superclasses);
+  unshift $self->package->ISA->@*, @classes;
   return $self;
 }
 
@@ -103,7 +121,7 @@ sub eigen_class ($self) { $self }
 
 sub methods ($self) {
   my %methods = map {
-    $_ => [Llama::Package->named($_)->symbol_names('CODE')]
+    $_ => [sort Llama::Package->named($_)->symbol_names('CODE')]
   } $self->ancestry;
 
   wantarray ? %methods : \%methods;
@@ -137,9 +155,15 @@ sub add_attribute ($self, @args) {
 
 sub attribute ($self, $name) {
   no strict 'refs';
-  my $attribute = ${$self->package->qualify('ATTRIBUTES')}{$name};
+
+  my $attribute;
+  for ($self->ancestry) {
+    $attribute = ${$_ . '::ATTRIBUTES'}{$name};
+    last if $attribute;
+  }
+
   Carp::confess "unknown attribute '$name'" unless $attribute;
-  $attribute;
+  return $attribute;
 }
 
 =pod
@@ -152,41 +176,51 @@ head2 attributes
 
 sub attributes ($self) {
   no strict 'refs';
-  my @attributes = keys %{$self->package->qualify('ATTRIBUTES')};
+  my @attributes = map { $_->name } $self->ATTRIBUTES;
   wantarray ? @attributes : \@attributes;
 }
 
 sub readonly_attributes ($self) {
   no strict 'refs';
-  my %attributes = %{$self->package->qualify('ATTRIBUTES')};
-  my @attributes = map { $_->name } grep { !$_->is_mutable } values %attributes;
+  my @attributes = map { $_->name } grep { !$_->is_mutable } $self->ATTRIBUTES;
   wantarray ? @attributes : \@attributes;
 }
 
 sub required_attributes ($self) {
-  no strict 'refs';
-  my %attributes = %{$self->package->qualify('ATTRIBUTES')};
-  my @attributes = map { $_->name } grep { $_->is_required && !$_->default } values %attributes;
+  my @attributes = map { $_->name } grep { $_->is_required && !$_->default } $self->ATTRIBUTES;
   wantarray ? @attributes : \@attributes;
 }
 
 sub optional_attributes ($self) {
+  my @attributes = map { $_->name } grep { $_->is_optional } $self->ATTRIBUTES;
+  wantarray ? @attributes : \@attributes;
+}
+
+sub ATTRIBUTES ($self) {
   no strict 'refs';
-  my %attributes = %{$self->package->qualify('ATTRIBUTES')};
-  my @attributes = map { $_->name } grep { $_->is_optional } values %attributes;
+
+  my @attributes =
+    sort { $a->order <=> $b->order }
+    map { values %{Llama::Package->named($_)->qualify('ATTRIBUTES')} }
+    $self->ancestry;
+
   wantarray ? @attributes : \@attributes;
 }
 
 sub set_attribute_value ($self, $name, $value) {
   no strict 'refs';
+
   my $attribute = $self->attribute($name);
   $attribute->validate_writable->validate($value);
   ${$self->package->qualify('ATTRIBUTE_DATA')}{$name} = $value;
+
+  return $self;
 }
 
 sub get_attribute_value ($self, $name) {
   no strict 'refs';
   ${$self->package->qualify('ATTRIBUTE_DATA')}{$name};
 }
+
 
 1;

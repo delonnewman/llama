@@ -1,4 +1,4 @@
 package Llama::Collection::Cons;
-use Llama::Base qw(+Base::Array +Sequence);
+use Llama::Prelude qw(+Pair +Sequence);
 
 1;

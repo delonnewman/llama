@@ -1,0 +1,40 @@
+package Llama::Prelude;
+
+use strict;
+use warnings;
+use utf8;
+use feature ':5.20';
+use experimental qw(signatures postderef);
+
+use Carp ();
+use Data::Printer;
+use Scalar::Util ();
+
+use Llama::Package;
+use Llama::Util qw(extract_flags);
+
+sub import($, @args) {
+  # sensible defaults
+  $_->import for qw(strict warnings utf8);
+  feature->import(':5.20');
+
+  my %flags = extract_flags \@args;
+  return unless @args || %flags;
+
+  my $caller = caller;
+  my $pkg    = Llama::Package->named($caller);
+
+  # subclassing
+  my @parents = @args;
+  if (@parents) {
+    Llama::Package->named($_)->maybe_load for @parents;
+    $pkg->ISA(@parents);
+  }
+
+  # enable signatures
+  if ($flags{-signatures}) {
+    experimental->import($_) for qw(signatures postderef);
+  }
+}
+
+1;

@@ -1,5 +1,5 @@
 package Llama::Attribute;
-use Llama::Base qw(+Base::Hash :constructor :signatures);
+use Llama::Prelude qw(+Base::Hash :signatures);
 
 # Attribute meta object
 
@@ -10,15 +10,13 @@ use Llama::Attribute::Type;
 
 my $Any = sub{1};
 
-no warnings 'experimental::signatures';
-
 sub BUILD ($self, $name, @args) {
   $self->{name} = $name;
-  $self->{type} = Llama::Attribute::Type->parse(@args);
+  $self->{type} = Llama::Attribute::Type->build(@args);
   $self->freeze;
 }
 
-delegate [qw(is_mutable is_optional is_valid default)] => 'type';
+delegate [qw(is_mutable is_optional is_valid default order options)] => 'type';
 
 sub is_required ($self) { !$self->is_optional }
 

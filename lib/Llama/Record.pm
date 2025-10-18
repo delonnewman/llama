@@ -1,18 +1,29 @@
 package Llama::Record;
-use Llama::Base qw(+Entity :signatures);
+use Llama::Prelude qw(+Item :signatures);
 
 use Data::Printer;
 use Hash::Util ();
+use Scalar::Util ();
 
-use Llama::Record::Class;
-
-no warnings 'experimental::signatures';
+use Llama::Class::Record;
 
 sub import ($class, $attributes = undef) {
+  my $caller = caller;
   if ($attributes) {
-    my $caller = caller;
-    Llama::Record::Class->create(name => $caller, attributes => $attributes);
+    $class->new_class(name => $caller, attributes => $attributes);
   }
+}
+
+sub new_class ($class, %attributes) {
+  my $self = Llama::Class::Record->new($attributes{name} // die "name is required");
+  $self->superclasses($class);
+
+  my %schema = ($attributes{attributes} // {})->%*;
+  for my $attribute (keys %schema) {
+    $self->add_attribute($attribute, $schema{$attribute});
+  }
+
+  return $self;
 }
 
 sub BUILD ($self, @args) {
@@ -20,16 +31,7 @@ sub BUILD ($self, @args) {
   $self->freeze;
 }
 
-sub class ($self) {
-  my $pkg = __PACKAGE__;
-  return Llama::Class->named($pkg) if ref $self eq $pkg;
-  return Llama::Record::Class->named($self->__name__);
-}
-
-sub with ($self, %attributes) {
-  my %args = ($self->Hash, %attributes);
-  return $self->new(%args);
-}
+sub __kind__ { 'Llama::Class::Record' }
 
 1;
 
@@ -55,7 +57,7 @@ Llama::Package->named('DateTime')->is_loaded
 
 # in Llama/Record.pm
 package Llama::Record;
-use Llama::Base '+Class', -signatures;
+use Llama::Prelude qw(+Class :signatures);
 
 sub new ($self, %attributes) {
   my $class = $self->SUPER::new($attributes{name}); # if name is undef will be an instance of AnonymousClass
