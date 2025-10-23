@@ -33,6 +33,10 @@ sub BUILD ($self, @args) {
 
 sub __kind__ { 'Llama::Class::Record' }
 
+sub __hash__ ($self) {
+  $self->{__hash__} //= $self->next::method();
+}
+
 1;
 
 __END__
