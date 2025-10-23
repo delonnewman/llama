@@ -48,6 +48,7 @@ sub load {
   $self;
 }
 
+# see https://github.com/moose/Class-Load/blob/1ecc408483500736b6af4ca3ee9383c4c677bd01/lib/Class/Load/PP.pm#L30
 sub is_loaded ($self) { !!$self->full_path }
 sub full_path ($self) { $INC{$self->path_name}; }
 

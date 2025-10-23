@@ -3,6 +3,7 @@ use Llama::Prelude qw(:signatures);
 use Llama::Union qw(CODE HASH ARRAY SCALAR Regexp GLOB LVALUE FORMAT IO VSTRING SCALAR);
 
 # A set of meta objects for characterizing Perl values--implements type interface.
+# https://blogs.perl.org/users/leon_timmermans/2025/02/a-deep-dive-into-the-perl-type-systems.html
 
 package Llama::Value::Type::CODE {
   sub parse ($self, $code) {

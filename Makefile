@@ -7,7 +7,10 @@ console:
 clean:
 	rm -rf t/data
 
+docs:
+	pod2html --htmldir=./docs --podpath=./lib --verbose
+
 deps:
 	cpm install --with-develop -g
 
-.PHONY: test console clean
+.PHONY: test console clean docs
