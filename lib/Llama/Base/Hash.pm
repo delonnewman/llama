@@ -37,13 +37,11 @@ sub instance ($self) {
 }
 
 sub __hash__ ($self) {
-  $self->{__hash__} //= do {
-    my $hash;
-    $hash = !$hash
-      ? hash_combine(string_hash($_), string_hash($self->{$_}))
-      : hash_combine($hash, hash_combine(string_hash($_), string_hash($self->{$_}))) for sort keys %$self;
-    $hash;
-  };
+  my $hash;
+  $hash = !$hash
+    ? hash_combine(string_hash($_), string_hash($self->{$_}))
+    : hash_combine($hash, hash_combine(string_hash($_), string_hash($self->{$_}))) for sort keys %$self;
+  return $hash;
 }
 
 sub equals ($self, $other) {
