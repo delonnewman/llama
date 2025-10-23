@@ -75,7 +75,7 @@ subtest 'eigen classes' => sub {
 
 subtest 'attributes' => sub {
   my $class = Llama::Class->new('AttributesTest');
-  $class->add_attribute(testing => (mutable => 1));
+  $class->add_attribute(testing => { mutable => 1 });
   $class->set_attribute_value('testing' => 'this is a test');
 
   no warnings 'once';
@@ -84,7 +84,7 @@ subtest 'attributes' => sub {
   package ObjectAttributes {
     use Llama::Prelude qw(+Base::Scalar);
   }
-  ObjectAttributes->META->add_attribute(name => (mutable => 1));
+  ObjectAttributes->META->add_attribute(name => { mutable => 1 });
   my $object = ObjectAttributes->new(1);
 
   my $attribute = ObjectAttributes->META->attribute('name');

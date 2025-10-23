@@ -9,7 +9,8 @@ use Llama::Package;
 use Llama::Util qw(string_hash hash_combine);
 
 sub allocate ($class, @args) {
-  bless {}, $class;
+  my %attributes = @args == 1 ? $args[0]->%* : @args;
+  bless {%attributes}, $class;
 }
 
 sub is_frozen ($self) { Hash::Util::hash_locked(%$self) }
@@ -70,7 +71,7 @@ sub toArray ($self) {
 }
 
 sub toStr ($self) {
-  my $class = $self->name;
+  my $class = $self->__name__;
 
   no strict 'refs';
   my %attributes = %{$class . '::ATTRIBUTES'};
