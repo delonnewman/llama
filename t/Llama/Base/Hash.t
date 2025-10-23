@@ -12,9 +12,11 @@ package BaseHashTestClass {
 
 subtest 'hashing and value equality basics' => sub {
   my $subject = BaseHashTestClass->new(name => 'Paul', email => 'paul@example.com');
-  my $second = BaseHashTestClass->new(name => 'Paul', email => 'paul@example.com');
+  my $second  = BaseHashTestClass->new(name => 'Paul', email => 'paul@example.com');
+  my $third   = BaseHashTestClass->new(email => 'paul@example.com', name => 'Paul');
 
   is $subject->__hash__ => $second->__hash__;
+  is $subject->__hash__ => $third->__hash__;
   isnt $subject->__id__ => $second->__id__;
 
   ok $subject->equals($second);
