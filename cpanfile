@@ -1,6 +1,9 @@
 requires 'Data::Printer';
 requires 'Feature::Compat::Try';
 
+requires 'Role::Tiny';
+requires 'Type::Tiny';
+
 on 'develop' => sub {
   requires 'Reply';
   requires 'Proc::InvokeEditor';
