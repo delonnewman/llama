@@ -9,6 +9,7 @@ use experimental qw(signatures postderef);
 use Data::Printer;
 use Scalar::Util qw(reftype);
 use POSIX qw(pow);
+use Digest::MurmurHash qw(murmur_hash);
 
 use Exporter 'import';
 
@@ -91,18 +92,9 @@ sub extract_block ($arrayref) {
 }
 
 sub string_hash ($string) {
-  return 0 unless $string;
+  return 0           unless $string;
   return ord $string if length $string == 1;
-
-  my $code = 0;
-  my @string = split '' => $string;
-  for (my $i = 0; $i < $#string; $i++) {
-    for (my $j = $#string; $j > 0; $j--) {
-      $code += pow(ord $string[$i], $j);
-    }
-  }
-
-  return $code;
+  return murmur_hash($string);
 }
 
 sub hash_combine ($seed, $hash) {

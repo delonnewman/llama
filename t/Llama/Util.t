@@ -1,7 +1,7 @@
 package Llama::Util::Test;
 use Llama::Test::TestSuite;
 
-use Llama::Util qw(extract_flags extract_block);
+use Llama::Util qw(extract_flags extract_block string_hash);
 
 subtest 'extract_block returns a code reference if one is present' => sub {
   my $args = [1, 2, 3, sub { 4 }];
@@ -70,6 +70,16 @@ subtest 'regression - undef values in flags' => sub {
   my @undef = grep { !defined $_ } @args;
 
   ok !@undef, 'no undefined values';
+};
+
+subtest 'string_hash' => sub {
+  my $subject = string_hash('/uploads/img_31PXmBA2negA3iU0CwB1h.jpeg');
+  my $second  = string_hash('/uploads/img_31PXnjl818sP83E8qHSYn.jpeg');
+  my $third   = string_hash('/uploads/img_31PXotG8ITRiAijyDDVHR.jpeg');
+
+  isnt $subject => $second;
+  isnt $subject => $third;
+  isnt $second  => $third;
 };
 
 done_testing;

@@ -29,4 +29,14 @@ subtest 'hashing and value equality basics' => sub {
   ok $subject->equals($third);
 };
 
+subtest 'hashing and equality regressions' => sub {
+  my $subject = BaseHashTestClass->new(content => '/uploads/img_31PXmBA2negA3iU0CwB1h.jpeg', id => '019a173d-b7b6-7f88-a3cf-982c31208b23', name => "");
+  my $second  = BaseHashTestClass->new(content => '/uploads/img_31PXnjl818sP83E8qHSYn.jpeg', id => '019a173e-a7b6-7ba6-85aa-144a1257d842', name => "");
+  my $third   = BaseHashTestClass->new(content => '/uploads/img_31PXotG8ITRiAijyDDVHR.jpeg', id => '019a173f-5957-7487-842d-ea8c8bb2e1ee', name => "");
+
+  isnt $subject->__hash__ => $second->__hash__;
+  isnt $subject->__hash__ => $third->__hash__;
+  isnt $second->__hash__  => $third->__hash__;
+};
+
 done_testing;
