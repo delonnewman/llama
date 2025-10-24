@@ -60,6 +60,12 @@ sub with ($self, %attributes) {
   return $self->new(%args);
 }
 
+sub without ($self, @attr_names) {
+  my %args = $self->toHash;
+  delete @args{@attr_names};
+  return $self->new(%args);
+}
+
 sub toStr ($self) {
   my $class = $self->__name__;
 
