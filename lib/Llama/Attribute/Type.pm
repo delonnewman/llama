@@ -4,6 +4,7 @@ use Llama::Prelude qw(+Base::Hash :signatures);
 use Carp ();
 use Data::Printer;
 use Feature::Compat::Try;
+use Scalar::Util qw(blessed);
 
 my $Any = sub{1};
 
@@ -44,7 +45,13 @@ sub parse ($self, $value) {
   return $value unless $self->class_name;
 
   return $self->class_name->parse($value) unless $self->cardinality eq 'many';
-  return [map { $self->class_name->parse($_) } @$value];
+
+  my @results = map { $self->class_name->parse($_) } @$value;
+  return \@results unless blessed($results[0]) && $results[0]->isa('Llama::Base::Hash');
+
+  # dedup
+  my %results = map { $_->__hash__ => $_ } @results;
+  return [values %results];
 }
 
 sub is_valid ($self, $value) {
