@@ -3,6 +3,7 @@ requires 'Feature::Compat::Try';
 
 requires 'Role::Tiny';
 requires 'Type::Tiny';
+requires 'Digest::MurmurHash';
 
 on 'develop' => sub {
   requires 'Reply';
