@@ -19,7 +19,14 @@ sub import ($class) {
 
   $pkg->add_sub('has_many', sub ($name, $options = $EMPTY_HASH) {
     Llama::Package->named($options->{class})->maybe_load if $options->{class};
-    $caller->class->add_attribute($name, { optional => 1, associated => 1, cardinality => 'many', default => sub {$EMPTY_ARRAY}, order => $order++, %$options });
+    $caller->class->add_attribute($name, {
+      optional    => 1,
+      associated  => 1,
+      cardinality => 'many',
+      default     => sub {$EMPTY_ARRAY},
+      order       => $order++,
+      %$options
+    });
   });
 }
 
