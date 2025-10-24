@@ -46,6 +46,15 @@ sub parse ($self, @args) {
   return $self;
 }
 
+sub has_one ($self, $attribute_name) {
+  return !!$self->{$attribute_name};
+}
+
+sub has_some ($self, $attribute_name) {
+  my $val = $self->{$attribute_name};
+  return $val && $val->@*;
+}
+
 sub with ($self, %attributes) {
   my %args = ($self->toHash, %attributes);
   return $self->new(%args);

@@ -27,6 +27,8 @@ sub import ($class) {
       order       => $order++,
       %$options
     });
+
+    $caller->class->add_method("has_$name", sub ($self) { $self->has_some($name) });
   });
 }
 
