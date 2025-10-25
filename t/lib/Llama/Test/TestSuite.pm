@@ -9,7 +9,7 @@ use feature 'signatures';
 use Data::Printer ();
 use Test::More ();
 
-my @EXPORT = qw();
+my @EXPORT = qw(throws doesnt_throw);
 my %FORWARDING = (
   'Test::More' =>
     [qw(ok is isnt pass fail diag subtest is_deeply like unlike done_testing require_ok isa_ok can_ok)],
@@ -35,6 +35,32 @@ sub import {
         *{$calling_package . '::' . $symbol} = *{ $module . '::' . $symbol};
       }
     }
+  }
+}
+
+sub throws :prototype(&@) {
+  my ($block, $error_pattern) = @_;
+  eval {
+    $block->();
+  };
+  if ($@) {
+    Test::More::fail("wrong exception thrown: $@") if $error_pattern && $@ !~ $error_pattern;
+    Test::More::pass("exception thrown: $@");
+  } else {
+    Test::More::fail('no exception thrown');
+  }
+}
+
+sub doesnt_throw :prototype(&@) {
+  my ($block, $error_pattern) = @_;
+  eval {
+    $block->();
+  };
+  if ($@) {
+    Test::More::fail("wrong exception thrown: $@") if $error_pattern && $@ !~ $error_pattern;
+    Test::More::fail("exception thrown: $@");
+  } else {
+    Test::More::pass('no exception thrown');
   }
 }
 

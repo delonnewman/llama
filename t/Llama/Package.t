@@ -1,41 +1,10 @@
 package Llama::Package::Test;
-use strict;
-use warnings;
-use utf8;
+use Llama::Test::TestSuite;
 
-use Test::More;
-use lib qw(../../lib);
 use Scalar::Util qw(refaddr);
 
-use Llama::Package;
-
-sub throws(&@) {
-  my ($block, $error_pattern) = @_;
-  eval {
-    $block->();
-  };
-  if ($@) {
-    fail("wrong exception thrown: $@") if $error_pattern && $@ !~ $error_pattern;
-    pass("exception thrown: $@");
-  } else {
-    fail('no exception thrown');
-  }
-}
-
-sub doesnt_throw(&@) {
-  my ($block, $error_pattern) = @_;
-  eval {
-    $block->();
-  };
-  if ($@) {
-    fail("wrong exception thrown: $@") if $error_pattern && $@ !~ $error_pattern;
-    fail("exception thrown: $@");
-  } else {
-    pass('no exception thrown');
-  }
-}
-
 my $described_class = 'Llama::Package';
+require_ok $described_class;
 
 package Mock::Package {
   sub first {  }
