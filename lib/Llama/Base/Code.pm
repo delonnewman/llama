@@ -1,9 +1,7 @@
 package Llama::Base::Code;
-use Llama::Prelude qw(+Base :signatures);
+use Llama::Prelude qw(+Base +Callable :signatures);
 
 use Carp ();
-
-use overload '&{}' => sub{shift->CodeRef};
 
 sub allocate ($class, $sub) {
   my $type = ref $sub;
@@ -13,7 +11,5 @@ sub allocate ($class, $sub) {
 }
 
 sub call ($self, @args) { $self->(@args) }
-
-sub CodeRef ($self) { $self }
 
 1;
