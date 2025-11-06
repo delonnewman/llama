@@ -8,12 +8,12 @@ my $PI = 3.14159;
 
 subtest 'identity' => sub {
   my $class = $described_class->new($PI);
-  my $pi1 = $class->new_instance;
-  my $pi2 = $class->new_instance;
+  my $pi1   = $class->new_instance;
+  my $pi2   = $class->new_instance;
 
-  ok $$pi1 == $PI;
-  ok $$pi1 == $$pi2;
-  ok $pi1->identical($pi2);
+  ok $$pi1 == $PI => 'correct value';
+  ok $$pi1 == $$pi2 => 'all instance have the same value';
+  ok $pi1->identical($pi2) => 'only one instance';
 };
 
 subtest 'base' => sub {
