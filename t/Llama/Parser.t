@@ -26,13 +26,13 @@ sub parse_error_ok ($type, $val) {
 }
 
 subtest "${described_class}::Bool" => sub {
-  parse_ok Bool => 0     => !!0;
-  parse_ok Bool => '0'   => !!0;
-  parse_ok Bool => ''    => !!0;
+  parse_ok Bool =>  0  => !!0;
+  parse_ok Bool => '0' => !!0;
+  parse_ok Bool =>  '' => !!0;
   parse_ok Bool => undef, !!0;
 
-  parse_ok Bool => 1     => !!1;
-  parse_ok Bool => '1'   => !!1;
+  parse_ok Bool =>  1  => !!1;
+  parse_ok Bool => '1' => !!1;
 
   parse_error_ok Bool => 'hey';
   parse_error_ok Bool => 1234;
