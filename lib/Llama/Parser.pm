@@ -40,7 +40,7 @@ sub coerce ($val) {
 }
 
 sub Bool ($class) {
-  $class->__name__->new(sub ($input) {
+  state $Bool = $class->__name__->new(sub ($input) {
     return Result->Ok(value => !!0) if !$input;
     return Result->Ok(value => !!1) if $input eq '1';
 
@@ -49,7 +49,7 @@ sub Bool ($class) {
 }
 
 sub Str ($class) {
-  $class->__name__->new(sub ($input) {
+  state $Str = $class->__name__->new(sub ($input) {
     return Result->Ok(value => "$input") if defined($input) && ref(\$input) eq 'SCALAR';
 
     Result->Error(message => np($input) . " is not a valid string value");
@@ -57,7 +57,7 @@ sub Str ($class) {
 }
 
 sub Num ($class) {
-  $class->__name__->new(sub ($input) {
+  state $Num = $class->__name__->new(sub ($input) {
     return Result->Ok(value => 0+$input) if defined($input) && looks_like_number($input);
 
     Result->Error(message => np($input) . " is not a valid number value");
