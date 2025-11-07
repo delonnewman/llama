@@ -98,9 +98,10 @@ subtest "${described_class}::Num" => sub {
 };
 
 subtest "${described_class}::ArrayOf" => sub {
-  parse_ok ArrayOf => []          => [];
-  parse_ok ArrayOf => [1, 2, 3]   => [1, 2, 3];
-  parse_ok ArrayOf => [qw(a b c)] => [qw(a b c)];
+  parse_ok ArrayOf => []               => [];
+  parse_ok ArrayOf => [1, 2, 3]        => [1, 2, 3];
+  parse_ok ArrayOf => [qw(a b c)]      => [qw(a b c)];
+  parse_ok ArrayOf => [a => 1, b => 2] => [a => 1, b => 2];
 };
 
 done_testing;
