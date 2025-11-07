@@ -92,7 +92,7 @@ sub ArrayOf ($class, $parser = $class->Any) {
       if ref($input) ne 'ARRAY';
 
     my @results = map { $parser->run($_) } @$input;
-    my @errors  = grep { $_->isa('Llama::Parser::Result::Error') } @results;
+    my @errors  = grep { $_->is_error } @results;
     return Result->Error(message => join("; ", map { $_->message } @errors)) if @errors;
 
     return Result->Ok(value => [map { $_->value } @results]);
@@ -114,16 +114,16 @@ sub run ($self, $input) {
 sub and_then ($self, $other) {
   return $self->__name__->new(sub ($input) {
     my $result1 = $self->run($input);
-    return $result1 if $result1->isa('Llama::Parser::Result::Error');
+    return $result1 if $result1->is_error;
 
-    $other->run($result1->rest // '');
+    $other->run($result1->rest);
   });
 }
 
 sub or_else ($self, $other) {
   return $self->__name__->new(sub ($input) {
     my $result1 = $self->run($input);
-    return $result1 unless $result1->isa('Llama::Parser::Result::Error');
+    return $result1 unless $result1->is_error;
 
     $other->run($input);
   });
