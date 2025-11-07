@@ -39,6 +39,28 @@ sub coerce ($val) {
   die "Cannot coerce value to parser: " . (defined $val ? ref $val : 'undef');
 }
 
+sub Undef ($class) {
+  state $Undef = $class->__name__->new(sub ($input) {
+    return Result->Ok(value => $input) unless defined $input;
+
+    Result->Error(message => np($input) . " is not undefined");
+  });
+}
+
+sub Defined ($class) {
+  state $Defined = $class->__name__->new(sub ($input) {
+    return Result->Ok(value => $input) if defined $input;
+
+    Result->Error(message => np($input) . " is not efined");
+  });
+}
+
+sub Any ($class) {
+  state $Any = $class->__name__->new(sub ($input) {
+    return Result->Ok(value => $input);
+  });
+}
+
 sub Bool ($class) {
   state $Bool = $class->__name__->new(sub ($input) {
     return Result->Ok(value => !!0) if !$input;
@@ -64,8 +86,11 @@ sub Num ($class) {
   });
 }
 
-sub ArrayOf ($class, $parser) {
+sub ArrayOf ($class, $parser = $class->Any) {
   $class->__name__->new(sub ($input) {
+    return Result->Error(message => "only array references are valid instead got: " . np($input))
+      if ref($input) ne 'ARRAY';
+
     my @results = map { $parser->run($_) } @$input;
     my @errors  = grep { $_->isa('Llama::Parser::Result::Error') } @results;
     return Result->Error(message => join("; ", map { $_->message } @errors)) if @errors;

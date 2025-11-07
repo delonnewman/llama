@@ -13,7 +13,14 @@ sub parse_ok ($type, $val, @args) {
   isa_ok $result => "$described_class\::Result" => "$type => $valStr";
   isa_ok $result => "$described_class\::Result\::Ok" => "$type => $valStr";
 
-  is $result->value => $args[0] if @args > 0;
+  if (@args > 0) {
+    if (ref $args[0]) {
+      is_deeply $result->value => $args[0];
+    } else {
+      is $result->value => $args[0];
+    }
+  }
+
   is $result->rest  => $args[1] if @args > 1;
 }
 
@@ -57,6 +64,11 @@ subtest "${described_class}::Num" => sub {
   parse_error_ok Num => {};
   parse_error_ok Num => undef;
   parse_error_ok Num => 'hey';
+};
+
+subtest "${described_class}::ArrayOf" => sub {
+  parse_ok ArrayOf => []        => [];
+  parse_ok ArrayOf => [1, 2, 3] => [1, 2, 3];
 };
 
 done_testing;
