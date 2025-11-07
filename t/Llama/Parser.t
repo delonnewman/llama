@@ -1,33 +1,62 @@
 package Llama::Base::Test;
 use Llama::Test::TestSuite;
 use Llama::Prelude qw(:signatures);
+use Data::Printer;
 
 my $described_class = 'Llama::Parser';
 require_ok $described_class;
 
-sub result_ok ($result, @args) {
-  isa_ok $result => "$described_class\::Result";
-  isa_ok $result => "$described_class\::Result\::Ok";
+sub parse_ok ($type, $val, @args) {
+  my $result = $described_class->$type->run($val);
+  my $valStr = np($val);
+
+  isa_ok $result => "$described_class\::Result" => "$type => $valStr";
+  isa_ok $result => "$described_class\::Result\::Ok" => "$type => $valStr";
+
   is $result->value => $args[0] if @args > 0;
   is $result->rest  => $args[1] if @args > 1;
 }
 
-sub result_error_ok ($result) {
-  isa_ok $result => "$described_class\::Result";
-  isa_ok $result => "$described_class\::Result\::Error";
+sub parse_error_ok ($type, $val) {
+  my $result = $described_class->$type->run($val);
+  my $valStr = np($val);
+
+  isa_ok $result => "$described_class\::Result" => "$type => $valStr";
+  isa_ok $result => "$described_class\::Result\::Error" => "$type => $valStr";
 }
 
-subtest "$described_class - Bool" => sub {
-  result_ok $described_class->Bool->run(0)     => !!0;
-  result_ok $described_class->Bool->run('0')   => !!0;
-  result_ok $described_class->Bool->run('')    => !!0;
-  result_ok $described_class->Bool->run(undef) => !!0;
+subtest "${described_class}::Bool" => sub {
+  parse_ok Bool => 0     => !!0;
+  parse_ok Bool => '0'   => !!0;
+  parse_ok Bool => ''    => !!0;
+  parse_ok Bool => undef, !!0;
 
-  result_ok $described_class->Bool->run(1)     => !!1;
-  result_ok $described_class->Bool->run('1')   => !!1;
+  parse_ok Bool => 1     => !!1;
+  parse_ok Bool => '1'   => !!1;
 
-  result_error_ok $described_class->Bool->run('hey');
-  result_error_ok $described_class->Bool->run(1234);
+  parse_error_ok Bool => 'hey';
+  parse_error_ok Bool => 1234;
+};
+
+subtest "${described_class}::Str" => sub {
+  parse_ok Str =>     0 => "0";
+  parse_ok Str =>  1234 => "1234";
+  parse_ok Str => 'hey' => "hey";
+
+  parse_error_ok Str => [];
+  parse_error_ok Str => {};
+  parse_error_ok Str => undef;
+};
+
+subtest "${described_class}::Num" => sub {
+  parse_ok Num =>     0  => 0;
+  parse_ok Num =>  1234  => 1234;
+  parse_ok Num => '1234' => 1234;
+
+  parse_error_ok Num => [];
+  parse_error_ok Num => {};
+  parse_error_ok Num => undef;
+  parse_error_ok Num => 'hey';
 };
 
 done_testing;
