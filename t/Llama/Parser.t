@@ -32,6 +32,37 @@ sub parse_error_ok ($type, $val) {
   isa_ok $result => "$described_class\::Result\::Error" => "$type => $valStr";
 }
 
+subtest "${described_class}::Undef" => sub {
+  parse_ok Undef => undef, undef;
+
+  parse_error_ok Undef => 1234;
+  parse_error_ok Undef => 'some string';
+  parse_error_ok Undef => [];
+  parse_error_ok Undef => {};
+  parse_error_ok Undef => '';
+};
+
+subtest "${described_class}::Defined" => sub {
+  parse_error_ok Defined => undef;
+
+  parse_ok Defined => 1234   => 1234;
+  parse_ok Defined => '1234' => '1234';
+  parse_ok Defined => 'hey'  => 'hey';
+  parse_ok Defined => []     => [];
+  parse_ok Defined => {}     => {};
+  parse_ok Defined => ''     => '';
+};
+
+subtest "${described_class}::Any" => sub {
+  parse_ok Any => undef, undef;
+  parse_ok Any => 1234   => 1234;
+  parse_ok Any => '1234' => '1234';
+  parse_ok Any => 'hey'  => 'hey';
+  parse_ok Any => []     => [];
+  parse_ok Any => {}     => {};
+  parse_ok Any => ''     => '';
+};
+
 subtest "${described_class}::Bool" => sub {
   parse_ok Bool =>  0  => !!0;
   parse_ok Bool => '0' => !!0;
