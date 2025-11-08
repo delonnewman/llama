@@ -97,11 +97,11 @@ subtest "${described_class}::Num" => sub {
   parse_error_ok Num => 'hey';
 };
 
-subtest "${described_class}::ArrayOf" => sub {
-  parse_ok ArrayOf => []               => [];
-  parse_ok ArrayOf => [1, 2, 3]        => [1, 2, 3];
-  parse_ok ArrayOf => [qw(a b c)]      => [qw(a b c)];
-  parse_ok ArrayOf => [a => 1, b => 2] => [a => 1, b => 2];
+subtest "${described_class}::Array" => sub {
+  parse_ok Array => []               => [];
+  parse_ok Array => [1, 2, 3]        => [1, 2, 3];
+  parse_ok Array => [qw(a b c)]      => [qw(a b c)];
+  parse_ok Array => [a => 1, b => 2] => [a => 1, b => 2];
 };
 
 subtest "${described_class}::HasKey" => sub {

@@ -80,7 +80,7 @@ sub Num ($class) {
   });
 }
 
-sub ArrayOf ($class, $parser = $class->Any) {
+sub Array ($class, $parser = $class->Any) {
   $class->__name__->new(sub ($input) {
     return Result->Error(message => "only array references are valid instead got: " . np($input))
       if ref($input) ne 'ARRAY';
