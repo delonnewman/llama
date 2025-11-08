@@ -15,7 +15,7 @@ sub parse_ok ($type, $val, @args) {
 
   if (@args > 0) {
     if (ref $args[0]) {
-      is_deeply $result->value => $args[0];
+      is_deeply $result->value => $args[0], "expected: " . np($args[0]) . ', got: ' . np($result->value);
     } else {
       is $result->value => $args[0];
     }
@@ -102,6 +102,49 @@ subtest "${described_class}::ArrayOf" => sub {
   parse_ok ArrayOf => [1, 2, 3]        => [1, 2, 3];
   parse_ok ArrayOf => [qw(a b c)]      => [qw(a b c)];
   parse_ok ArrayOf => [a => 1, b => 2] => [a => 1, b => 2];
+};
+
+subtest "${described_class}::HasKey" => sub {
+  my $name = $described_class->HasKey('name');
+  my $age  = $described_class->HasKey(age => $described_class->Num);
+
+  # Valid
+  my $result = $name->run({ name => 'James', age => 34 });
+  is_deeply $result->value => [name => 'James'];
+  is_deeply $result->rest  => { age => 34 };
+
+  # Missing
+  $result = $name->run({ age => 56 });
+  like $result->message => qr/key "name" is missing/;
+
+  # Undefined
+  $result = $name->run({ name => undef, age => 13 });
+  like $result->message => qr/key "name" is not defined/;
+
+  # Value Error
+  $result = $age->run({ age => 'thirty' });
+  like $result->message => qr/key "age" is not a valid number, got "thirty"/;
+};
+
+subtest "${described_class}::Keys" => sub {
+  my $person = $described_class->Keys(
+    name    => $described_class->Str,
+    age     => $described_class->Num,
+    manager => $described_class->Bool,
+  );
+
+  my $result = $person->run({
+    name    => 'Janet',
+    age     => 30,
+    manager => 1,
+  });
+
+  is $result->rest => undef;
+  is_deeply $result->value => {
+    name    => 'Janet',
+    age     => 30,
+    manager => !!1,
+  };
 };
 
 done_testing;

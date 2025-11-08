@@ -18,7 +18,7 @@ our @EXPORT_OK = qw(choice any_of);
 #
 
 sub choice (@parsers) {
-  reduce { $a | $b } @parsers;
+  reduce { $a->or_else($b) } @parsers;
 }
 
 sub any_of (@parsers) {
@@ -33,12 +33,6 @@ sub new ($class, $sub) {
   return bless $sub => $class;
 }
 
-sub coerce ($val) {
-  return $val if ref $val && $val->isa('Llama::Parser');
-
-  die "Cannot coerce value to parser: " . (defined $val ? ref $val : 'undef');
-}
-
 sub Undef ($class) {
   state $Undef = $class->__name__->new(sub ($input) {
     return Result->Ok(value => $input) unless defined $input;
@@ -51,7 +45,7 @@ sub Defined ($class) {
   state $Defined = $class->__name__->new(sub ($input) {
     return Result->Ok(value => $input) if defined $input;
 
-    Result->Error(message => np($input) . " is not efined");
+    Result->Error(message => "is not defined");
   });
 }
 
@@ -82,7 +76,7 @@ sub Num ($class) {
   state $Num = $class->__name__->new(sub ($input) {
     return Result->Ok(value => 0+$input) if defined($input) && looks_like_number($input);
 
-    Result->Error(message => np($input) . " is not a valid number value");
+    Result->Error(message => "is not a valid number, got ". np($input));
   });
 }
 
@@ -99,13 +93,74 @@ sub ArrayOf ($class, $parser = $class->Any) {
   });
 }
 
+sub HasKey ($class, $key, $value = $class->Defined) {
+  my $parser = $class->MayHaveKey($key, $value);
+  $class->__name__->new(sub ($input) {
+    my $result = $parser->run($input);
+    return Result->Error(message => "key " . np($key) . " is missing")
+      if $result->is_ok && !defined $result->value;
+
+    return $result;
+  });
+}
+
+sub MayHaveKey ($class, $key, $value = $class->Defined) {
+  $class->__name__->new(sub ($input) {
+    return Result->Error(message => "only hash references are valid instead got: " . np($input))
+      if ref($input) ne 'HASH';
+
+    return Result->Ok(rest => $input) unless exists $input->{$key};
+
+    my $result = $value->run($input->{$key});
+    return Result->Error(message => "key " . np($key) . " " . $result->message) if $result->is_error;
+
+    my @keys = grep { $_ ne $key } keys %$input;
+    my %rest = %{$input}{@keys};
+    my $pair = [$key, $result->value];
+
+    return Result->Ok(value => $pair, rest => %rest ? \%rest : undef);
+  });
+}
+
+sub Keys ($class, %schema) {
+  $class->_keys('HasKey', %schema);
+}
+*RequiredKeys = \&Keys;
+
+sub OptionalKeys ($class, %schema) {
+  $class->_keys('MayHaveKey', %schema);
+}
+
+sub _keys ($class, $method, %schema) {
+  my @parsers = map { $class->MayHaveKey($_ => $schema{$_}) } keys %schema;
+  $class->__name__->new(sub ($input) {
+    my (@errors, %value);
+
+    my $rest = $input;
+    for my $parser (@parsers) {
+      last unless $rest;
+      my $result = $parser->run($rest);
+      if ($result->is_ok) {
+        $value{$result->value->[0]} = $result->value->[1] if $result->value;
+        $rest = $result->rest;
+      }
+      else {
+        push @errors => $result;
+      }
+    }
+
+    return Result->Error(message => join("; ", map { $_->message } @errors)) if @errors;
+    return Result->Ok(value => \%value, rest => $rest);
+  });
+}
+
 #
 # Parser Instance Methods
 #
 
 use overload
-  '|'  => 'or_else',
-  '>>' => 'and_then';
+  '|'  => sub{shift->or_else(shift)},
+  '>>' => sub{shift->and_then(shift)};
 
 sub run ($self, $input) {
   return $self->($input);
@@ -113,6 +168,7 @@ sub run ($self, $input) {
 
 sub and_then ($self, $other) {
   return $self->__name__->new(sub ($input) {
+    say STDERR "and_then: input = ", np($input);
     my $result1 = $self->run($input);
     return $result1 if $result1->is_error;
 
