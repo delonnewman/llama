@@ -22,7 +22,7 @@ sub choice (@parsers) {
 }
 
 sub any_of (@parsers) {
-  choice(map { __PACKAGE__->coerce($_) } @parsers);
+  choice(map { __PACKAGE__->Literal($_) } @parsers);
 }
 
 #
@@ -76,7 +76,15 @@ sub Num ($class) {
   state $Num = $class->__name__->new(sub ($input) {
     return Result->Ok(value => 0+$input) if defined($input) && looks_like_number($input);
 
-    Result->Error(message => "is not a valid number, got ". np($input));
+    Result->Error(message => "is not a valid number got ". np($input));
+  });
+}
+
+sub Literal ($class, $val)  {
+  $class->__name__->new(sub ($input) {
+    return Result->Ok(value => $input) if defined($input) && $input eq $val;
+
+    Result->Error(message => "expected literal " . np($val) . " got " . np($input));
   });
 }
 
@@ -87,7 +95,11 @@ sub Array ($class, $parser = $class->Any) {
 
     my @results = map { $parser->run($_) } @$input;
     my @errors  = grep { $_->is_error } @results;
-    return Result->Error(message => join("; ", map { $_->message } @errors)) if @errors;
+
+    if (@errors) {
+      my $i = 0;
+      return Result->Error(message => join("; " => map { "index " . $i++ . " " . $_->message } @errors))
+    }
 
     return Result->Ok(value => [map { $_->value } @results]);
   });
@@ -168,7 +180,6 @@ sub run ($self, $input) {
 
 sub and_then ($self, $other) {
   return $self->__name__->new(sub ($input) {
-    say STDERR "and_then: input = ", np($input);
     my $result1 = $self->run($input);
     return $result1 if $result1->is_error;
 

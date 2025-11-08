@@ -102,6 +102,15 @@ subtest "${described_class}::Array" => sub {
   parse_ok Array => [1, 2, 3]        => [1, 2, 3];
   parse_ok Array => [qw(a b c)]      => [qw(a b c)];
   parse_ok Array => [a => 1, b => 2] => [a => 1, b => 2];
+
+  my $nums = $described_class->Array($described_class->Num);
+
+  my $result = $nums->run([1, 2, 3]);
+  is_deeply $result->value => [1, 2, 3];
+
+  $result = $nums->run([qw(a b c)]);
+  ok $result->is_error;
+  like $result->message => qr/index 0 is not a valid number got "a"/;
 };
 
 subtest "${described_class}::HasKey" => sub {
@@ -123,7 +132,7 @@ subtest "${described_class}::HasKey" => sub {
 
   # Value Error
   $result = $age->run({ age => 'thirty' });
-  like $result->message => qr/key "age" is not a valid number, got "thirty"/;
+  like $result->message => qr/key "age" is not a valid number got "thirty"/;
 };
 
 subtest "${described_class}::Keys" => sub {
