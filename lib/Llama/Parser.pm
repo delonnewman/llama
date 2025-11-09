@@ -3,6 +3,7 @@ use Llama::Prelude qw(+Base :signatures);
 no strict 'refs';
 no warnings 'once';
 
+use Carp ();
 use Data::Printer;
 use List::Util qw(reduce);
 use Scalar::Util qw(looks_like_number);
@@ -22,7 +23,25 @@ sub choice (@parsers) {
 }
 
 sub any_of (@parsers) {
-  choice(map { __PACKAGE__->Literal($_) } @parsers);
+  choice(map { __PACKAGE__->coerce($_) } @parsers);
+}
+
+sub collect (@parsers) {
+  __PACKAGE__->new(sub ($input) {
+    my (@messages, @values);
+
+    for my $parser (@parsers) {
+      my $result = $parser->run($input);
+      if ($result->is_ok && !@messages) {
+        $input = $result->rest;
+        push @values => $result->value;
+      }
+      push @messages => $result->message if $result->is_error;
+    }
+
+    return Result->CompositeError(messages => \@messages) if @messages;
+    return Result->Ok(value => \@values);
+  });
 }
 
 #
@@ -33,11 +52,18 @@ sub new ($class, $sub) {
   return bless $sub => $class;
 }
 
+sub coerce ($class, $parser) {
+  return $parser if blessed($parser) && $parser->isa(__PACKAGE__);
+  return $class->Literal($parser) unless blessed($parser);
+
+  Carp::croak "can't coerce " . np($parser) . " into a parser";
+}
+
 sub Undef ($class) {
   state $Undef = $class->__name__->new(sub ($input) {
     return Result->Ok(value => $input) unless defined $input;
 
-    Result->Error(message => np($input) . " is not undefined");
+    Result->Error(message => "is not undefined got " . np($input));
   });
 }
 
@@ -90,7 +116,7 @@ sub Literal ($class, $val)  {
 
 sub Array ($class, $parser = $class->Any) {
   $class->__name__->new(sub ($input) {
-    return Result->Error(message => "only array references are valid instead got: " . np($input))
+    return Result->Error(message => "only array references are valid instead got " . np($input))
       if ref($input) ne 'ARRAY';
 
     my @results = map { $parser->run($_) } @$input;
@@ -98,7 +124,7 @@ sub Array ($class, $parser = $class->Any) {
 
     if (@errors) {
       my $i = 0;
-      return Result->Error(message => join("; " => map { "index " . $i++ . " " . $_->message } @errors))
+      return Result->CompositeError(messages => [map { "index " . $i++ . " " . $_->message } @errors]);
     }
 
     return Result->Ok(value => [map { $_->value } @results]);
@@ -118,7 +144,7 @@ sub HasKey ($class, $key, $value = $class->Defined) {
 
 sub MayHaveKey ($class, $key, $value = $class->Defined) {
   $class->__name__->new(sub ($input) {
-    return Result->Error(message => "only hash references are valid instead got: " . np($input))
+    return Result->Error(message => "only hash references are valid instead got " . np($input))
       if ref($input) ne 'HASH';
 
     return Result->Ok(rest => $input) unless exists $input->{$key};
@@ -135,35 +161,12 @@ sub MayHaveKey ($class, $key, $value = $class->Defined) {
 }
 
 sub Keys ($class, %schema) {
-  $class->_keys('HasKey', %schema);
+  collect(map { $class->HasKey($_ => $schema{$_}) } keys %schema);
 }
 *RequiredKeys = \&Keys;
 
 sub OptionalKeys ($class, %schema) {
-  $class->_keys('MayHaveKey', %schema);
-}
-
-sub _keys ($class, $method, %schema) {
-  my @parsers = map { $class->MayHaveKey($_ => $schema{$_}) } keys %schema;
-  $class->__name__->new(sub ($input) {
-    my (@errors, %value);
-
-    my $rest = $input;
-    for my $parser (@parsers) {
-      last unless $rest;
-      my $result = $parser->run($rest);
-      if ($result->is_ok) {
-        $value{$result->value->[0]} = $result->value->[1] if $result->value;
-        $rest = $result->rest;
-      }
-      else {
-        push @errors => $result;
-      }
-    }
-
-    return Result->Error(message => join("; ", map { $_->message } @errors)) if @errors;
-    return Result->Ok(value => \%value, rest => $rest);
-  });
+  collect(map { $class->MayHaveKey($_ => $schema{$_}) } keys %schema);
 }
 
 #

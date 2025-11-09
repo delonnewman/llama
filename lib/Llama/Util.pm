@@ -6,8 +6,9 @@ use utf8;
 use feature ':5.20';
 use experimental qw(signatures postderef);
 
+use Carp;
 use Data::Printer;
-use Scalar::Util qw(reftype);
+use Scalar::Util qw(reftype blessed);
 use POSIX qw(pow);
 use Digest::MurmurHash qw(murmur_hash);
 
@@ -20,6 +21,7 @@ our @EXPORT_OK = qw(
   hash_code
   hash_combine
   string_hash
+  toHashRef
 );
 
 # see https://github.com/moose/Package-Stash/blob/ac478644bb18a32e2f968138e2d651e47b843423/lib/Package/Stash/PP.pm#L135
@@ -89,6 +91,22 @@ array is modified in place.
 sub extract_block ($arrayref) {
   return delete $arrayref->[-1] if ref $arrayref->[-1] eq 'CODE';
   return undef;
+}
+
+sub toHashRef ($val) {
+  my $type = ref $val;
+  return $val if $type eq 'HASH';
+
+  if ($type eq 'ARRAY') {
+    my %hash = map { $_->[0] => $_->[1] } $val->@*;
+    return \%hash;
+  }
+
+  if (blessed($val) && (my $method = $val->can('toHashRef'))) {
+    return $val->$method();
+  }
+
+  croak "can't coerce " . np($val) . " into a hash reference";
 }
 
 sub string_hash ($string) {

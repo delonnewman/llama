@@ -3,6 +3,7 @@ use Llama::Prelude qw(:signatures);
 
 sub Ok ($, @args) { Llama::Parser::Result::Ok->new(@args) }
 sub Error ($, @args) { Llama::Parser::Result::Error->new(@args) }
+sub CompositeError ($, @args) { Llama::Parser::Result::CompositeError->new(@args) }
 
 sub new ($class, %attributes) {
   bless \%attributes => $class;
@@ -28,6 +29,15 @@ package Llama::Parser::Result::Error {
 
   sub is_terminal { 1 }
   sub is_error { 1 }
+}
+
+package Llama::Parser::Result::CompositeError {
+  our @ISA = qw(Llama::Parser::Result::Error);
+
+  sub messages ($self) { $self->{messages} }
+  sub message ($self) {
+    $self->{message} //= join "; " => $self->messages->@*;
+  }
 }
 
 1;

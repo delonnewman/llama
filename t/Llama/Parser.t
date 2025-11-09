@@ -3,6 +3,8 @@ use Llama::Test::TestSuite;
 use Llama::Prelude qw(:signatures);
 use Data::Printer;
 
+use Llama::Util qw(toHashRef);
+
 my $described_class = 'Llama::Parser';
 require_ok $described_class;
 
@@ -149,7 +151,7 @@ subtest "${described_class}::Keys" => sub {
   });
 
   is $result->rest => undef;
-  is_deeply $result->value => {
+  is_deeply toHashRef($result->value) => {
     name    => 'Janet',
     age     => 30,
     manager => !!1,

@@ -1,7 +1,7 @@
 package Llama::Util::Test;
 use Llama::Test::TestSuite;
 
-use Llama::Util qw(extract_flags extract_block string_hash);
+use Llama::Util qw(extract_flags extract_block string_hash toHashRef);
 
 subtest 'extract_block returns a code reference if one is present' => sub {
   my $args = [1, 2, 3, sub { 4 }];
@@ -80,6 +80,22 @@ subtest 'string_hash' => sub {
   isnt $subject => $second;
   isnt $subject => $third;
   isnt $second  => $third;
+};
+
+subtest 'toHashRef' => sub {
+  my $person = {
+    name    => 'Janet',
+    age     => 30,
+    manager => 1,
+  };
+
+  my $result = toHashRef([
+    [name    => 'Janet'],
+    [age     => 30],
+    [manager => !!1],
+  ]);
+
+  is_deeply $result => $person;
 };
 
 done_testing;
