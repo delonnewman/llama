@@ -8,11 +8,12 @@ use Data::Printer;
 use List::Util qw(reduce);
 use Scalar::Util qw(looks_like_number);
 
+use Llama::Util qw(toHashRef);
 use Llama::Parser::Result;
 sub Result :prototype() { 'Llama::Parser::Result' }
 
 use Exporter 'import';
-our @EXPORT_OK = qw(choice any_of);
+our @EXPORT_OK = qw(choice any_of collect);
 
 #
 # Exported Functions
@@ -167,6 +168,17 @@ sub Keys ($class, %schema) {
 
 sub OptionalKeys ($class, %schema) {
   collect(map { $class->MayHaveKey($_ => $schema{$_}) } keys %schema);
+}
+
+sub HashObject ($class, $class_name, @parsers) {
+  my $parser = collect(@parsers);
+  $class->__name__->new(sub ($input) {
+    my $result = $parser->run($input);
+    return $result if $result->is_error;
+
+    my $obj = bless toHashRef($result->value) => $class_name;
+    return Result->Ok(value => $obj);
+  });
 }
 
 #

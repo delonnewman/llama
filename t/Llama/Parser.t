@@ -158,4 +158,39 @@ subtest "${described_class}::Keys" => sub {
   };
 };
 
+package Person {
+  my $Schema = $described_class->HashObject(
+    Person => (
+      $described_class->HasKey(name    => $described_class->Str),
+      $described_class->HasKey(age     => $described_class->Num),
+      $described_class->HasKey(manager => $described_class->Bool),
+    )
+  );
+
+  sub new ($class, %attributes) {
+    my $result = $Schema->run(\%attributes);
+    die "ArgumentError: " . $result->message if $result->is_error;
+    return $result->value;
+  }
+
+  sub name    ($self) { $self->{name} }
+  sub age     ($self) { $self->{age} }
+  sub manager ($self) { $self->{manager} }
+}
+
+subtest "${described_class}::HashObject" => sub {
+  my $person = Person->new(
+    name    => 'Jake',
+    age     => 19,
+    manager => 0,
+  );
+
+  isa_ok $person      => 'Person';
+  is $person->name    => 'Jake';
+  is $person->age     => 19;
+  is $person->manager => !!0;
+
+  throws { Person->new(name => 'Katie', age => 'five') } qr/ArgumentError:/
+};
+
 done_testing;
