@@ -13,7 +13,7 @@ use Llama::Parser::Result;
 sub Result :prototype() { 'Llama::Parser::Result' }
 
 use Exporter 'import';
-our @EXPORT_OK = qw(choice any_of collect);
+our @EXPORT_OK = qw(choice any_of collect HashObject);
 
 #
 # Exported Functions
@@ -170,9 +170,9 @@ sub OptionalKeys ($class, %schema) {
   collect(map { $class->MayHaveKey($_ => $schema{$_}) } keys %schema);
 }
 
-sub HashObject ($class, $class_name, @parsers) {
+sub HashObject ($class_name, @parsers) {
   my $parser = collect(@parsers);
-  $class->__name__->new(sub ($input) {
+  __PACKAGE__->new(sub ($input) {
     my $result = $parser->run($input);
     return $result if $result->is_error;
 

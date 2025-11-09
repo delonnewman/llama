@@ -159,16 +159,17 @@ subtest "${described_class}::Keys" => sub {
 };
 
 package Person {
-  my $Schema = $described_class->HashObject(
-    Person => (
-      $described_class->HasKey(name    => $described_class->Str),
-      $described_class->HasKey(age     => $described_class->Num),
-      $described_class->HasKey(manager => $described_class->Bool),
-    )
+  $described_class->import('HashObject');
+
+  our $SCHEMA = HashObject(
+    __PACKAGE__,
+    $described_class->HasKey(name    => $described_class->Str),
+    $described_class->HasKey(age     => $described_class->Num),
+    $described_class->HasKey(manager => $described_class->Bool),
   );
 
   sub new ($class, %attributes) {
-    my $result = $Schema->run(\%attributes);
+    my $result = $SCHEMA->run(\%attributes);
     die "ArgumentError: " . $result->message if $result->is_error;
     return $result->value;
   }
