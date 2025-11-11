@@ -6,7 +6,7 @@ no warnings 'once';
 use Carp ();
 use Data::Printer;
 use List::Util qw(reduce);
-use Scalar::Util qw(looks_like_number);
+use Scalar::Util qw(looks_like_number blessed);
 
 use Llama::Util qw(toHashRef);
 use Llama::Parser::Result;
@@ -16,7 +16,7 @@ use Exporter 'import';
 our @EXPORT_OK = qw(choice any_of collect HashObject);
 
 #
-# Exported Functions
+# Exported Combinators
 #
 
 sub choice (@parsers) {
@@ -27,7 +27,17 @@ sub any_of (@parsers) {
   choice(map { __PACKAGE__->coerce($_) } @parsers);
 }
 
+=pod
+
+=head2 collect
+
+    my $parser = collect(Num(1), Num(2), Num(3));
+
+=cut
+
 sub collect (@parsers) {
+  my $xformer = shift @parsers unless blessed($parsers[0]);
+
   __PACKAGE__->new(sub ($input) {
     my (@messages, @values);
 
@@ -41,7 +51,9 @@ sub collect (@parsers) {
     }
 
     return Result->CompositeError(messages => \@messages) if @messages;
-    return Result->Ok(value => \@values);
+
+    my $val = defined $xformer ? $xformer->(@values) : \@values;
+    return Result->Ok(value => $val);
   });
 }
 
