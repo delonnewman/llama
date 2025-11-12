@@ -15,6 +15,15 @@ sub Result :prototype() { 'Llama::Parser::Result' }
 use Exporter 'import';
 our @EXPORT_OK = qw(choice any_of collect HashObject);
 
+# see https://github.com/dahlia/optique
+# see https://clojure.org/guides/spec
+# see https://github.com/Ramarren/cl-parser-combinators
+# see https://github.com/fosskers/parcom
+# see https://sr.ht/~shunter/parsnip/
+# see https://fsharpforfunandprofit.com/posts/understanding-parser-combinators/
+# see https://zod.dev
+# see https://github.com/sinclairzx81/typebox
+
 #
 # Exported Combinators
 #
