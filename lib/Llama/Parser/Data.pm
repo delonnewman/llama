@@ -10,7 +10,8 @@ use Llama::Parser::Result;
 
 =head1 NAME
 
-Llama::Parser::Data - A collection of parsers that are suitable for parsing arbitrary Perl data structures.
+Llama::Parser::Data - A collection of parsers that are suitable for parsing
+arbitrary Perl data structures.
 
 =head1 SYNOPSIS
 
