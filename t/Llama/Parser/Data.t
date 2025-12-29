@@ -152,6 +152,30 @@ subtest "${package}::HasKey" => sub {
   like $result->message => qr/key "age" is not a valid number got "thirty"/;
 };
 
+$package->import('MayHaveKey');
+
+subtest "${package}::MayHaveKey" => sub {
+  my $name = MayHaveKey('name');
+  my $age  = MayHaveKey(age => Num());
+
+  # Valid
+  my $result = $name->run({ name => 'James', age => 34 });
+  is_deeply $result->value => [name => 'James'];
+  is_deeply $result->rest  => { age => 34 };
+
+  # Missing
+  $result = $name->run({ age => 56 });
+  ok $result->is_ok;
+
+  # Undefined
+  $result = $name->run({ name => undef, age => 13 });
+  like $result->message => qr/key "name" is not defined/;
+
+  # Value Error
+  $result = $age->run({ age => 'thirty' });
+  like $result->message => qr/key "age" is not a valid number got "thirty"/;
+};
+
 $package->import('Keys');
 
 subtest "${package}::Keys" => sub {

@@ -20,6 +20,7 @@ our @EXPORT_OK = qw(
   Num
   Array
   HasKey
+  MayHaveKey
   Keys
   OptionalKeys
   HashObject
