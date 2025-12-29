@@ -8,12 +8,11 @@ use Llama::Util qw(toHashRef);
 my $described_class = 'Llama::Parser';
 require_ok $described_class;
 
-sub parse_ok ($type, $val, @args) {
-  my $result = $described_class->$type->run($val);
-  my $valStr = np($val);
+sub parse_ok ($parser, $val, @args) {
+  my $result = $parser->run($val);
 
-  isa_ok $result => "$described_class\::Result" => "$type => $valStr";
-  isa_ok $result => "$described_class\::Result\::Ok" => "$type => $valStr";
+  isa_ok $result => "$described_class\::Result" => np($val);
+  isa_ok $result => "$described_class\::Result\::Ok" => np($val);
 
   if (@args > 0) {
     if (ref $args[0]) {
@@ -26,84 +25,83 @@ sub parse_ok ($type, $val, @args) {
   is $result->rest  => $args[1] if @args > 1;
 }
 
-sub parse_error_ok ($type, $val) {
-  my $result = $described_class->$type->run($val);
-  my $valStr = np($val);
+sub parse_error_ok ($parser, $val) {
+  my $result = $parser->run($val);
 
-  isa_ok $result => "$described_class\::Result" => "$type => $valStr";
-  isa_ok $result => "$described_class\::Result\::Error" => "$type => $valStr";
+  isa_ok $result => "$described_class\::Result" => np($val);
+  isa_ok $result => "$described_class\::Result\::Error" => np($val);
 }
 
 subtest "${described_class}::Undef" => sub {
-  parse_ok Undef => undef, undef;
+  parse_ok $described_class->Undef => undef, undef;
 
-  parse_error_ok Undef => 1234;
-  parse_error_ok Undef => 'some string';
-  parse_error_ok Undef => [];
-  parse_error_ok Undef => {};
-  parse_error_ok Undef => '';
+  parse_error_ok $described_class->Undef => 1234;
+  parse_error_ok $described_class->Undef => 'some string';
+  parse_error_ok $described_class->Undef => [];
+  parse_error_ok $described_class->Undef => {};
+  parse_error_ok $described_class->Undef => '';
 };
 
 subtest "${described_class}::Defined" => sub {
-  parse_error_ok Defined => undef;
+  parse_error_ok $described_class->Defined => undef;
 
-  parse_ok Defined => 1234   => 1234;
-  parse_ok Defined => '1234' => '1234';
-  parse_ok Defined => 'hey'  => 'hey';
-  parse_ok Defined => []     => [];
-  parse_ok Defined => {}     => {};
-  parse_ok Defined => ''     => '';
+  parse_ok $described_class->Defined => 1234   => 1234;
+  parse_ok $described_class->Defined => '1234' => '1234';
+  parse_ok $described_class->Defined => 'hey'  => 'hey';
+  parse_ok $described_class->Defined => []     => [];
+  parse_ok $described_class->Defined => {}     => {};
+  parse_ok $described_class->Defined => ''     => '';
 };
 
 subtest "${described_class}::Any" => sub {
-  parse_ok Any => undef, undef;
-  parse_ok Any => 1234   => 1234;
-  parse_ok Any => '1234' => '1234';
-  parse_ok Any => 'hey'  => 'hey';
-  parse_ok Any => []     => [];
-  parse_ok Any => {}     => {};
-  parse_ok Any => ''     => '';
+  parse_ok $described_class->Any => undef, undef;
+  parse_ok $described_class->Any => 1234   => 1234;
+  parse_ok $described_class->Any => '1234' => '1234';
+  parse_ok $described_class->Any => 'hey'  => 'hey';
+  parse_ok $described_class->Any => []     => [];
+  parse_ok $described_class->Any => {}     => {};
+  parse_ok $described_class->Any => ''     => '';
 };
 
 subtest "${described_class}::Bool" => sub {
-  parse_ok Bool =>  0  => !!0;
-  parse_ok Bool => '0' => !!0;
-  parse_ok Bool =>  '' => !!0;
-  parse_ok Bool => undef, !!0;
+  parse_ok $described_class->Bool =>  0  => !!0;
+  parse_ok $described_class->Bool => '0' => !!0;
+  parse_ok $described_class->Bool =>  '' => !!0;
+  parse_ok $described_class->Bool => undef, !!0;
 
-  parse_ok Bool =>  1  => !!1;
-  parse_ok Bool => '1' => !!1;
+  parse_ok $described_class->Bool =>  1  => !!1;
+  parse_ok $described_class->Bool => '1' => !!1;
 
-  parse_error_ok Bool => 'hey';
-  parse_error_ok Bool => 1234;
+  parse_error_ok $described_class->Bool => 'hey';
+  parse_error_ok $described_class->Bool => 1234;
 };
 
 subtest "${described_class}::Str" => sub {
-  parse_ok Str =>     0 => "0";
-  parse_ok Str =>  1234 => "1234";
-  parse_ok Str => 'hey' => "hey";
+  parse_ok $described_class->Str =>     0 => "0";
+  parse_ok $described_class->Str =>  1234 => "1234";
+  parse_ok $described_class->Str => 'hey' => "hey";
 
-  parse_error_ok Str => [];
-  parse_error_ok Str => {};
-  parse_error_ok Str => undef;
+  parse_error_ok $described_class->Str => [];
+  parse_error_ok $described_class->Str => {};
+  parse_error_ok $described_class->Str => undef;
 };
 
 subtest "${described_class}::Num" => sub {
-  parse_ok Num =>     0  => 0;
-  parse_ok Num =>  1234  => 1234;
-  parse_ok Num => '1234' => 1234;
+  parse_ok $described_class->Num =>     0  => 0;
+  parse_ok $described_class->Num =>  1234  => 1234;
+  parse_ok $described_class->Num => '1234' => 1234;
 
-  parse_error_ok Num => [];
-  parse_error_ok Num => {};
-  parse_error_ok Num => undef;
-  parse_error_ok Num => 'hey';
+  parse_error_ok $described_class->Num => [];
+  parse_error_ok $described_class->Num => {};
+  parse_error_ok $described_class->Num => undef;
+  parse_error_ok $described_class->Num => 'hey';
 };
 
 subtest "${described_class}::Array" => sub {
-  parse_ok Array => []               => [];
-  parse_ok Array => [1, 2, 3]        => [1, 2, 3];
-  parse_ok Array => [qw(a b c)]      => [qw(a b c)];
-  parse_ok Array => [a => 1, b => 2] => [a => 1, b => 2];
+  parse_ok $described_class->Array => []               => [];
+  parse_ok $described_class->Array => [1, 2, 3]        => [1, 2, 3];
+  parse_ok $described_class->Array => [qw(a b c)]      => [qw(a b c)];
+  parse_ok $described_class->Array => [a => 1, b => 2] => [a => 1, b => 2];
 
   my $nums = $described_class->Array($described_class->Num);
 
