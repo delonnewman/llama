@@ -21,6 +21,7 @@ our @EXPORT_OK = qw(
   Array
   HasKey
   Keys
+  OptionalKeys
   HashObject
 );
 

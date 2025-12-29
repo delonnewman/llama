@@ -1,4 +1,4 @@
-package Llama::Base::Test;
+package Llama::Parser::Data::Test;
 use Llama::Test::TestSuite;
 use Llama::Prelude qw(:signatures);
 use Data::Printer;
@@ -156,6 +156,29 @@ $package->import('Keys');
 
 subtest "${package}::Keys" => sub {
   my $person = Keys(
+    name    => Str(),
+    age     => Num(),
+    manager => Bool(),
+  );
+
+  my $result = $person->run({
+    name    => 'Janet',
+    age     => 30,
+    manager => 1,
+  });
+
+  is $result->rest => undef;
+  is_deeply toHashRef($result->value) => {
+    name    => 'Janet',
+    age     => 30,
+    manager => !!1,
+  };
+};
+
+$package->import('OptionalKeys');
+
+subtest "${package}::OptionalKeys" => sub {
+  my $person = OptionalKeys(
     name    => Str(),
     age     => Num(),
     manager => Bool(),
