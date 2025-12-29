@@ -61,48 +61,56 @@ subtest "${package}::Defined" => sub {
   parse_ok Defined() => ''     => '';
 };
 
-subtest "${described_class}::Any" => sub {
-  parse_ok $described_class->Any => undef, undef;
-  parse_ok $described_class->Any => 1234   => 1234;
-  parse_ok $described_class->Any => '1234' => '1234';
-  parse_ok $described_class->Any => 'hey'  => 'hey';
-  parse_ok $described_class->Any => []     => [];
-  parse_ok $described_class->Any => {}     => {};
-  parse_ok $described_class->Any => ''     => '';
+$package->import('Any');
+
+subtest "${package}::Any" => sub {
+  parse_ok Any() => undef, undef;
+  parse_ok Any() => 1234   => 1234;
+  parse_ok Any() => '1234' => '1234';
+  parse_ok Any() => 'hey'  => 'hey';
+  parse_ok Any() => []     => [];
+  parse_ok Any() => {}     => {};
+  parse_ok Any() => ''     => '';
 };
 
-subtest "${described_class}::Bool" => sub {
-  parse_ok $described_class->Bool =>  0  => !!0;
-  parse_ok $described_class->Bool => '0' => !!0;
-  parse_ok $described_class->Bool =>  '' => !!0;
-  parse_ok $described_class->Bool => undef, !!0;
+$package->import('Bool');
 
-  parse_ok $described_class->Bool =>  1  => !!1;
-  parse_ok $described_class->Bool => '1' => !!1;
+subtest "${package}::Bool" => sub {
+  parse_ok Bool() =>  0  => !!0;
+  parse_ok Bool() => '0' => !!0;
+  parse_ok Bool() =>  '' => !!0;
+  parse_ok Bool() => undef, !!0;
 
-  parse_error_ok $described_class->Bool => 'hey';
-  parse_error_ok $described_class->Bool => 1234;
+  parse_ok Bool() =>  1  => !!1;
+  parse_ok Bool() => '1' => !!1;
+
+  parse_error_ok Bool() => 'hey';
+  parse_error_ok Bool() => 1234;
 };
 
-subtest "${described_class}::Str" => sub {
-  parse_ok $described_class->Str =>     0 => "0";
-  parse_ok $described_class->Str =>  1234 => "1234";
-  parse_ok $described_class->Str => 'hey' => "hey";
+$package->import('Str');
 
-  parse_error_ok $described_class->Str => [];
-  parse_error_ok $described_class->Str => {};
-  parse_error_ok $described_class->Str => undef;
+subtest "${package}::Str" => sub {
+  parse_ok Str() =>     0 => "0";
+  parse_ok Str() =>  1234 => "1234";
+  parse_ok Str() => 'hey' => "hey";
+
+  parse_error_ok Str() => [];
+  parse_error_ok Str() => {};
+  parse_error_ok Str() => undef;
 };
 
-subtest "${described_class}::Num" => sub {
-  parse_ok $described_class->Num =>     0  => 0;
-  parse_ok $described_class->Num =>  1234  => 1234;
-  parse_ok $described_class->Num => '1234' => 1234;
+$package->import('Num');
 
-  parse_error_ok $described_class->Num => [];
-  parse_error_ok $described_class->Num => {};
-  parse_error_ok $described_class->Num => undef;
-  parse_error_ok $described_class->Num => 'hey';
+subtest "${package}::Num" => sub {
+  parse_ok Num() =>     0  => 0;
+  parse_ok Num() =>  1234  => 1234;
+  parse_ok Num() => '1234' => 1234;
+
+  parse_error_ok Num() => [];
+  parse_error_ok Num() => {};
+  parse_error_ok Num() => undef;
+  parse_error_ok Num() => 'hey';
 };
 
 subtest "${described_class}::Array" => sub {
