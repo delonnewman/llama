@@ -17,6 +17,7 @@ our @EXPORT_OK = qw(
   Bool
   Str
   Num
+  Array
 );
 
 

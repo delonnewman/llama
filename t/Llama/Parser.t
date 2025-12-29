@@ -113,13 +113,15 @@ subtest "${package}::Num" => sub {
   parse_error_ok Num() => 'hey';
 };
 
-subtest "${described_class}::Array" => sub {
-  parse_ok $described_class->Array => []               => [];
-  parse_ok $described_class->Array => [1, 2, 3]        => [1, 2, 3];
-  parse_ok $described_class->Array => [qw(a b c)]      => [qw(a b c)];
-  parse_ok $described_class->Array => [a => 1, b => 2] => [a => 1, b => 2];
+$package->import('Array');
 
-  my $nums = $described_class->Array($described_class->Num);
+subtest "${package}::Array" => sub {
+  parse_ok Array() => []               => [];
+  parse_ok Array() => [1, 2, 3]        => [1, 2, 3];
+  parse_ok Array() => [qw(a b c)]      => [qw(a b c)];
+  parse_ok Array() => [a => 1, b => 2] => [a => 1, b => 2];
+
+  my $nums = Array(Num());
 
   my $result = $nums->run([1, 2, 3]);
   is_deeply $result->value => [1, 2, 3];
