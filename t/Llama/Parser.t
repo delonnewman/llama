@@ -48,15 +48,17 @@ subtest "${package}::Undef" => sub {
   parse_error_ok Undef() => '';
 };
 
-subtest "${described_class}::Defined" => sub {
-  parse_error_ok $described_class->Defined => undef;
+$package->import('Defined');
 
-  parse_ok $described_class->Defined => 1234   => 1234;
-  parse_ok $described_class->Defined => '1234' => '1234';
-  parse_ok $described_class->Defined => 'hey'  => 'hey';
-  parse_ok $described_class->Defined => []     => [];
-  parse_ok $described_class->Defined => {}     => {};
-  parse_ok $described_class->Defined => ''     => '';
+subtest "${package}::Defined" => sub {
+  parse_error_ok Defined() => undef;
+
+  parse_ok Defined() => 1234   => 1234;
+  parse_ok Defined() => '1234' => '1234';
+  parse_ok Defined() => 'hey'  => 'hey';
+  parse_ok Defined() => []     => [];
+  parse_ok Defined() => {}     => {};
+  parse_ok Defined() => ''     => '';
 };
 
 subtest "${described_class}::Any" => sub {

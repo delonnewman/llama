@@ -9,7 +9,7 @@ use Llama::Parser qw(collect choice);
 use Llama::Parser::Result;
 
 use Exporter 'import';
-our @EXPORT_OK = qw(Undef);
+our @EXPORT_OK = qw(Undef Defined);
 
 
 =pod
