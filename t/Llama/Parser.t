@@ -5,9 +5,6 @@ use Data::Printer;
 
 use Llama::Util qw(toHashRef);
 
-my $described_class = 'Llama::Parser';
-require_ok $described_class;
-
 my $package = 'Llama::Parser::Data';
 require_ok $package;
 
@@ -131,9 +128,11 @@ subtest "${package}::Array" => sub {
   like $result->message => qr/index 0 is not a valid number got "a"/;
 };
 
-subtest "${described_class}::HasKey" => sub {
-  my $name = $described_class->HasKey('name');
-  my $age  = $described_class->HasKey(age => $described_class->Num);
+$package->import('HasKey');
+
+subtest "${package}::HasKey" => sub {
+  my $name = HasKey('name');
+  my $age  = HasKey(age => Num());
 
   # Valid
   my $result = $name->run({ name => 'James', age => 34 });
@@ -153,11 +152,13 @@ subtest "${described_class}::HasKey" => sub {
   like $result->message => qr/key "age" is not a valid number got "thirty"/;
 };
 
-subtest "${described_class}::Keys" => sub {
-  my $person = $described_class->Keys(
-    name    => $described_class->Str,
-    age     => $described_class->Num,
-    manager => $described_class->Bool,
+$package->import('Keys');
+
+subtest "${package}::Keys" => sub {
+  my $person = Keys(
+    name    => Str(),
+    age     => Num(),
+    manager => Bool(),
   );
 
   my $result = $person->run({
@@ -175,13 +176,13 @@ subtest "${described_class}::Keys" => sub {
 };
 
 package Person {
-  $described_class->import('HashObject');
+  $package->import('HashObject', 'HasKey', 'Str', 'Num', 'Bool');
 
   our $SCHEMA = HashObject(
     __PACKAGE__,
-    $described_class->HasKey(name    => $described_class->Str),
-    $described_class->HasKey(age     => $described_class->Num),
-    $described_class->HasKey(manager => $described_class->Bool),
+    HasKey(name    => Str()),
+    HasKey(age     => Num()),
+    HasKey(manager => Bool()),
   );
 
   sub new ($class, %attributes) {
@@ -195,7 +196,7 @@ package Person {
   sub manager ($self) { $self->{manager} }
 }
 
-subtest "${described_class}::HashObject" => sub {
+subtest "${package}::HashObject" => sub {
   my $person = Person->new(
     name    => 'Jake',
     age     => 19,

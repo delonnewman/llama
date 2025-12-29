@@ -6,6 +6,7 @@ no warnings 'once';
 use Data::Printer;
 use Scalar::Util qw(looks_like_number blessed);
 
+use Llama::Util qw(toHashRef);
 use Llama::Parser qw(collect choice);
 use Llama::Parser::Result;
 
@@ -18,6 +19,9 @@ our @EXPORT_OK = qw(
   Str
   Num
   Array
+  HasKey
+  Keys
+  HashObject
 );
 
 
@@ -301,7 +305,7 @@ sub OptionalKeys (%schema) {
 }
 
 sub HashObject ($class_name, @parsers) {
-  my $parser = collect(\&toHashRef, @parsers);
+  my $parser = collect(sub { toHashRef(\@_) }, @parsers);
 
   Parser->new(sub ($input) {
     my $result = $parser->run($input);
