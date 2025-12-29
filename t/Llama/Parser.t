@@ -8,11 +8,14 @@ use Llama::Util qw(toHashRef);
 my $described_class = 'Llama::Parser';
 require_ok $described_class;
 
+my $package = 'Llama::Parser::Data';
+require_ok $package;
+
 sub parse_ok ($parser, $val, @args) {
   my $result = $parser->run($val);
 
-  isa_ok $result => "$described_class\::Result" => np($val);
-  isa_ok $result => "$described_class\::Result\::Ok" => np($val);
+  isa_ok $result => "Llama::Parser::Result" => np($val);
+  isa_ok $result => "Llama::Parser::Result::Ok" => np($val);
 
   if (@args > 0) {
     if (ref $args[0]) {
@@ -29,18 +32,20 @@ sub parse_ok ($parser, $val, @args) {
 sub parse_error_ok ($parser, $val) {
   my $result = $parser->run($val);
 
-  isa_ok $result => "$described_class\::Result" => np($val);
-  isa_ok $result => "$described_class\::Result\::Error" => np($val);
+  isa_ok $result => "Llama::Parser::Result" => np($val);
+  isa_ok $result => "Llama::Parser::Result::Error" => np($val);
 }
 
-subtest "${described_class}::Undef" => sub {
-  parse_ok $described_class->Undef => undef, undef;
+$package->import('Undef');
 
-  parse_error_ok $described_class->Undef => 1234;
-  parse_error_ok $described_class->Undef => 'some string';
-  parse_error_ok $described_class->Undef => [];
-  parse_error_ok $described_class->Undef => {};
-  parse_error_ok $described_class->Undef => '';
+subtest "${package}::Undef" => sub {
+  parse_ok Undef() => undef, undef;
+
+  parse_error_ok Undef() => 1234;
+  parse_error_ok Undef() => 'some string';
+  parse_error_ok Undef() => [];
+  parse_error_ok Undef() => {};
+  parse_error_ok Undef() => '';
 };
 
 subtest "${described_class}::Defined" => sub {
