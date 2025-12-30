@@ -170,9 +170,10 @@ In all cases if the input is successful it will be coerced into a number.
 =cut
 
 sub Num ($literal = undef) {
-  my $name = __PACKAGE__ . '::Num';
+  my $prefix = __PACKAGE__ . '::Num';
+  my $name   = $literal ? "$prefix(" . np($literal) . ")" : $prefix;
   
-  state $Num = Parser->new(sub ($input) {
+  Parser->new(sub ($input) {
     return Result->Error(message => "is not a valid number got ". np($input))
       unless defined($input) && looks_like_number($input);
 

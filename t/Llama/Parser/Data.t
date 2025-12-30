@@ -122,6 +122,18 @@ subtest "${package}::Num" => sub {
   parse_error_ok Num() => 'hey';
 };
 
+subtest "${package}::Num - with parameter" => sub {
+  my $one = Num(1);
+  is $one->name => 'Llama::Parser::Data::Num(1)';
+
+  parse_ok $one => 1 => 1;
+  parse_ok $one => "1" => 1;
+
+  parse_error_ok $one => "one";
+  parse_error_ok $one => "1am";
+  parse_error_ok $one => "1 km";
+};
+
 $package->import('Array');
 
 subtest "${package}::Array" => sub {
