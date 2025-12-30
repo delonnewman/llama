@@ -137,6 +137,8 @@ subtest "${package}::Num - with parameter" => sub {
 $package->import('Array');
 
 subtest "${package}::Array" => sub {
+  is Array()->name => 'Llama::Parser::Data::Array';
+
   parse_ok Array() => []               => [];
   parse_ok Array() => [1, 2, 3]        => [1, 2, 3];
   parse_ok Array() => [qw(a b c)]      => [qw(a b c)];

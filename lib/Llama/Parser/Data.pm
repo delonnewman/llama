@@ -198,6 +198,8 @@ sub Literal ($val)  {
 }
 
 sub Array ($parser = undef) {
+  my $name = __PACKAGE__ . '::Array';
+
   Parser->new(sub ($input) {
     return Result->Error(message => "only array references are valid instead got " . np($input))
       if ref $input ne 'ARRAY';
@@ -220,7 +222,7 @@ sub Array ($parser = undef) {
 
     return Result->CompositeError(messages => \@messages) if @messages;
     return Result->Ok(value => \@values);
-  });
+  } => $name);
 }
 
 sub HasKey ($key, $value = Defined) {
