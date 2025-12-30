@@ -269,14 +269,16 @@ sub MayHaveKey ($key, $value = Defined) {
 
 sub Keys (%schema) {
   my $parser = And(map { HasKey($_ => $schema{$_}) } keys %schema);
-  my $keys = join(', ', map { "$_ => " . $schema{$_}->name } keys %schema);
+  my $keys   = join(', ', map { "$_ => " . $schema{$_}->name } keys %schema);
+
   return $parser->name(__PACKAGE__ . "::Keys($keys)");
 }
 *RequiredKeys = \&Keys;
 
 sub OptionalKeys (%schema) {
   my $parser = And(map { MayHaveKey($_ => $schema{$_}) } keys %schema);
-  my $keys = join(', ', map { "$_ => " . $schema{$_}->name } keys %schema);
+  my $keys   = join(', ', map { "$_ => " . $schema{$_}->name } keys %schema);
+
   return $parser->name(__PACKAGE__ . "::OptionalKeys($keys)");
 }
 
