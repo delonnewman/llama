@@ -283,15 +283,18 @@ sub OptionalKeys (%schema) {
 }
 
 sub HashObject ($class_name, @parsers) {
-  my $parser = And(@parsers);
+  my $inner = And(@parsers);
+  my $attributes = join(', ', map { $_->name } @parsers);
 
-  Parser->new(sub ($input) {
-    my $result = $parser->run($input);
+  my $parser = Parser->new(sub ($input) {
+    my $result = $inner->parse($input);
     return $result if $result->is_error;
 
     my $obj = bless toHashRef($result->value) => $class_name;
     return Result->Ok(value => $obj);
   });
+
+  return $parser->name("$class_name($attributes)");
 }
 
 1;

@@ -279,20 +279,20 @@ subtest "${package}::OptionalKeys" => sub {
   };
 };
 
-package Person {
-  $package->import('HashObject', 'HasKey', 'Str', 'Num', 'Bool');
+package Test::Person {
+  $package->import('HashObject', 'HasKey', 'MayHaveKey', 'Str', 'Num', 'Bool');
 
-  our $SCHEMA = HashObject(
-    __PACKAGE__,
-    HasKey(name    => Str()),
-    HasKey(age     => Num()),
-    HasKey(manager => Bool()),
-  );
+  sub parser ($self) {
+    state $parser = HashObject(
+      ref($self) || $self,
+      HasKey(name    => Str()),
+      HasKey(age     => Num()),
+      MayHaveKey(manager => Bool()),
+    );
+  }
 
   sub new ($class, %attributes) {
-    my $result = $SCHEMA->run(\%attributes);
-    die "ArgumentError: " . $result->message if $result->is_error;
-    return $result->value;
+    return $class->parser->validate(\%attributes);
   }
 
   sub name    ($self) { $self->{name} }
@@ -301,18 +301,24 @@ package Person {
 }
 
 subtest "${package}::HashObject" => sub {
-  my $person = Person->new(
+  my $person = Test::Person->new(
     name    => 'Jake',
     age     => 19,
     manager => 0,
   );
 
-  isa_ok $person      => 'Person';
+  like $person->parser->name => qr/^Test::Person\(.+\)/;
+  like $person->parser->name => qr/HasKey\(name => Llama::Parser::Data::Str\)/;
+  like $person->parser->name => qr/HasKey\(age => Llama::Parser::Data::Num\)/;
+  like $person->parser->name =>
+    qr/MayHaveKey\(manager => Llama::Parser::Data::Bool\)/;
+
+  isa_ok $person      => 'Test::Person';
   is $person->name    => 'Jake';
   is $person->age     => 19;
   is $person->manager => !!0;
 
-  throws { Person->new(name => 'Katie', age => 'five') } qr/ArgumentError:/
+  throws { Test::Person->new(name => 'Katie', age => 'five') } qr/ArgumentError:/
 };
 
 done_testing;
