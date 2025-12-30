@@ -170,6 +170,8 @@ In all cases if the input is successful it will be coerced into a number.
 =cut
 
 sub Num ($literal = undef) {
+  my $name = __PACKAGE__ . '::Num';
+  
   state $Num = Parser->new(sub ($input) {
     return Result->Error(message => "is not a valid number got ". np($input))
       unless defined($input) && looks_like_number($input);
@@ -178,7 +180,7 @@ sub Num ($literal = undef) {
     return Result->Ok(value => 0+$input) if $input == $literal;
 
     Result->Error(message => np($input) . " does not equal " . np($literal));
-  });
+  } => $name);
 }
 
 # TODO: consider supporting booleans on newer Perls > 5.36

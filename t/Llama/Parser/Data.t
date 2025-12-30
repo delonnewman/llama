@@ -110,6 +110,8 @@ subtest "${package}::Str - with parameter" => sub {
 $package->import('Num');
 
 subtest "${package}::Num" => sub {
+  is Num()->name => 'Llama::Parser::Data::Num';
+
   parse_ok Num() =>     0  => 0;
   parse_ok Num() =>  1234  => 1234;
   parse_ok Num() => '1234' => 1234;
