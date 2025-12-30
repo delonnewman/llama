@@ -145,6 +145,7 @@ subtest "${package}::Array" => sub {
   parse_ok Array() => [a => 1, b => 2] => [a => 1, b => 2];
 
   my $nums = Array(Num());
+  is $nums->name => 'Llama::Parser::Data::Array(Llama::Parser::Data::Num)';
 
   my $result = $nums->run([1, 2, 3]);
   is_deeply $result->value => [1, 2, 3];

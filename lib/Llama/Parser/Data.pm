@@ -198,7 +198,8 @@ sub Literal ($val)  {
 }
 
 sub Array ($parser = undef) {
-  my $name = __PACKAGE__ . '::Array';
+  my $prefix = __PACKAGE__ . '::Array';
+  my $name   = $parser ? "$prefix(" . $parser->name . ")" : $prefix;
 
   Parser->new(sub ($input) {
     return Result->Error(message => "only array references are valid instead got " . np($input))
