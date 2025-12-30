@@ -83,7 +83,7 @@ sub Undef :prototype() {
     return Result->Ok(value => $input) unless defined $input;
 
     Result->Error(message => "is not undefined got " . np($input));
-  });
+  }, => __PACKAGE__ . '::Undef');
 }
 
 =pod
@@ -104,7 +104,7 @@ sub Defined :prototype() {
     return Result->Ok(value => $input) if defined $input;
 
     Result->Error(message => "is not defined");
-  });
+  } => __PACKAGE__ . '::Defined');
 }
 
 =pod
@@ -119,7 +119,7 @@ sub Bool :prototype() {
     return Result->Ok(value => !!1) if $input eq '1';
 
     Result->Error(message => np($input) . " is not a valid boolean value");
-  });
+  } => __PACKAGE__ . '::Bool');
 }
 
 =pod
@@ -129,6 +129,9 @@ sub Bool :prototype() {
 =cut
 
 sub Str ($pattern = undef) {
+  my $prefix = __PACKAGE__ . '::Str';
+  my $name   = $pattern ? "$prefix(" . np($pattern) . ")" : $prefix;
+  
   Parser->new(sub ($input) {
     return Result->Error(message => np($input) . " is not a valid string value")
       unless defined($input) && ref(\$input) eq 'SCALAR';
@@ -142,7 +145,7 @@ sub Str ($pattern = undef) {
 
     return Result->Ok(value => "$input") if $input eq $pattern;
     return Result->Error(message => np($input) . " does not equal " . np($pattern));
-  });
+  } => $name);
 }
 
 =pod

@@ -34,6 +34,8 @@ sub parse_error_ok ($parser, $val) {
 $package->import('Undef');
 
 subtest "${package}::Undef" => sub {
+  is Undef()->name => 'Llama::Parser::Data::Undef';
+  
   parse_ok Undef() => undef, undef;
 
   parse_error_ok Undef() => 1234;
@@ -46,6 +48,8 @@ subtest "${package}::Undef" => sub {
 $package->import('Defined');
 
 subtest "${package}::Defined" => sub {
+  is Defined()->name => 'Llama::Parser::Data::Defined';
+
   parse_error_ok Defined() => undef;
 
   parse_ok Defined() => 1234   => 1234;
@@ -59,6 +63,8 @@ subtest "${package}::Defined" => sub {
 $package->import('Bool');
 
 subtest "${package}::Bool" => sub {
+  is Bool()->name => 'Llama::Parser::Data::Bool';
+
   parse_ok Bool() =>  0  => !!0;
   parse_ok Bool() => '0' => !!0;
   parse_ok Bool() =>  '' => !!0;
@@ -74,6 +80,8 @@ subtest "${package}::Bool" => sub {
 $package->import('Str');
 
 subtest "${package}::Str" => sub {
+  is Str()->name => 'Llama::Parser::Data::Str';
+
   parse_ok Str() =>     0 => "0";
   parse_ok Str() =>  1234 => "1234";
   parse_ok Str() => 'hey' => "hey";
@@ -81,6 +89,22 @@ subtest "${package}::Str" => sub {
   parse_error_ok Str() => [];
   parse_error_ok Str() => {};
   parse_error_ok Str() => undef;
+};
+
+subtest "${package}::Str - with parameter" => sub {
+  my $hey = Str("hey");
+  is $hey->name => 'Llama::Parser::Data::Str("hey")';
+
+  parse_ok $hey => "hey" => "hey";
+  parse_error_ok $hey => "hey!";
+  parse_error_ok $hey => "hello";
+
+  my $prefix_he = Str(qr/^he/);
+  is $prefix_he->name => 'Llama::Parser::Data::Str(^he  (modifiers: u))';
+
+  parse_ok $prefix_he => "hey"   => "hey";
+  parse_ok $prefix_he => "hey!"  => "hey!";
+  parse_ok $prefix_he => "hello" => "hello";
 };
 
 $package->import('Num');
