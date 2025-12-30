@@ -77,6 +77,14 @@ sub run ($self, $input) {
   return $self->($input);
 }
 
+*parse = \&run;
+
+sub parse_or_die ($self, $input) {
+  my $result = $self->parse($input);
+  Carp::confess "ParserError: while parsing " . np($input) . ' ' . $result->message if $result->is_error;
+  return $result;
+}
+
 sub and_then ($self, $other) {
   return $self->__name__->new(sub ($input) {
     my $result1 = $self->run($input);
