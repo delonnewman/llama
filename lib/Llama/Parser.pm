@@ -18,7 +18,6 @@ our @EXPORT_OK = qw(
   Any
   Or
   And
-  collect
 );
 
 # Aliases
@@ -119,8 +118,6 @@ sub And (@parsers) {
     return Result->Ok(value => \@values, rest => $result->rest);
   });
 }
-
-*collect = \&And;
 
 =pod
 
