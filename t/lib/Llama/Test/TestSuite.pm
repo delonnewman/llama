@@ -4,7 +4,7 @@ use utf8;
 use strict;
 use warnings;
 use feature ':5.20';
-use feature 'signatures';
+use experimental qw(signatures postderef);
 
 use Data::Printer ();
 use Test::More ();
@@ -12,13 +12,14 @@ use Test::More ();
 my @EXPORT = qw(throws doesnt_throw);
 my %FORWARDING = (
   'Test::More' =>
-    [qw(ok is isnt pass fail diag subtest is_deeply like unlike done_testing require_ok isa_ok can_ok)],
+    [qw(ok is isnt pass fail diag subtest is_deeply like unlike done_testing require_ok isa_ok can_ok skip)],
   'Data::Printer' => [qw(p np)],
 );
 
 sub import {
   $_->import for qw(strict warnings utf8);
-  feature->import(':5.24', 'signatures');
+  feature->import(':5.20');
+  experimental->import($_) for qw(signatures postderef);
 
   {
     my ($calling_package) = caller;
