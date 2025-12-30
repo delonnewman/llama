@@ -20,8 +20,17 @@ package Llama::Parser::Result::Ok {
   sub value ($self) { $self->{value} }
   sub rest ($self) { $self->{rest} }
 
-  sub is_terminal ($self) { !$self->rest }
   sub is_ok { 1 }
+  sub is_terminal ($self) {
+    my $rest = $self->rest;
+    return !!1 if !defined $rest || $rest eq '';
+
+    my $ref = ref $rest;
+    return !!1 if $ref eq 'ARRAY' && !@$rest;
+    return !!1 if $ref eq 'HASH'  && !%$rest;
+
+    return !!'';
+  }
 }
 
 package Llama::Parser::Result::Void {
