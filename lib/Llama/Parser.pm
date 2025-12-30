@@ -10,10 +10,13 @@ use Scalar::Util qw(looks_like_number blessed);
 
 use Llama::Util qw(toHashRef);
 use Llama::Parser::Result;
-sub Result :prototype() { 'Llama::Parser::Result' }
 
 use Exporter 'import';
 our @EXPORT_OK = qw(choice any_of collect);
+
+# Aliases
+
+sub Result :prototype() { 'Llama::Parser::Result' }
 
 #
 # Exported Combinators
