@@ -222,6 +222,11 @@ subtest "${package}::Keys" => sub {
     manager => Bool(),
   );
 
+  like $person->name => qr/^Llama::Parser::Data::Keys\(.*\)/;
+  like $person->name => qr/name => Llama::Parser::Data::Str/;
+  like $person->name => qr/age => Llama::Parser::Data::Num/;
+  like $person->name => qr/manager => Llama::Parser::Data::Bool/;
+
   my $result = $person->run({
     name    => 'Janet',
     age     => 30,

@@ -268,7 +268,9 @@ sub MayHaveKey ($key, $value = Defined) {
 }
 
 sub Keys (%schema) {
-  And(map { HasKey($_ => $schema{$_}) } keys %schema);
+  my $parser = And(map { HasKey($_ => $schema{$_}) } keys %schema);
+  my $keys = join(', ', map { "$_ => " . $schema{$_}->name } keys %schema);
+  return $parser->name(__PACKAGE__ . "::Keys($keys)");
 }
 *RequiredKeys = \&Keys;
 
