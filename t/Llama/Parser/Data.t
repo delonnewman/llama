@@ -24,11 +24,12 @@ sub parse_ok ($parser, $val, @args) {
   is $result->rest  => $args[1] if @args > 1;
 }
 
-sub parse_error_ok ($parser, $val) {
+sub parse_error_ok ($parser, $val, $pattern = undef) {
   my $result = $parser->run($val);
 
   isa_ok $result => "Llama::Parser::Result" => np($val);
   isa_ok $result => "Llama::Parser::Result::Error" => np($val);
+  like $result->message => $pattern if $pattern;
 }
 
 $package->import('Undef');
@@ -148,11 +149,10 @@ subtest "${package}::Array" => sub {
   is $nums->name => 'Llama::Parser::Data::Array(Llama::Parser::Data::Num)';
 
   my $result = $nums->run([1, 2, 3]);
-  is_deeply $result->value => [1, 2, 3];
+  parse_ok $nums => [1, 2, 3] => [1, 2, 3];
+  parse_ok $nums => [qw(1 2 3)] => [1, 2, 3];
 
-  $result = $nums->run([qw(a b c)]);
-  ok $result->is_error;
-  like $result->message => qr/index 0 is not a valid number got "a"/;
+  parse_error_ok $nums => [qw(a b c)] => qr/index 0 is not a valid number got "a"/;
 };
 
 $package->import('HasKey');
