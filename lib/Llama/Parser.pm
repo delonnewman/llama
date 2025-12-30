@@ -124,6 +124,7 @@ sub And (@parsers) {
         push @values => $result->value unless $result->is_void;
       }
       push @messages => $result->message if $result->is_error;
+      last if $result->is_terminal;
     }
 
     return Result->CompositeError(messages => \@messages) if @messages;

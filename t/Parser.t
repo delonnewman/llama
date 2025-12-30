@@ -19,7 +19,7 @@ sub Chars ($chars) {
       unless $1;
 
     return Result->Ok(value => $1, rest => $input);
-  });
+  } => __PACKAGE__ . '::Chars');
 }
 
 my $input = "abcde";
@@ -92,16 +92,26 @@ subtest "Any" => sub {
   is $result->rest => undef;
 };
 
-$described_class->import('And');
+$described_class->import('And', 'AndThen');
 
 subtest "And" => sub {
   my $result;
 
   my $all = And(Chars('a'), Chars('b'), Chars('c'));
 
-  $result = $all->parse($input);
+  $result = $all->parse_or_die($input);
   is_deeply $result->value => [qw(a b c)];
   is $result->rest => "de";
+};
+
+subtest "And - early return" => sub {
+  my $result;
+
+  my $all = And(Chars('a'), Chars('b'), Chars('c'), Chars('d'), Chars('e'), Chars('f'));
+
+  $result = $all->parse_or_die($input);
+  is_deeply $result->value => [qw(a b c d e)];
+  is $result->rest => '';
 };
 
 done_testing;
