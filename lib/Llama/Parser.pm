@@ -18,6 +18,7 @@ our @EXPORT_OK = qw(
   Any
   Or
   And
+  AndThen
 );
 
 # Aliases
@@ -90,6 +91,16 @@ or they all fail. If all parsers fail the result will be the last error.
 
 sub Or (@parsers) {
   reduce { $a->or_else($b) } @parsers;
+}
+
+=pod
+
+=head2 AndThen
+
+=cut
+
+sub AndThen (@parsers) {
+  reduce { $a->and_then($b) } @parsers;
 }
 
 =pod
