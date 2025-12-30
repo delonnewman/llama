@@ -150,6 +150,7 @@ subtest "${package}::Array" => sub {
   is $nums->name => 'Llama::Parser::Data::Array(Llama::Parser::Data::Num)';
 
   my $result = $nums->run([1, 2, 3]);
+  parse_ok $nums => [] => [];
   parse_ok $nums => [1, 2, 3] => [1, 2, 3];
   parse_ok $nums => [qw(1 2 3)] => [1, 2, 3];
 
