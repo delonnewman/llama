@@ -7,7 +7,7 @@ use Data::Printer;
 use Scalar::Util qw(looks_like_number blessed);
 
 use Llama::Util qw(toHashRef);
-use Llama::Parser qw(collect And Or);
+use Llama::Parser qw(And Or);
 use Llama::Parser::Result;
 
 use Exporter 'import';
@@ -24,7 +24,6 @@ our @EXPORT_OK = qw(
   OptionalKeys
   HashObject
 );
-
 
 =pod
 
@@ -182,7 +181,7 @@ sub Num ($literal = undef) {
 # TODO: consider supporting booleans on newer Perls > 5.36
 sub Literal ($val)  {
   my $ref = ref $val;
-  return collect(map { Literal($_) } @$val)
+  return And(map { Literal($_) } @$val)
     if $ref eq 'ARRAY';
 
   return Keys(map { $_ => Literal($val->{$_}) } keys %$val)
@@ -250,16 +249,16 @@ sub MayHaveKey ($key, $value = Defined) {
 }
 
 sub Keys (%schema) {
-  collect(map { HasKey($_ => $schema{$_}) } keys %schema);
+  And(map { HasKey($_ => $schema{$_}) } keys %schema);
 }
 *RequiredKeys = \&Keys;
 
 sub OptionalKeys (%schema) {
-  collect(map { MayHaveKey($_ => $schema{$_}) } keys %schema);
+  And(map { MayHaveKey($_ => $schema{$_}) } keys %schema);
 }
 
 sub HashObject ($class_name, @parsers) {
-  my $parser = collect(@parsers);
+  my $parser = And(@parsers);
 
   Parser->new(sub ($input) {
     my $result = $parser->run($input);
