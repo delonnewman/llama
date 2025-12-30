@@ -225,7 +225,7 @@ sub HasKey ($key, $value = Defined) {
     my $result = $parser->run($input);
 
     return Result->Error(message => "key " . np($key) . " is missing")
-      if $result->is_ok && !defined $result->value;
+      if $result->is_void;
 
     return $result;
   });
@@ -236,7 +236,7 @@ sub MayHaveKey ($key, $value = Defined) {
     return Result->Error(message => "only hash references are valid instead got " . np($input))
       if ref($input) ne 'HASH';
 
-    return Result->Ok(rest => $input) unless exists $input->{$key};
+    return Result->Void(rest => $input) unless exists $input->{$key};
 
     my $result = $value->run($input->{$key});
     return Result->Error(message => "key " . np($key) . " " . $result->message) if $result->is_error;

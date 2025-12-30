@@ -110,7 +110,7 @@ sub And (@parsers) {
       $result = $parser->run($input);
       if ($result->is_ok && !@messages) {
         $input = $result->rest;
-        push @values => $result->value;
+        push @values => $result->value unless $result->is_void;
       }
       push @messages => $result->message if $result->is_error;
     }
