@@ -6,7 +6,8 @@ no warnings 'once';
 use Carp ();
 use Data::Printer;
 use List::Util qw(reduce);
-use Scalar::Util qw(looks_like_number blessed);
+use Scalar::Util qw(looks_like_number);
+use Sub::Util;
 
 use Llama::Util qw(toHashRef);
 use Llama::Parser::Result;
@@ -136,7 +137,8 @@ sub And (@parsers) {
 
 =cut
 
-sub new ($class, $sub) {
+sub new ($class, $sub, $name = undef) {
+  Sub::Util::set_subname($name, $sub) if $name;
   return bless $sub => $class;
 }
 
@@ -149,6 +151,16 @@ sub new ($class, $sub) {
 use overload
   '|'  => sub{shift->or_else(shift)},
   '>>' => sub{shift->and_then(shift)};
+
+sub name ($self) {
+  Sub::Util::subname($self);
+}
+
+sub toStr ($self) {
+  my $name  = $self->name;
+  return $self->next::method() if $name =~ /ANON/;
+  return "$name";
+}
 
 sub run ($self, $input) {
   return $self->($input);
