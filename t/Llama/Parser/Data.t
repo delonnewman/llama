@@ -161,7 +161,10 @@ $package->import('HasKey');
 
 subtest "${package}::HasKey" => sub {
   my $name = HasKey('name');
+  is $name->name => 'Llama::Parser::Data::HasKey(name)';
+  
   my $age  = HasKey(age => Num());
+  is $age->name => 'Llama::Parser::Data::HasKey(age => Llama::Parser::Data::Num)';
 
   # Valid
   my $result = $name->run({ name => 'James', age => 34 });

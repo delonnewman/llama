@@ -227,6 +227,11 @@ sub Array ($parser = undef) {
 }
 
 sub HasKey ($key, $value = Defined) {
+  my $prefix = __PACKAGE__ . '::HasKey';
+  my $name   = $value->name =~ /Defined/
+    ? "$prefix($key)"
+    : "$prefix($key => " . $value->name . ")";
+  
   my $parser = MayHaveKey($key, $value);
 
   Parser->new(sub ($input) {
@@ -236,7 +241,7 @@ sub HasKey ($key, $value = Defined) {
       if $result->is_void;
 
     return $result;
-  });
+  } => $name);
 }
 
 sub MayHaveKey ($key, $value = Defined) {
