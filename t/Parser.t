@@ -22,12 +22,12 @@ sub Chars ($chars) {
   });
 }
 
-my $a = Chars('a');
-my $b = Chars('b');
-
 subtest "parse & parse_or_die" => sub {
   my $input = "abcde";
   my $result;
+
+  my $a = Chars('a');
+  my $b = Chars('b');
 
   $result = $a->parse($input);
   is $result->value => "a";
