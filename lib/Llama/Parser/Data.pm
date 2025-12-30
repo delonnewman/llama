@@ -109,23 +109,6 @@ sub Defined :prototype() {
   });
 }
 
-=pod
-
-=head2 Any
-
-Return a parser that succeed on any input. The parser will never return an error result.
-
-    my $parser = Any;
-    $parser->run('Anything is ok') # => Result::Ok('Anything is ok')
-
-=cut
-
-sub Any {
-  state $Any = Parser->new(sub ($input) {
-    return Result->Ok(value => $input);
-  });
-}
-
 sub AnyOf (@parsers) {
   choice(map { Parser->coerce($_) } @parsers);
 }
@@ -136,24 +119,6 @@ sub AnyBut ($parser) {
 
 sub AnyIf ($predicate) {
 
-}
-
-
-=pod
-
-=head2 Fail
-
-Return a parser that fail on any input. The parser will always return an error result.
-
-    my $parser = Fail('I will always fail');
-    $parser->run('Hey!') # => Result::Error('I will always fail')
-
-=cut
-
-sub Fail ($message) {
-  Parser->new(sub ($input) {
-    return Result->Error(message => $message);
-  });
 }
 
 =pod
@@ -307,13 +272,13 @@ sub OptionalKeys (%schema) {
 }
 
 sub HashObject ($class_name, @parsers) {
-  my $parser = collect(sub { toHashRef(\@_) }, @parsers);
+  my $parser = collect(@parsers);
 
   Parser->new(sub ($input) {
     my $result = $parser->run($input);
     return $result if $result->is_error;
 
-    my $obj = bless $result->value => $class_name;
+    my $obj = bless toHashRef($result->value) => $class_name;
     return Result->Ok(value => $obj);
   });
 }
