@@ -37,7 +37,7 @@ sub Result :prototype() { 'Llama::Parser::Result' }
 sub Const ($value) {
   __PACKAGE__->new(sub ($input) {
     Result->Ok(value => $value, rest => $input);
-  });
+  } => "Const(" . np($value) . ")");
 }
 
 =pod
@@ -54,7 +54,7 @@ Return a parser that fail on any input. The parser will always return an error r
 sub Fail ($message) {
   __PACKAGE__->new(sub ($input) {
     return Result->Error(message => $message);
-  });
+  } => __PACKAGE__ . "::Fail(" . np($message) . ")");
 }
 
 =pod
@@ -73,7 +73,7 @@ is always C<undef>.
 sub Any {
   state $Any = __PACKAGE__->new(sub ($input) {
     return Result->Ok(value => $input);
-  });
+  } => 'Any');
 }
 
 =pod
@@ -91,7 +91,10 @@ or they all fail. If all parsers fail the result will be the last error.
 =cut
 
 sub Or (@parsers) {
-  reduce { $a->or_else($b) } @parsers;
+  my $parser = reduce { $a->or_else($b) } @parsers;
+  return $parser->name(
+    __PACKAGE__ . '::Or(' . join(', ', map { $_->name } @parsers) . ')'
+  );
 }
 
 =pod
@@ -101,7 +104,10 @@ sub Or (@parsers) {
 =cut
 
 sub AndThen (@parsers) {
-  reduce { $a->and_then($b) } @parsers;
+  my $parser = reduce { $a->and_then($b) } @parsers;
+  return $parser->name(
+    __PACKAGE__ . '::AndThen(' . join(', ', map { $_->name } @parsers) . ')'
+  );
 }
 
 =pod
@@ -114,6 +120,8 @@ sub AndThen (@parsers) {
 =cut
 
 sub And (@parsers) {
+  my $name = __PACKAGE__ . '::And(' . join(', ', map { $_->name } @parsers) . ')';
+
   __PACKAGE__->new(sub ($input) {
     my (@messages, @values, $result);
 
@@ -129,7 +137,7 @@ sub And (@parsers) {
 
     return Result->CompositeError(messages => \@messages) if @messages;
     return Result->Ok(value => \@values, rest => $result->rest);
-  });
+  } => $name);
 }
 
 =pod
@@ -153,7 +161,11 @@ use overload
   '|'  => sub{shift->or_else(shift)},
   '>>' => sub{shift->and_then(shift)};
 
-sub name ($self) {
+sub name ($self, @args) {
+  if (@args) {
+    Sub::Util::set_subname($args[0], $self);
+    return $self;
+  }
   Sub::Util::subname($self);
 }
 

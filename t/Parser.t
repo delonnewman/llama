@@ -19,7 +19,7 @@ sub Chars ($chars) {
       unless $1;
 
     return Result->Ok(value => $1, rest => $input);
-  } => __PACKAGE__ . '::Chars');
+  } => 'Test::Chars(' . np($chars) . ')');
 }
 
 my $input = "abcde";
@@ -48,6 +48,9 @@ subtest "Or" => sub {
   my $a_or_b = Or(Chars('a'), Chars('b'));
   my $b_or_a = Or(Chars('b'), Chars('a'));
 
+  is $a_or_b->name =>
+    'Llama::Parser::Or(Test::Chars("a"), Test::Chars("b"))';
+
   $result = $a_or_b->parse($input);
   is $result->value => "a";
   is $result->rest  => "bcde";
@@ -63,6 +66,7 @@ subtest "Const" => sub {
   my $result;
 
   my $z = Const('z');
+  is $z->name  => 'Llama::Parser::Const("z")';
 
   $result = $z->parse($input);
   is $result->value => "z";
@@ -74,10 +78,12 @@ $described_class->import('Fail');
 subtest "Fail" => sub {
   my $result;
 
-  my $error = Fail("I don't know what to do");
+  my $message = "Fail!";
+  my $error = Fail($message);
+  is $error->name => "Llama::Parser::Fail(\"$message\")";
 
   $result = $error->parse($input);
-  is $result->message => "I don't know what to do";
+  is $result->message => $message;
 };
 
 $described_class->import('Any');
@@ -86,6 +92,7 @@ subtest "Any" => sub {
   my $result;
 
   my $get_em = Any();
+  is $get_em->name => 'Llama::Parser::Any';
 
   $result = $get_em->parse($input);
   is $result->value => $input;
@@ -98,6 +105,8 @@ subtest "And" => sub {
   my $result;
 
   my $all = And(Chars('a'), Chars('b'), Chars('c'));
+  is $all->name =>
+    'Llama::Parser::And(Test::Chars("a"), Test::Chars("b"), Test::Chars("c"))';
 
   $result = $all->parse_or_die($input);
   is_deeply $result->value => [qw(a b c)];
