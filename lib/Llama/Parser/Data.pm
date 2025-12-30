@@ -7,14 +7,13 @@ use Data::Printer;
 use Scalar::Util qw(looks_like_number blessed);
 
 use Llama::Util qw(toHashRef);
-use Llama::Parser qw(collect choice);
+use Llama::Parser qw(collect And Or);
 use Llama::Parser::Result;
 
 use Exporter 'import';
 our @EXPORT_OK = qw(
   Undef
   Defined
-  Any
   Bool
   Str
   Num
@@ -32,16 +31,16 @@ our @EXPORT_OK = qw(
 =head1 NAME
 
 Llama::Parser::Data - A collection of parsers that are suitable for parsing
-arbitrary Perl data structures.
+structured data.
 
 =head1 SYNOPSIS
 
-  use Llama::Parser::Data qw(HashObject HasKey MayHaveKey);
+  use Llama::Parser::Data qw(HashObject HasKey MayHaveKey, Str, Num, Bool);
 
   my $parser = HashObject('Employee',
-    HasKey(name => Str),
-    HasKey(age  => Num),
-    MayHaveKey(manager => Bool),
+    HasKey(name => Str()),
+    HasKey(age  => Num()),
+    MayHaveKey(manager => Bool()),
   );
 
   my $result = $parser->run({
@@ -109,18 +108,6 @@ sub Defined :prototype() {
   });
 }
 
-sub AnyOf (@parsers) {
-  choice(map { Parser->coerce($_) } @parsers);
-}
-
-sub AnyBut ($parser) {
-
-}
-
-sub AnyIf ($predicate) {
-
-}
-
 =pod
 
 =head2 Bool
@@ -172,7 +159,7 @@ In all cases if the input is successful it will be coerced into a number.
     $num->run(1234); # => Result::Ok(1234)
     $num->run('1234'); # => Result::Error('is not a valid number got "1234"')
 
-    my $parser = choice(Num(1), Num(2), Num(3));
+    my $parser = Or(Num(1), Num(2), Num(3));
     $parser->run(1); # => Result::Ok(1)
     $parser->run(2); # => Result::Ok(2)
     $parser->run(3); # => Result::Ok(3)

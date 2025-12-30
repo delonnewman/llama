@@ -1,7 +1,5 @@
 package Llama::Parser::Data::Test;
 use Llama::Test::TestSuite;
-use Llama::Prelude qw(:signatures);
-use Data::Printer;
 
 use Llama::Util qw(toHashRef);
 
@@ -56,18 +54,6 @@ subtest "${package}::Defined" => sub {
   parse_ok Defined() => []     => [];
   parse_ok Defined() => {}     => {};
   parse_ok Defined() => ''     => '';
-};
-
-$package->import('Any');
-
-subtest "${package}::Any" => sub {
-  parse_ok Any() => undef, undef;
-  parse_ok Any() => 1234   => 1234;
-  parse_ok Any() => '1234' => '1234';
-  parse_ok Any() => 'hey'  => 'hey';
-  parse_ok Any() => []     => [];
-  parse_ok Any() => {}     => {};
-  parse_ok Any() => ''     => '';
 };
 
 $package->import('Bool');
@@ -219,6 +205,16 @@ subtest "${package}::OptionalKeys" => sub {
     name    => 'Janet',
     age     => 30,
     manager => !!1,
+  };
+
+  $result = $person->parse_or_die({
+    name => 'Janet',
+    age  => 30,
+  });
+
+  is_deeply toHashRef($result->value) => {
+    name => 'Janet',
+    age  => 30,
   };
 };
 
