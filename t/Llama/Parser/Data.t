@@ -142,6 +142,7 @@ subtest "${package}::Array" => sub {
 
   parse_ok Array() => []               => [];
   parse_ok Array() => [1, 2, 3]        => [1, 2, 3];
+  parse_ok Array() => [qw(1 2 3)]      => [qw(1 2 3)];
   parse_ok Array() => [qw(a b c)]      => [qw(a b c)];
   parse_ok Array() => [a => 1, b => 2] => [a => 1, b => 2];
 
