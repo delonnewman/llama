@@ -173,6 +173,10 @@ sub or_else ($self, $other) {
   });
 }
 
+sub Llama::Parser::map ($self, $cb) {
+  return $self->bind(sub ($input) { Const($cb->($input)) });
+}
+
 sub Llama::Parser::and ($self, $other) {
   return $self->bind(sub { $other });
 }
