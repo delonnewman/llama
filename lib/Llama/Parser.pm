@@ -155,6 +155,14 @@ sub parse_or_die ($self, $input) {
   return $result;
 }
 
+sub is_valid ($self, $input) {
+  return $self->parse($input)->is_ok;
+}
+
+sub validate ($self, $input) {
+  return $self->parse_or_die($input)->value;
+}
+
 sub and_then ($self, $other) {
   return $self->__name__->new(sub ($input) {
     my $result1 = $self->run($input);
