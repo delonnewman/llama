@@ -275,7 +275,9 @@ sub Keys (%schema) {
 *RequiredKeys = \&Keys;
 
 sub OptionalKeys (%schema) {
-  And(map { MayHaveKey($_ => $schema{$_}) } keys %schema);
+  my $parser = And(map { MayHaveKey($_ => $schema{$_}) } keys %schema);
+  my $keys = join(', ', map { "$_ => " . $schema{$_}->name } keys %schema);
+  return $parser->name(__PACKAGE__ . "::OptionalKeys($keys)");
 }
 
 sub HashObject ($class_name, @parsers) {

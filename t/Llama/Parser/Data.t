@@ -250,6 +250,11 @@ subtest "${package}::OptionalKeys" => sub {
     manager => Bool(),
   );
 
+  like $person->name => qr/^Llama::Parser::Data::OptionalKeys\(.*\)/;
+  like $person->name => qr/name => Llama::Parser::Data::Str/;
+  like $person->name => qr/age => Llama::Parser::Data::Num/;
+  like $person->name => qr/manager => Llama::Parser::Data::Bool/;
+
   my $result = $person->run({
     name    => 'Janet',
     age     => 30,
