@@ -163,8 +163,9 @@ subtest "${package}::HasKey" => sub {
   my $name = HasKey('name');
   is $name->name => 'Llama::Parser::Data::HasKey(name)';
   
-  my $age  = HasKey(age => Num());
-  is $age->name => 'Llama::Parser::Data::HasKey(age => Llama::Parser::Data::Num)';
+  my $age = HasKey(age => Num());
+  is $age->name =>
+    'Llama::Parser::Data::HasKey(age => Llama::Parser::Data::Num)';
 
   # Valid
   my $result = $name->run({ name => 'James', age => 34 });
@@ -188,7 +189,11 @@ $package->import('MayHaveKey');
 
 subtest "${package}::MayHaveKey" => sub {
   my $name = MayHaveKey('name');
-  my $age  = MayHaveKey(age => Num());
+  is $name->name => 'Llama::Parser::Data::MayHaveKey(name)';
+
+  my $age = MayHaveKey(age => Num());
+  is $age->name =>
+    'Llama::Parser::Data::MayHaveKey(age => Llama::Parser::Data::Num)';
 
   # Valid
   my $result = $name->run({ name => 'James', age => 34 });

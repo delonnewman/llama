@@ -245,6 +245,11 @@ sub HasKey ($key, $value = Defined) {
 }
 
 sub MayHaveKey ($key, $value = Defined) {
+  my $prefix = __PACKAGE__ . '::MayHaveKey';
+  my $name   = $value->name =~ /Defined/
+    ? "$prefix($key)"
+    : "$prefix($key => " . $value->name . ")";
+
   Parser->new(sub ($input) {
     return Result->Error(message => "only hash references are valid instead got " . np($input))
       if ref($input) ne 'HASH';
@@ -259,7 +264,7 @@ sub MayHaveKey ($key, $value = Defined) {
     my $pair = [$key, $result->value];
 
     return Result->Ok(value => $pair, rest => %rest ? \%rest : undef);
-  });
+  } => $name);
 }
 
 sub Keys (%schema) {
