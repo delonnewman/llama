@@ -153,13 +153,9 @@ sub new ($class, $sub, $name = undef) {
 
 =pod
 
-=head1 Instance Methods
+=head1 Attributes
 
 =cut
-
-use overload
-  '|'  => sub{shift->or_else(shift)},
-  '>>' => sub{shift->and_then(shift)};
 
 sub name ($self, @args) {
   if (@args) {
@@ -168,6 +164,17 @@ sub name ($self, @args) {
   }
   Sub::Util::subname($self);
 }
+
+
+=pod
+
+=head1 Instance Methods
+
+=cut
+
+use overload
+  '|'  => sub{shift->or_else(shift)},
+  '>>' => sub{shift->and_then(shift)};
 
 sub toStr ($self) {
   my $name  = $self->name;
@@ -215,7 +222,9 @@ sub or_else ($self, $other) {
 }
 
 sub Llama::Parser::map ($self, $cb) {
-  return $self->bind(sub ($input) { Const($cb->($input)) });
+  return $self->bind(sub ($input) {
+    Const($cb->($input));
+  });
 }
 
 sub Llama::Parser::and ($self, $other) {
