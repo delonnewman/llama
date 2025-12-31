@@ -53,6 +53,19 @@ subtest ">>" => sub {
   is $result->rest => '';
 };
 
+subtest "|" => sub {
+  my $any =
+    Chars('a') |
+    Chars('b') |
+    Chars('c') |
+    Chars('d') |
+    Chars('e');
+
+  my $result = $any->parse_or_die($input);
+  is_deeply $result->value => 'a';
+  is $result->rest => 'bcde';
+};
+
 $described_class->import('Or');
 
 subtest "Or" => sub {
