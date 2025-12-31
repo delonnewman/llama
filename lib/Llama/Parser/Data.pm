@@ -201,8 +201,19 @@ sub Literal ($val)  {
 
 sub Seq (@parsers) {
   Parser->new(sub ($input) {
-    return Result->Error(message => "only array references are valid instead got " . np($input))
-      if ref $input ne 'ARRAY';
+    return Result->Error(
+      message => "only array references are valid instead got " . np($input)
+    ) if ref $input ne 'ARRAY';
+
+    return Result->Error(
+      message => (
+        "expected a sequence of " .
+        scalar(@parsers) .
+        " elements, but got " .
+        scalar(@$input) .
+        " instead"
+      )
+    ) unless @parsers == @$input;
 
     my ($result, @values, @messages);
     for (my $i = 0; $i < @$input; $i++) {

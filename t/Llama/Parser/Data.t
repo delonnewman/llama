@@ -285,7 +285,12 @@ subtest "${package}::Seq" => sub {
   my $nums = Seq(Num(1), Num(2), Num(3));
   is_deeply $nums->parse([1, 2, 3])->value   => [1, 2, 3];
   is_deeply $nums->parse([qw(1 2 3)])->value => [1, 2, 3];
+
   ok $nums->parse(1)->is_error;
+  like $nums->parse([1, 2, 3, 4])->message
+    => qr/expected a sequence of 3 elements, but got 4 instead/;
+  like $nums->parse([1, 2])->message
+    => qr/expected a sequence of 3 elements, but got 2 instead/;
 
   my $alpha = Seq(Str("a"), Str("b"), Str("c"));
   is_deeply $alpha->parse([qw(a b c)])->value => [qw(a b c)];
