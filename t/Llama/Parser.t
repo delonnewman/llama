@@ -51,6 +51,9 @@ subtest ">>" => sub {
   my $result = $all->parse_or_die($input);
   is_deeply $result->value => [[[['a', 'b'], 'c'], 'd'], 'e'];
   is $result->rest => '';
+
+  $result = $all->parse('ac');
+  ok $result->is_error;
 };
 
 subtest "|" => sub {
@@ -64,6 +67,9 @@ subtest "|" => sub {
   my $result = $any->parse_or_die($input);
   is_deeply $result->value => 'a';
   is $result->rest => 'bcde';
+
+  $result = $any->parse('fab');
+  ok $result->is_error;
 };
 
 subtest "is_valid" => sub {
