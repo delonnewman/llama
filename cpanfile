@@ -11,6 +11,6 @@ on 'develop' => sub {
   requires 'Term::ReadLine::Gnu';
   requires 'Term::ReadKey';
   requires 'B::Keywords';
-
   requires 'Carp::Always';
+  requires 'Devel::Cover';
 };
