@@ -205,10 +205,16 @@ sub validate ($self, $input) {
 
 sub and_then ($self, $other) {
   return $self->__name__->new(sub ($input) {
-    my $result = $self->run($input);
-    return $result if $result->is_error;
+    my $result1 = $self->run($input);
+    return $result1 if $result1->is_error;
 
-    $other->run($result->rest);
+    my $result2 = $other->run($result1->rest);
+    return $result2 if $result2->is_error;
+
+    return Result->Ok(
+      value => [$result1->value, $result2->value],
+      rest  => $result2->rest
+    );
   });
 }
 

@@ -40,6 +40,19 @@ subtest "parse & parse_or_die" => sub {
   throws { $b->parse_or_die($input) } qr/ParseError:/;
 };
 
+subtest ">>" => sub {
+  my $all =
+    Chars('a') >>
+    Chars('b') >>
+    Chars('c') >>
+    Chars('d') >>
+    Chars('e');
+
+  my $result = $all->parse_or_die($input);
+  is_deeply $result->value => [[[['a', 'b'], 'c'], 'd'], 'e'];
+  is $result->rest => '';
+};
+
 $described_class->import('Or');
 
 subtest "Or" => sub {
@@ -99,7 +112,7 @@ subtest "Any" => sub {
   is $result->rest => undef;
 };
 
-$described_class->import('And', 'AndThen');
+$described_class->import('And');
 
 subtest "And" => sub {
   my $result;
