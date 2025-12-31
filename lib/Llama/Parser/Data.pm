@@ -18,10 +18,12 @@ our @EXPORT_OK = qw(
   Str
   Num
   Array
+  Seq
   HasKey
   MayHaveKey
   Keys
   OptionalKeys
+  Literal
   HashObject
 );
 
@@ -187,7 +189,7 @@ sub Num ($literal = undef) {
 # TODO: consider supporting booleans on newer Perls > 5.36
 sub Literal ($val)  {
   my $ref = ref $val;
-  return And(map { Literal($_) } @$val)
+  return Seq(map { Literal($_) } @$val)
     if $ref eq 'ARRAY';
 
   return Keys(map { $_ => Literal($val->{$_}) } keys %$val)
@@ -195,6 +197,23 @@ sub Literal ($val)  {
 
   return Num($val) if looks_like_number($val);
   return Str($val);
+}
+
+sub Seq (@parsers) {
+  Parser->new(sub ($input) {
+    return Result->Error(message => "only array references are valid instead got " . np($input))
+      if ref $input ne 'ARRAY';
+
+    my ($result, @values, @messages);
+    for (my $i = 0; $i < @$input; $i++) {
+      $result = $parsers[$i]->parse($input->[$i]);
+      push @messages => $result->message if $result->is_error;
+      push @values => $result->value if $result->is_ok;
+    }
+
+    return Result->CompositeError(messages => \@messages) if @messages;
+    return Result->Ok(value => \@values);
+  });
 }
 
 sub Array ($parser = undef) {

@@ -279,6 +279,43 @@ subtest "${package}::OptionalKeys" => sub {
   };
 };
 
+$package->import('Seq');
+
+subtest "${package}::Seq" => sub {
+  my $nums = Seq(Num(1), Num(2), Num(3));
+  is_deeply $nums->parse([1, 2, 3])->value   => [1, 2, 3];
+  is_deeply $nums->parse([qw(1 2 3)])->value => [1, 2, 3];
+  ok $nums->parse(1)->is_error;
+
+  my $alpha = Seq(Str("a"), Str("b"), Str("c"));
+  is_deeply $alpha->parse([qw(a b c)])->value => [qw(a b c)];
+};
+
+$package->import('Literal');
+
+subtest "${package}::Literal" => sub {
+  my $one = Literal(1);
+  is $one->parse("1")->value => 1;
+  ok $one->parse("one")->is_error;
+
+  my $hey = Literal("Hey");
+  is $hey->parse("Hey")->value => "Hey";
+  ok $hey->parse("hey")->is_error;
+
+  my $hey_i = Literal(qr/^Hey$/i);
+  is $hey_i->parse("Hey")->value => "Hey";
+  is $hey_i->parse("hey")->value => "hey";
+  ok $hey_i->parse("Hey!")->is_error;
+
+  my $seq = Literal([1..3]);
+  is_deeply $seq->parse([1, 2, 3])->value   => [1, 2, 3];
+  is_deeply $seq->parse([qw(1 2 3)])->value => [1, 2, 3];
+
+  my $hash = Literal({ a => 1, b => 2 });
+  is_deeply toHashRef($hash->parse({ a => "1", b => "2" })->value)
+    => { a => 1, b => 2 };
+};
+
 package Test::Person {
   $package->import('HashObject', 'HasKey', 'MayHaveKey', 'Str', 'Num', 'Bool');
 
