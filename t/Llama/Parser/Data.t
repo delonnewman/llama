@@ -1,36 +1,11 @@
 package Llama::Parser::Data::Test;
 use Llama::Test::TestSuite;
+use Llama::Test::Helpers qw(parse_ok parse_error_ok);
 
 use Llama::Util qw(toHashRef);
 
 my $package = 'Llama::Parser::Data';
 require_ok $package;
-
-sub parse_ok ($parser, $val, @args) {
-  my $result = $parser->run($val);
-
-  isa_ok $result => "Llama::Parser::Result" => np($val);
-  isa_ok $result => "Llama::Parser::Result::Ok" => np($val);
-
-  if (@args > 0) {
-    if (ref $args[0]) {
-      is_deeply $result->value => $args[0] =>
-        "expected: " . np($args[0]) . ', got: ' . np($result->value);
-    } else {
-      is $result->value => $args[0];
-    }
-  }
-
-  is $result->rest  => $args[1] if @args > 1;
-}
-
-sub parse_error_ok ($parser, $val, $pattern = undef) {
-  my $result = $parser->run($val);
-
-  isa_ok $result => "Llama::Parser::Result" => np($val);
-  isa_ok $result => "Llama::Parser::Result::Error" => np($val);
-  like $result->message => $pattern if $pattern;
-}
 
 $package->import('Undef');
 
