@@ -61,10 +61,26 @@ subtest "${package}::Defined" => sub {
   parse_ok Defined() => ''     => '';
 };
 
-$package->import('Bool');
+$package->import('Bool', 'True', 'False');
 
 subtest "${package}::Bool" => sub {
-  is Bool()->name => 'Llama::Parser::Data::Bool';
+  is Bool()->name  => 'Llama::Parser::Data::Bool';
+  is True()->name  => 'Llama::Parser::Data::True';
+  is False()->name => 'Llama::Parser::Data::False';
+
+  parse_ok False() =>  0  => !!0;
+  parse_ok False() => '0' => !!0;
+  parse_ok False() =>  '' => !!0;
+  parse_ok False() => undef, !!0;
+
+  parse_error_ok False() => '023';
+  parse_error_ok False() => 'hey';
+
+  parse_ok True() =>  1  => !!1;
+  parse_ok True() => '1' => !!1;
+
+  parse_error_ok True() => 123;
+  parse_error_ok True() => 'hey';
 
   parse_ok Bool() =>  0  => !!0;
   parse_ok Bool() => '0' => !!0;

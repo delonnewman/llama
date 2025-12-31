@@ -14,6 +14,8 @@ use Exporter 'import';
 our @EXPORT_OK = qw(
   Undef
   Defined
+  True
+  False
   Bool
   Str
   Num
@@ -111,14 +113,43 @@ sub Defined :prototype() {
 
 =pod
 
+=head2 True
+
+=cut
+
+sub True {
+  state $True = Parser->new(sub ($input) {
+    return Result->Ok(value => !!1) if $input eq '1';
+
+    Result->Error(message => np($input) . " is not a valid true value");
+  } => __PACKAGE__ . '::True');
+}
+
+=pod
+
+=head2 False
+
+=cut
+
+sub False {
+  state $False = Parser->new(sub ($input) {
+    return Result->Ok(value => !!0) if !$input;
+
+    Result->Error(message => np($input) . " is not a valid false value");
+  } => __PACKAGE__ . '::False');
+}
+
+=pod
+
 =head2 Bool
 
 =cut
 
 sub Bool :prototype() {
+  state $FalseOrTrue = False() | True();
   state $Bool = Parser->new(sub ($input) {
-    return Result->Ok(value => !!0) if !$input;
-    return Result->Ok(value => !!1) if $input eq '1';
+    my $result = $FalseOrTrue->parse($input);
+    return $result if $result->is_ok;
 
     Result->Error(message => np($input) . " is not a valid boolean value");
   } => __PACKAGE__ . '::Bool');
