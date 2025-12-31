@@ -116,7 +116,14 @@ subtest "And" => sub {
 subtest "And - early return" => sub {
   my $result;
 
-  my $all = And(Chars('a'), Chars('b'), Chars('c'), Chars('d'), Chars('e'), Chars('f'));
+  my $all = And(
+    Chars('a'),
+    Chars('b'),
+    Chars('c'),
+    Chars('d'),
+    Chars('e'),
+    Chars('f')
+  );
 
   $result = $all->parse_or_die($input);
   is_deeply $result->value => [qw(a b c d e)];
