@@ -66,6 +66,13 @@ subtest "|" => sub {
   is $result->rest => 'bcde';
 };
 
+subtest "is_valid" => sub {
+  my $hi = Chars('h') >> Chars('i');
+
+  ok  $hi->is_valid("hi");
+  ok !$hi->is_valid('Hi');
+};
+
 $described_class->import('Or');
 
 subtest "Or" => sub {
