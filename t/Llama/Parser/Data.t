@@ -1,6 +1,6 @@
 package Llama::Parser::Data::Test;
 use Llama::Test::TestSuite;
-use Llama::Test::Helpers qw(parse_ok parse_error_ok);
+use Llama::Test::Helpers qw(parse_ok parse_error_ok error_ok result_ok);
 
 use Llama::Util qw(toHashRef);
 
@@ -193,15 +193,15 @@ subtest "${package}::MayHaveKey" => sub {
 
   # Missing
   $result = $name->run({ age => 56 });
-  ok $result->is_ok;
+  result_ok $result;
 
   # Undefined
   $result = $name->run({ name => undef, age => 13 });
-  like $result->message => qr/key "name" is not defined/;
+  error_ok $result => qr/key "name" is not defined/;
 
   # Value Error
   $result = $age->run({ age => 'thirty' });
-  like $result->message => qr/key "age" is not a valid number got "thirty"/;
+  error_ok $result => qr/key "age" is not a valid number got "thirty"/;
 };
 
 $package->import('Keys');
