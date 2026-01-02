@@ -20,7 +20,7 @@ our @EXPORT_OK = qw(
   Str
   Num
   Array
-  Seq
+  Tuple
   HasKey
   MayHaveKey
   Keys
@@ -220,7 +220,7 @@ sub Num ($literal = undef) {
 # TODO: consider supporting booleans on newer Perls > 5.36
 sub Literal ($val)  {
   my $ref = ref $val;
-  return Seq(map { Literal($_) } @$val)
+  return Tuple(map { Literal($_) } @$val)
     if $ref eq 'ARRAY';
 
   return Keys(map { $_ => Literal($val->{$_}) } keys %$val)
@@ -230,7 +230,7 @@ sub Literal ($val)  {
   return Str($val);
 }
 
-sub Seq (@parsers) {
+sub Tuple (@parsers) {
   Parser->new(sub ($input) {
     return Result->Error(
       message => "only array references are valid instead got " . np($input)

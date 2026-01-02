@@ -270,10 +270,10 @@ subtest "${package}::OptionalKeys" => sub {
   };
 };
 
-$package->import('Seq');
+$package->import('Tuple');
 
-subtest "${package}::Seq" => sub {
-  my $nums = Seq(Num(1), Num(2), Num(3));
+subtest "${package}::Tuple" => sub {
+  my $nums = Tuple(Num(1), Num(2), Num(3));
   is_deeply $nums->parse([1, 2, 3])->value   => [1, 2, 3];
   is_deeply $nums->parse([qw(1 2 3)])->value => [1, 2, 3];
 
@@ -283,7 +283,7 @@ subtest "${package}::Seq" => sub {
   like $nums->parse([1, 2])->message
     => qr/expected a sequence of 3 elements, but got 2 instead/;
 
-  my $alpha = Seq(Str("a"), Str("b"), Str("c"));
+  my $alpha = Tuple(Str("a"), Str("b"), Str("c"));
   is_deeply $alpha->parse([qw(a b c)])->value => [qw(a b c)];
 };
 
