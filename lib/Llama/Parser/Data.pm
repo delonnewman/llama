@@ -293,15 +293,21 @@ sub HasKey ($key, $value = Defined) {
     ? "$prefix($key)"
     : "$prefix($key => " . $value->name . ")";
   
-  my $parser = MayHaveKey($key, $value);
-
   Parser->new(sub ($input) {
-    my $result = $parser->run($input);
+    return Result->Error(message => "only hash references are valid instead got " . np($input))
+      if ref($input) ne 'HASH';
 
     return Result->Error(message => "key " . np($key) . " is missing")
-      if $result->is_void;
+      unless exists $input->{$key};
 
-    return $result;
+    my $result = $value->run($input->{$key});
+    return Result->Error(message => "key " . np($key) . " " . $result->message) if $result->is_error;
+
+    my @keys = grep { $_ ne $key } keys %$input;
+    my %rest = %{$input}{@keys};
+    my $pair = [$key, $result->value];
+
+    return Result->Ok(value => $pair, rest => %rest ? \%rest : undef);
   } => $name);
 }
 
