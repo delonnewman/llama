@@ -11,6 +11,18 @@ sub cons ($self, $value) {
   $self->__name__->new($value, $self, $self->length + 1);
 }
 
+sub reverse ($self) {
+  my $list = $self->empty;
+
+  my $seq = $self;
+  while ($seq) {
+    $list = $list->cons($seq->first);
+    $seq = $seq->next;
+  }
+
+  return $list;
+}
+
 sub empty ($self) {
   state $empty = $self->__name__->new(undef, undef, 0);
 }
