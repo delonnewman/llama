@@ -13,8 +13,8 @@ our @EXPORT_OK = qw(
 sub result_ok ($result, %options) {
   my $name = $options{-name} // '';
 
-  isa_ok $result => "Llama::Parser::Result" => $name;
-  isa_ok $result => "Llama::Parser::Result::Ok" => $name;
+  isa_ok $result => "Llama::Parser::Result";
+  isa_ok $result => "Llama::Parser::Result::Ok";
 
   my $msg = 'result is ok';
   $msg .= ": $name" if $name;
@@ -25,7 +25,7 @@ sub result_ok ($result, %options) {
 sub parse_ok ($parser, $val, @args) {
   my $result = $parser->run($val);
 
-  result_ok $result, -name => np($val);
+  result_ok $result, -name => np($val) or return;
 
   if (@args > 0) {
     if (ref $args[0]) {
