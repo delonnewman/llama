@@ -6,11 +6,12 @@ no warnings 'once';
 use Carp ();
 use Data::Printer;
 use List::Util qw(reduce);
-use Scalar::Util qw(looks_like_number);
+use Scalar::Util qw(looks_like_number blessed);
 use Sub::Util;
 
-use Llama::Util qw(toHashRef);
+use Llama::Collection::List;
 use Llama::Parser::Result;
+use Llama::Util qw(toHashRef);
 
 use Exporter 'import';
 our @EXPORT_OK = qw(
@@ -21,6 +22,8 @@ our @EXPORT_OK = qw(
   And
   AndThen
 );
+
+# see https://docs.racket-lang.org/parsack/index.html
 
 # Aliases
 
@@ -211,8 +214,15 @@ sub and_then ($self, $other) {
     my $result2 = $other->run($result1->rest);
     return $result2 if $result2->is_error;
 
+    my $value1 = $result1->value;
+    my $value2 = $result2->value;
+
+    my $list = blessed($value1) && $value1->isa('Llama::Collection::List')
+      ? $value1->cons($value2)
+      : Llama::Collection::List->empty->cons($value1)->cons($value2);
+
     return Result->Ok(
-      value => [$result1->value, $result2->value],
+      value => $list,
       rest  => $result2->rest
     );
   });

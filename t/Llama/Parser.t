@@ -49,7 +49,7 @@ subtest ">>" => sub {
     Chars('e');
 
   my $result = $all->parse_or_die($input);
-  is_deeply $result->value => [[[['a', 'b'], 'c'], 'd'], 'e'];
+  is_deeply $result->value->reverse->toArrayRef => ['a', 'b', 'c', 'd', 'e'];
   is $result->rest => '';
 
   $result = $all->parse('ac');

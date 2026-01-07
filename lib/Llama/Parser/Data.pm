@@ -7,7 +7,7 @@ use Data::Printer;
 use Scalar::Util qw(looks_like_number blessed);
 
 use Llama::Util qw(toHashRef);
-use Llama::Parser qw(And Or);
+use Llama::Parser qw(And Or Const);
 use Llama::Parser::Result;
 
 use Exporter 'import';
@@ -27,6 +27,8 @@ our @EXPORT_OK = qw(
   OptionalKeys
   Literal
   HashObject
+  Seq
+  Elem
 );
 
 =pod
@@ -255,6 +257,33 @@ sub Tuple (@parsers) {
 
     return Result->CompositeError(messages => \@messages) if @messages;
     return Result->Ok(value => \@values);
+  });
+}
+
+sub Seq {
+  state $Seq = Parser->new(sub ($input) {
+    my $type = ref $input;
+    return Result->Ok(value => $input) if $type eq 'ARRAY';
+
+    if ($type eq 'HASH') {
+      my $seq = [map { [$_ => $input->{$_}] } keys %$input];
+      return Result->Ok(value => $seq);
+    }
+
+    Result->Error(message => "only arrays an hashes are valid sequences");
+  });
+}
+
+sub Elem ($parser) {
+  Parser->new(sub ($input) {
+    my $result = Seq->run($input);
+    return $result if $result->is_error;
+
+    my @seq     = $result->value->@*;
+    my $result2 = $parser->run($seq[0]);
+    return $result2 if $result2->is_error;
+
+    Result->Ok(value => $result2->value, rest => [@seq[1..$#seq]]);
   });
 }
 

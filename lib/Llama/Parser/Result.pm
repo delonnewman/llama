@@ -34,6 +34,10 @@ package Llama::Parser::Result::Ok {
   }
 }
 
+package Llama::Parser::Result::Pair {
+  our @ISA = qw(Llama::Parser::Result::Ok);
+}
+
 package Llama::Parser::Result::Void {
   our @ISA = qw(Llama::Parser::Result::Ok);
   sub is_void ($self) { 1 }

@@ -312,6 +312,36 @@ subtest "${package}::Literal" => sub {
     => { a => 1, b => 2 };
 };
 
+$package->import('Seq');
+
+subtest "${package}::Seq" => sub {
+  parse_ok Seq() => [] => [];
+  parse_ok Seq() => [1, 2, 3] => [1, 2, 3];
+
+  my $hash   = {a => 1, b => 2, c => 3};
+  my $result = Seq()->run($hash);
+  is [grep { $_->[0] eq 'a' } $result->value->@*]->[0][1] => $hash->{a};
+  is [grep { $_->[0] eq 'b' } $result->value->@*]->[0][1] => $hash->{b};
+  is [grep { $_->[0] eq 'c' } $result->value->@*]->[0][1] => $hash->{c};
+
+  parse_error_ok Seq() => 1;
+  parse_error_ok Seq() => 'a';
+  parse_error_ok Seq() => undef;
+};
+
+$package->import('Elem');
+
+subtest "${package}::Elem" => sub {
+  my $nums = Elem(Num(1)) >> Elem(Num(2)) >> Elem(Num(3));
+  pass();
+  
+  parse_ok $nums => [1..3]  => [1..3];
+  parse_ok $nums => [1..10] => [1..10];
+
+  parse_error_ok $nums => [] => [];
+  parse_error_ok $nums => [qw(a b c)];
+};
+
 package Test::Person {
   $package->import('HashObject', 'HasKey', 'MayHaveKey', 'Str', 'Num', 'Bool');
 
