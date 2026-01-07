@@ -1,6 +1,9 @@
 test:
 	prove -r -MCarp::Always -Ilib -It/lib
 
+coverage:
+	cover -test
+
 console:
 	reply -Ilib
 

@@ -2,6 +2,7 @@ package Llama::Parser::Result;
 use Llama::Prelude qw(:signatures);
 
 sub Ok ($, @args) { Llama::Parser::Result::Ok->new(@args) }
+sub Void ($, @args) { Llama::Parser::Result::Void->new(@args) }
 sub Error ($, @args) { Llama::Parser::Result::Error->new(@args) }
 sub CompositeError ($, @args) { Llama::Parser::Result::CompositeError->new(@args) }
 
@@ -11,6 +12,7 @@ sub new ($class, %attributes) {
 
 sub is_error { 0 }
 sub is_ok { 0 }
+sub is_void { 0 }
 
 package Llama::Parser::Result::Ok {
   our @ISA = qw(Llama::Parser::Result);
@@ -18,8 +20,27 @@ package Llama::Parser::Result::Ok {
   sub value ($self) { $self->{value} }
   sub rest ($self) { $self->{rest} }
 
-  sub is_terminal ($self) { !$self->rest }
   sub is_ok { 1 }
+
+  sub is_terminal ($self) {
+    my $rest = $self->rest;
+    return !!1 if !defined $rest || $rest eq '';
+
+    my $ref = ref $rest;
+    return !!1 if $ref eq 'ARRAY' && !@$rest;
+    return !!1 if $ref eq 'HASH'  && !%$rest;
+
+    return !!'';
+  }
+}
+
+package Llama::Parser::Result::Pair {
+  our @ISA = qw(Llama::Parser::Result::Ok);
+}
+
+package Llama::Parser::Result::Void {
+  our @ISA = qw(Llama::Parser::Result::Ok);
+  sub is_void ($self) { 1 }
 }
 
 package Llama::Parser::Result::Error {

@@ -7,13 +7,21 @@ use Carp ();
 use Data::Printer;
 use List::Util qw(reduce);
 use Scalar::Util qw(looks_like_number blessed);
+use Sub::Util;
 
-use Llama::Util qw(toHashRef);
+use Llama::Collection::List;
 use Llama::Parser::Result;
-sub Result :prototype() { 'Llama::Parser::Result' }
+use Llama::Util qw(toHashRef);
 
 use Exporter 'import';
-our @EXPORT_OK = qw(choice any_of collect HashObject);
+our @EXPORT_OK = qw(
+  Const
+  Fail
+  Any
+  Or
+  And
+  AndThen
+);
 
 # see https://github.com/dahlia/optique
 # see https://clojure.org/guides/spec
@@ -23,195 +31,191 @@ our @EXPORT_OK = qw(choice any_of collect HashObject);
 # see https://fsharpforfunandprofit.com/posts/understanding-parser-combinators/
 # see https://zod.dev
 # see https://github.com/sinclairzx81/typebox
+# see https://docs.racket-lang.org/parsack/index.html
 
 #
 # Exported Combinators
 #
 
-sub choice (@parsers) {
-  reduce { $a->or_else($b) } @parsers;
-}
+# Aliases
 
-sub any_of (@parsers) {
-  choice(map { __PACKAGE__->coerce($_) } @parsers);
+sub Result :prototype() { 'Llama::Parser::Result' }
+
+=pod
+
+=head1 Combinators
+
+=head1 Const
+
+=cut
+
+sub Const ($value) {
+  __PACKAGE__->new(sub ($input) {
+    Result->Ok(value => $value, rest => $input);
+  } => "Const(" . np($value) . ")");
 }
 
 =pod
 
-=head2 collect
+=head2 Fail
 
-    my $parser = collect(Num(1), Num(2), Num(3));
+Return a parser that fail on any input. The parser will always return an error result.
+
+    my $parser = Fail('I will always fail');
+    $parser->run('Hey!') # => Result::Error('I will always fail')
 
 =cut
 
-sub collect (@parsers) {
-  my $xformer = shift @parsers unless blessed($parsers[0]);
+sub Fail ($message) {
+  __PACKAGE__->new(sub ($input) {
+    return Result->Error(message => $message);
+  } => __PACKAGE__ . "::Fail(" . np($message) . ")");
+}
+
+=pod
+
+=head2 Any
+
+Return a parser that succeed on any input. The parser will never return an error result.
+It's also greedy in the sense that it will match the entire stream, i.e. C<$result->rest>
+is always C<undef>.
+
+    my $parser = Any;
+    $parser->run('Anything is ok') # => Result::Ok('Anything is ok')
+
+=cut
+
+sub Any {
+  state $Any = __PACKAGE__->new(sub ($input) {
+    return Result->Ok(value => $input);
+  } => 'Any');
+}
+
+=pod
+
+=head2 Or
+
+Return a parser that will attempt to run each parser it's given in turn until one succeeds
+or they all fail. If all parsers fail the result will be the last error.
+
+    my $a_or_b = Or(Chars('a'), Chars('b'));
+    $a_or_b->parse("about") # => Result::Ok("a", "bout")
+    $a_or_b->parse("bout")  # => Result::Ok("b", "out")
+    $a_or_b->parse("out")   # => Result::Error
+
+=cut
+
+sub Or (@parsers) {
+  my $parser = reduce { $a->or_else($b) } @parsers;
+  return $parser->name(
+    __PACKAGE__ . '::Or(' . join(', ', map { $_->name } @parsers) . ')'
+  );
+}
+
+=pod
+
+=head2 AndThen
+
+=cut
+
+sub AndThen (@parsers) {
+  my $parser = reduce { $a->and_then($b) } @parsers;
+  return $parser->name(
+    __PACKAGE__ . '::AndThen(' . join(', ', map { $_->name } @parsers) . ')'
+  );
+}
+
+=pod
+
+=head2 And
+
+    my $one_two_three = And(Num(1), Num(2), Num(3));
+    $one_two_three->parse("123") # => [Result::Ok(1, "23"), Result::Ok(2, "3"), Result::Ok(3)]
+
+=cut
+
+sub And (@parsers) {
+  my $name = __PACKAGE__ . '::And(' . join(', ', map { $_->name } @parsers) . ')';
 
   __PACKAGE__->new(sub ($input) {
-    my (@messages, @values);
+    my (@messages, @values, $result);
 
     for my $parser (@parsers) {
-      my $result = $parser->run($input);
+      $result = $parser->run($input);
       if ($result->is_ok && !@messages) {
         $input = $result->rest;
-        push @values => $result->value;
+        push @values => $result->value unless $result->is_void;
       }
       push @messages => $result->message if $result->is_error;
+      last if $result->is_terminal;
     }
 
     return Result->CompositeError(messages => \@messages) if @messages;
-
-    my $val = defined $xformer ? $xformer->(@values) : \@values;
-    return Result->Ok(value => $val);
-  });
+    return Result->Ok(value => \@values, rest => $result->rest);
+  } => $name);
 }
 
-#
-# Parser Class Methods
-#
+=pod
 
-sub new ($class, $sub) {
+=head1 Class Methods
+
+=cut
+
+sub new ($class, $sub, $name = undef) {
+  Sub::Util::set_subname($name, $sub) if $name;
   return bless $sub => $class;
 }
 
-sub coerce ($class, $parser) {
-  return $parser if blessed($parser) && $parser->isa(__PACKAGE__);
-  return $class->Literal($parser) unless blessed($parser);
+=pod
 
-  Carp::croak "can't coerce " . np($parser) . " into a parser";
+=head1 Attributes
+
+=cut
+
+sub name ($self, @args) {
+  if (@args) {
+    Sub::Util::set_subname($args[0], $self);
+    return $self;
+  }
+  Sub::Util::subname($self);
 }
 
-sub Undef ($class) {
-  state $Undef = $class->__name__->new(sub ($input) {
-    return Result->Ok(value => $input) unless defined $input;
 
-    Result->Error(message => "is not undefined got " . np($input));
-  });
-}
+=pod
 
-sub Defined ($class) {
-  state $Defined = $class->__name__->new(sub ($input) {
-    return Result->Ok(value => $input) if defined $input;
+=head1 Instance Methods
 
-    Result->Error(message => "is not defined");
-  });
-}
-
-sub Any ($class) {
-  state $Any = $class->__name__->new(sub ($input) {
-    return Result->Ok(value => $input);
-  });
-}
-
-sub Bool ($class) {
-  state $Bool = $class->__name__->new(sub ($input) {
-    return Result->Ok(value => !!0) if !$input;
-    return Result->Ok(value => !!1) if $input eq '1';
-
-    Result->Error(message => np($input) . " is not a valid boolean value");
-  });
-}
-
-sub Str ($class) {
-  state $Str = $class->__name__->new(sub ($input) {
-    return Result->Ok(value => "$input") if defined($input) && ref(\$input) eq 'SCALAR';
-
-    Result->Error(message => np($input) . " is not a valid string value");
-  });
-}
-
-sub Num ($class) {
-  state $Num = $class->__name__->new(sub ($input) {
-    return Result->Ok(value => 0+$input) if defined($input) && looks_like_number($input);
-
-    Result->Error(message => "is not a valid number got ". np($input));
-  });
-}
-
-sub Literal ($class, $val)  {
-  $class->__name__->new(sub ($input) {
-    return Result->Ok(value => $input) if defined($input) && $input eq $val;
-
-    Result->Error(message => "expected literal " . np($val) . " got " . np($input));
-  });
-}
-
-sub Array ($class, $parser = $class->Any) {
-  $class->__name__->new(sub ($input) {
-    return Result->Error(message => "only array references are valid instead got " . np($input))
-      if ref($input) ne 'ARRAY';
-
-    my @results = map { $parser->run($_) } @$input;
-    my @errors  = grep { $_->is_error } @results;
-
-    if (@errors) {
-      my $i = 0;
-      return Result->CompositeError(messages => [map { "index " . $i++ . " " . $_->message } @errors]);
-    }
-
-    return Result->Ok(value => [map { $_->value } @results]);
-  });
-}
-
-sub HasKey ($class, $key, $value = $class->Defined) {
-  my $parser = $class->MayHaveKey($key, $value);
-  $class->__name__->new(sub ($input) {
-    my $result = $parser->run($input);
-    return Result->Error(message => "key " . np($key) . " is missing")
-      if $result->is_ok && !defined $result->value;
-
-    return $result;
-  });
-}
-
-sub MayHaveKey ($class, $key, $value = $class->Defined) {
-  $class->__name__->new(sub ($input) {
-    return Result->Error(message => "only hash references are valid instead got " . np($input))
-      if ref($input) ne 'HASH';
-
-    return Result->Ok(rest => $input) unless exists $input->{$key};
-
-    my $result = $value->run($input->{$key});
-    return Result->Error(message => "key " . np($key) . " " . $result->message) if $result->is_error;
-
-    my @keys = grep { $_ ne $key } keys %$input;
-    my %rest = %{$input}{@keys};
-    my $pair = [$key, $result->value];
-
-    return Result->Ok(value => $pair, rest => %rest ? \%rest : undef);
-  });
-}
-
-sub Keys ($class, %schema) {
-  collect(map { $class->HasKey($_ => $schema{$_}) } keys %schema);
-}
-*RequiredKeys = \&Keys;
-
-sub OptionalKeys ($class, %schema) {
-  collect(map { $class->MayHaveKey($_ => $schema{$_}) } keys %schema);
-}
-
-sub HashObject ($class_name, @parsers) {
-  my $parser = collect(@parsers);
-  __PACKAGE__->new(sub ($input) {
-    my $result = $parser->run($input);
-    return $result if $result->is_error;
-
-    my $obj = bless toHashRef($result->value) => $class_name;
-    return Result->Ok(value => $obj);
-  });
-}
-
-#
-# Parser Instance Methods
-#
+=cut
 
 use overload
   '|'  => sub{shift->or_else(shift)},
   '>>' => sub{shift->and_then(shift)};
 
+sub toStr ($self) {
+  my $name  = $self->name;
+  return $self->next::method() if $name =~ /ANON/;
+  return "$name";
+}
+
 sub run ($self, $input) {
   return $self->($input);
+}
+
+*parse = \&run;
+
+sub parse_or_die ($self, $input) {
+  my $result = $self->parse($input);
+  Carp::confess "ParserError: " . $result->message . " while parsing " . np($input)
+    if $result->is_error;
+  return $result;
+}
+
+sub is_valid ($self, $input) {
+  return $self->parse($input)->is_ok;
+}
+
+sub validate ($self, $input) {
+  return $self->parse_or_die($input)->value;
 }
 
 sub and_then ($self, $other) {
@@ -219,16 +223,48 @@ sub and_then ($self, $other) {
     my $result1 = $self->run($input);
     return $result1 if $result1->is_error;
 
-    $other->run($result1->rest);
+    my $result2 = $other->run($result1->rest);
+    return $result2 if $result2->is_error;
+
+    my $value1 = $result1->value;
+    my $value2 = $result2->value;
+
+    my $list = blessed($value1) && $value1->isa('Llama::Collection::List')
+      ? $value1->cons($value2)
+      : Llama::Collection::List->empty->cons($value1)->cons($value2);
+
+    return Result->Ok(
+      value => $list,
+      rest  => $result2->rest
+    );
   });
 }
 
 sub or_else ($self, $other) {
   return $self->__name__->new(sub ($input) {
-    my $result1 = $self->run($input);
-    return $result1 unless $result1->is_error;
+    my $result = $self->run($input);
+    return $result unless $result->is_error;
 
     $other->run($input);
+  });
+}
+
+sub Llama::Parser::map ($self, $cb) {
+  return $self->bind(sub ($input) {
+    Const($cb->($input));
+  });
+}
+
+sub Llama::Parser::and ($self, $other) {
+  return $self->bind(sub { $other });
+}
+
+sub Llama::Parser::bind ($self, $cb) {
+  return $self->__name__->new(sub ($input) {
+    my $result = $self->parse($input);
+    return $result if $result->is_error;
+
+    $cb->($result->value)->parse($result->rest);
   });
 }
 
