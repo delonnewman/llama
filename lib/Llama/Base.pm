@@ -15,7 +15,6 @@ use Scalar::Util ();
 
 use Llama::Exception;
 use Llama::Package;
-use Llama::Util qw(extract_flags);
 
 use overload
   'bool' => sub{shift->toBool},
