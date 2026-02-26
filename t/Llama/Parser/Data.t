@@ -348,8 +348,8 @@ package Test::Person {
   sub parser ($self) {
     state $parser = HashObject(
       ref($self) || $self,
-      HasKey(name    => Str()),
-      HasKey(age     => Num()),
+      HasKey(name => Str()),
+      HasKey(age  => Num()),
       MayHaveKey(manager => Bool()),
     );
   }
