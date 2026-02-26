@@ -6,7 +6,24 @@ use Data::Printer;
 use Feature::Compat::Try;
 use Scalar::Util qw(blessed);
 
+use Llama::Parser::Data ();
+use Llama::Attribute::TypeRegistry;
+
 my $Any = sub{1};
+
+sub registry ($self) {
+  state $registry = do {
+    Llama::Attribute::TypeRegistry->new
+      ->add(Defined    => \&Llama::Parser::Data::Defined)
+      ->add(Any        => \&Llama::Parser::Any)
+      ->add(Bool       => \&Llama::Parser::Data::Bool)
+      ->add(Num        => \&Llama::Parser::Data::Num)
+      ->add(Str        => \&Llama::Parser::Data::Str)
+      ->add(Tuple      => \&Llama::Parser::Data::Tuple)
+      ->add(Array      => \&Llama::Parser::Data::Array)
+      ->add(InstanceOf => \&Llama::Parser::Data::InstanceOf);
+  };
+}
 
 sub build ($class, @args) {
   return $class->new(value => 'Any') if @args < 1;
@@ -29,11 +46,24 @@ sub BUILD ($self, %attributes) {
   $self->{class}       = delete $attributes{class};
   $self->{cardinality} = delete $attributes{cardinality};
   $self->{options}     = {%attributes};
+
+  if (!$self->{value}) {
+    $self->{parser} = Llama::Parser::Any();
+  } else {
+    my $parser = $self->registry->parse($self->{value});
+    if (blessed($parser)) {
+      $self->{parser} = $parser
+    } else {
+      $self->{parser} = Llama::Parser::Data::InstanceOf($parser);
+    }
+  }
+
   $self->instance->freeze;
 }
 
 sub default     ($self) { $self->{default} }
 sub value       ($self) { $self->{value} }
+sub parser      ($self) { $self->{parser} }
 sub is_mutable  ($self) { $self->{mutable} }
 sub is_optional ($self) { $self->{optional} }
 sub order       ($self) { $self->{order} }
@@ -42,25 +72,11 @@ sub class_name  ($self) { $self->{class} }
 sub cardinality ($self) { $self->{cardinality} }
 
 sub parse ($self, $value) {
-  return $value unless $self->class_name;
-
-  return $self->class_name->parse($value) unless $self->cardinality eq 'many';
-
-  my @results = map { $self->class_name->parse($_) } @$value;
-  return \@results unless blessed($results[0]) && $results[0]->isa('Llama::Base::Hash');
-
-  # dedup
-  my %results = map { $_->__hash__ => $_ } @results;
-  return [values %results];
+  $self->parser->parse($value);
 }
 
 sub is_valid ($self, $value) {
-  try {
-    $self->parse($value);
-    return 1;
-  } catch ($e_) {
-    return 0;
-  }
+  $self->parser->is_valid($value);
 }
 
 sub toStr ($self) {
