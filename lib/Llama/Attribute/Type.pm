@@ -9,8 +9,6 @@ use Scalar::Util qw(blessed);
 use Llama::Parser::Data ();
 use Llama::Attribute::TypeRegistry;
 
-my $Any = sub{1};
-
 sub registry ($self) {
   state $registry = do {
     Llama::Attribute::TypeRegistry->new
