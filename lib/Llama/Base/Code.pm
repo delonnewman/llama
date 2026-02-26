@@ -3,7 +3,7 @@ use Llama::Prelude qw(+Base +Callable :signatures);
 
 use Carp ();
 
-sub allocate ($class, $sub) {
+sub new ($class, $sub) {
   my $type = ref $sub;
   Carp::confess "invalid reference type: '$type'" unless $type eq 'CODE';
 

@@ -7,7 +7,7 @@ use overload
   '0+' => sub{shift->toNum},
   '${}' => sub{shift->toScalarRef};
 
-sub allocate ($class, $value) {
+sub new ($class, $value) {
   bless \$value, $class;
 }
 

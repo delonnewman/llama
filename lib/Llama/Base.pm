@@ -26,11 +26,15 @@ sub DESTROY { }
 sub new ($self, @args) {
   my $class = ref($self) || $self;
 
-  my $object = $class->allocate(@args);
+  my $object = $class->allocate;
   $object->try('BUILD', @args);
   $object->try('ADJUST');
 
   return $object;
+}
+
+sub allocate ($self) {
+  Carp::confess "NotImplementedError: subclasses should implement allocate";
 }
 
 sub META ($self) {

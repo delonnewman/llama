@@ -8,9 +8,12 @@ use Scalar::Util qw(blessed);
 use Llama::Package;
 use Llama::Util qw(string_hash hash_combine);
 
-sub allocate ($class, @args) {
-  my %attributes = @args == 1 ? $args[0]->%* : @args;
-  bless {%attributes}, $class;
+sub allocate ($class) {
+  bless {}, $class;
+}
+
+sub BUILD ($self, %args) {
+  %{$self} = %args;
 }
 
 sub is_frozen ($self) { Hash::Util::hash_locked(%$self) }
