@@ -5,6 +5,7 @@ use Llama::Prelude qw(+Base :abstract);
 *if_falsy  = \&Llama::Base::tap;
 *if_truthy = \&Llama::Base::itself;
 *then      = \&Llama::Base::itself;
+*try       = \&Llama::Base::itself;
 
 sub toBool { 0 }
 
