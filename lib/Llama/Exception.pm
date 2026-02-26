@@ -31,7 +31,7 @@ sub toStr ($self) {
   my $message = $self->message;
   my $trace   = join "\n" => map { "  $_" } $self->stacktrace->@*;
 
-  return "$name: $message\n$trace";
+  return "$name: $message\n$trace\n";
 }
 
 package Llama::TypeError {
