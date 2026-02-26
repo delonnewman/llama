@@ -13,6 +13,7 @@ use Carp ();
 use Data::Printer;
 use Scalar::Util ();
 
+use Llama::Exception;
 use Llama::Package;
 use Llama::Util qw(extract_flags);
 
@@ -34,7 +35,7 @@ sub new ($self, @args) {
 }
 
 sub allocate ($self) {
-  Carp::confess "NotImplementedError: subclasses should implement allocate";
+  die Llama::NotImplementedError->new('subclasses should implement allocate');
 }
 
 sub META ($self) {
