@@ -259,7 +259,7 @@ subtest "${package}::OptionalKeys" => sub {
     manager => !!1,
   };
 
-  $result = $person->parse_or_die({
+  $result = $person->run({
     name => 'Janet',
     age  => 30,
   });
@@ -274,41 +274,41 @@ $package->import('Tuple');
 
 subtest "${package}::Tuple" => sub {
   my $nums = Tuple(Num(1), Num(2), Num(3));
-  is_deeply $nums->parse([1, 2, 3])->value   => [1, 2, 3];
-  is_deeply $nums->parse([qw(1 2 3)])->value => [1, 2, 3];
+  is_deeply $nums->run([1, 2, 3])->value   => [1, 2, 3];
+  is_deeply $nums->run([qw(1 2 3)])->value => [1, 2, 3];
 
-  ok $nums->parse(1)->is_error;
-  like $nums->parse([1, 2, 3, 4])->message
+  ok $nums->run(1)->is_error;
+  like $nums->run([1, 2, 3, 4])->message
     => qr/expected a sequence of 3 elements, but got 4 instead/;
-  like $nums->parse([1, 2])->message
+  like $nums->run([1, 2])->message
     => qr/expected a sequence of 3 elements, but got 2 instead/;
 
   my $alpha = Tuple(Str("a"), Str("b"), Str("c"));
-  is_deeply $alpha->parse([qw(a b c)])->value => [qw(a b c)];
+  is_deeply $alpha->run([qw(a b c)])->value => [qw(a b c)];
 };
 
 $package->import('Literal');
 
 subtest "${package}::Literal" => sub {
   my $one = Literal(1);
-  is $one->parse("1")->value => 1;
-  ok $one->parse("one")->is_error;
+  is $one->run("1")->value => 1;
+  ok $one->run("one")->is_error;
 
   my $hey = Literal("Hey");
-  is $hey->parse("Hey")->value => "Hey";
-  ok $hey->parse("hey")->is_error;
+  is $hey->run("Hey")->value => "Hey";
+  ok $hey->run("hey")->is_error;
 
   my $hey_i = Literal(qr/^Hey$/i);
-  is $hey_i->parse("Hey")->value => "Hey";
-  is $hey_i->parse("hey")->value => "hey";
-  ok $hey_i->parse("Hey!")->is_error;
+  is $hey_i->run("Hey")->value => "Hey";
+  is $hey_i->run("hey")->value => "hey";
+  ok $hey_i->run("Hey!")->is_error;
 
   my $seq = Literal([1..3]);
-  is_deeply $seq->parse([1, 2, 3])->value   => [1, 2, 3];
-  is_deeply $seq->parse([qw(1 2 3)])->value => [1, 2, 3];
+  is_deeply $seq->run([1, 2, 3])->value   => [1, 2, 3];
+  is_deeply $seq->run([qw(1 2 3)])->value => [1, 2, 3];
 
   my $hash = Literal({ a => 1, b => 2 });
-  is_deeply toHashRef($hash->parse({ a => "1", b => "2" })->value)
+  is_deeply toHashRef($hash->run({ a => "1", b => "2" })->value)
     => { a => 1, b => 2 };
 };
 
@@ -355,7 +355,7 @@ package Test::Person {
   }
 
   sub new ($class, %attributes) {
-    return $class->parser->validate(\%attributes);
+    return $class->parser->parse(\%attributes);
   }
 
   sub name    ($self) { $self->{name} }
