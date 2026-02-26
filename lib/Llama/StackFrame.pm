@@ -12,12 +12,17 @@ sub current ($class) {
   return $class->at(1);
 }
 
-sub trace ($class) {
+sub trace ($class, $minus = 3) {
   my @trace = ();
   my $i = 0;
+  my $skipped = 0;
   my $frame = $class->at($i);
   until ($frame->is_empty) {
-    push @trace, $frame;
+    if ($minus && $skipped < $minus) {
+      $skipped++;
+    } else {
+      push @trace, $frame;
+    }
     $i++;
     $frame = $class->at($i);
   }

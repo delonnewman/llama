@@ -201,21 +201,17 @@ sub run ($self, $input) {
   return $self->($input);
 }
 
-*parse = \&run;
+# *parse = \&run;
 
-sub parse_or_die ($self, $input) {
-  my $result = $self->parse($input);
+sub parse ($self, $input) {
+  my $result = $self->run($input);
   Carp::confess "ParserError: " . $result->message . " while parsing " . np($input)
     if $result->is_error;
-  return $result;
+  return $result->value;
 }
 
 sub is_valid ($self, $input) {
-  return $self->parse($input)->is_ok;
-}
-
-sub validate ($self, $input) {
-  return $self->parse_or_die($input)->value;
+  return $self->run($input)->is_ok;
 }
 
 sub and_then ($self, $other) {

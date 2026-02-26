@@ -8,12 +8,10 @@ use Carp ();
 use Llama::Delegation;
 use Llama::Attribute::Type;
 
-my $Any = sub{1};
-
 sub BUILD ($self, $name, @args) {
   $self->{name} = $name;
   $self->{type} = Llama::Attribute::Type->build(@args);
-  $self->freeze;
+  $self->instance->freeze;
 }
 
 delegate [qw(is_mutable is_optional is_valid default order options)] => 'type';

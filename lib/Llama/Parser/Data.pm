@@ -4,7 +4,7 @@ no strict 'refs';
 no warnings 'once';
 
 use Data::Printer;
-use Scalar::Util qw(looks_like_number blessed);
+use Scalar::Util qw(blessed looks_like_number);
 
 use Llama::Util qw(toHashRef);
 use Llama::Parser qw(And Or Const);
@@ -27,6 +27,7 @@ our @EXPORT_OK = qw(
   OptionalKeys
   Literal
   HashObject
+  InstanceOf
   Seq
   Elem
 );
@@ -150,7 +151,7 @@ sub False {
 sub Bool :prototype() {
   state $FalseOrTrue = False() | True();
   state $Bool = Parser->new(sub ($input) {
-    my $result = $FalseOrTrue->parse($input);
+    my $result = $FalseOrTrue->run($input);
     return $result if $result->is_ok;
 
     Result->Error(message => np($input) . " is not a valid boolean value");
@@ -250,7 +251,7 @@ sub Tuple (@parsers) {
 
     my ($result, @values, @messages);
     for (my $i = 0; $i < @$input; $i++) {
-      $result = $parsers[$i]->parse($input->[$i]);
+      $result = $parsers[$i]->run($input->[$i]);
       push @messages => $result->message if $result->is_error;
       push @values => $result->value if $result->is_ok;
     }
@@ -307,8 +308,9 @@ sub Array ($parser = undef) {
         push @values => $result->value;
       }
       if ($result->is_error) {
-        push @messages => "index " . $i++ . " " . $result->message;
+        push @messages => "index " . $i . " " . $result->message;
       }
+      $i++;
     }
 
     return Result->CompositeError(messages => \@messages) if @messages;
@@ -383,7 +385,7 @@ sub HashObject ($class_name, @parsers) {
   my $attributes = join(', ', map { $_->name } @parsers);
 
   my $parser = Parser->new(sub ($input) {
-    my $result = $inner->parse($input);
+    my $result = $inner->run($input);
     return $result if $result->is_error;
 
     my $obj = bless toHashRef($result->value) => $class_name;
@@ -391,6 +393,15 @@ sub HashObject ($class_name, @parsers) {
   });
 
   return $parser->name("$class_name($attributes)");
+}
+
+sub InstanceOf ($class_name) {
+  Parser->new(sub ($input) {
+    if (blessed $input && $input->isa($class_name)) {
+      return Result->Ok(value => $input);
+    }
+    return Result->Error(message => np($input) . " is not an instance of $class_name");
+  } => "InstanceOf($class_name)");
 }
 
 1;

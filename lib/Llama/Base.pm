@@ -13,8 +13,8 @@ use Carp ();
 use Data::Printer;
 use Scalar::Util ();
 
+use Llama::Exception;
 use Llama::Package;
-use Llama::Util qw(extract_flags);
 
 use overload
   'bool' => sub{shift->toBool},
@@ -26,11 +26,15 @@ sub DESTROY { }
 sub new ($self, @args) {
   my $class = ref($self) || $self;
 
-  my $object = $class->allocate(@args);
+  my $object = $class->allocate;
   $object->try('BUILD', @args);
   $object->try('ADJUST');
 
   return $object;
+}
+
+sub allocate ($self) {
+  die Llama::NotImplementedError->new('subclasses should implement allocate');
 }
 
 sub META ($self) {

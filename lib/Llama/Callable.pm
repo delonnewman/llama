@@ -1,8 +1,6 @@
 package Llama::Callable;
 use Llama::Prelude qw(:signatures);
 
-use overload '&{}' => 'toCodeRef';
-
 use Llama::Exception;
 
 sub call ($self, @args) {

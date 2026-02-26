@@ -28,7 +28,7 @@ sub new_class ($class, %attributes) {
 
 sub BUILD ($self, @args) {
   $self->next::method(@args);
-  $self->freeze;
+  $self->instance->freeze;
 }
 
 sub __kind__ { 'Llama::Class::Record' }

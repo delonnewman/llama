@@ -1,6 +1,21 @@
 package Llama::Class::Hash;
 use Llama::Prelude qw(+Class :signatures);
 
+use Llama::Parser::Data qw(HashObject HasKey MayHaveKey);
+
+sub parser ($self) {
+  my @keys = map {
+    $_->is_required
+      ? HasKey($_->name => $_->parser)
+      : MayHaveKey($_->name => $_->parser)
+  } $self->attributes;
+
+  return HashObject(
+    $self->name,
+    @keys,
+  );
+}
+
 sub add_attribute ($self, @args) {
   my $attribute  = $self->next::method(@args);
   my $name       = $attribute->name;

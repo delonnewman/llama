@@ -1,5 +1,7 @@
 package Llama::Class;
 use Llama::Prelude qw(+Base :signatures);
+no strict 'refs';
+no warnings qw(once);
 
 use Carp ();
 use Data::Printer;
@@ -10,9 +12,6 @@ use Llama::Attribute;
 use Llama::Class::InstanceCache;
 
 our $DEFAULT_MRO = 'c3';
-
-no strict 'refs';
-no warnings qw(once);
 
 sub named ($class, $name) {
   my $object = Llama::Class::InstanceCache->get($name);

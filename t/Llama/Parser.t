@@ -24,20 +24,20 @@ sub Chars ($chars) {
 
 my $input = "abcde";
 
-subtest "parse & parse_or_die" => sub {
+subtest "run & parse" => sub {
   my $result;
 
   my $a = Chars('a');
   my $b = Chars('b');
 
-  $result = $a->parse($input);
+  $result = $a->run($input);
   is $result->value => "a";
   is $result->rest  => "bcde";
 
-  $result = $b->parse($input);
+  $result = $b->run($input);
   is $result->message => "input doesn't start with \"b\"";
 
-  throws { $b->parse_or_die($input) } qr/ParseError:/;
+  throws { $b->parse($input) } qr/ParseError:/;
 };
 
 subtest ">>" => sub {
@@ -52,7 +52,7 @@ subtest ">>" => sub {
   is_deeply $result->toArrayRef => ['a', 'b', 'c', 'd', 'e'];
   is $result->rest => '';
 
-  $result = $all->parse('ac');
+  $result = $all->run('ac');
   ok $result->is_error;
 };
 
@@ -64,11 +64,11 @@ subtest "|" => sub {
     Chars('d') |
     Chars('e');
 
-  my $result = $any->parse_or_die($input);
+  my $result = $any->run($input);
   is_deeply $result->value => 'a';
   is $result->rest => 'bcde';
 
-  $result = $any->parse('fab');
+  $result = $any->run('fab');
   ok $result->is_error;
 };
 
@@ -90,11 +90,11 @@ subtest "Or" => sub {
   is $a_or_b->name =>
     'Llama::Parser::Or(Test::Chars("a"), Test::Chars("b"))';
 
-  $result = $a_or_b->parse($input);
+  $result = $a_or_b->run($input);
   is $result->value => "a";
   is $result->rest  => "bcde";
 
-  $result = $b_or_a->parse($input);
+  $result = $b_or_a->run($input);
   is $result->value => "a";
   is $result->rest  => "bcde";
 };
@@ -107,7 +107,7 @@ subtest "Const" => sub {
   my $z = Const('z');
   is $z->name  => 'Llama::Parser::Const("z")';
 
-  $result = $z->parse($input);
+  $result = $z->run($input);
   is $result->value => "z";
   is $result->rest  => $input;
 };
@@ -121,7 +121,7 @@ subtest "Fail" => sub {
   my $error = Fail($message);
   is $error->name => "Llama::Parser::Fail(\"$message\")";
 
-  $result = $error->parse($input);
+  $result = $error->run($input);
   is $result->message => $message;
 };
 
@@ -133,7 +133,7 @@ subtest "Any" => sub {
   my $get_em = Any();
   is $get_em->name => 'Llama::Parser::Any';
 
-  $result = $get_em->parse($input);
+  $result = $get_em->run($input);
   is $result->value => $input;
   is $result->rest => undef;
 };
@@ -147,7 +147,7 @@ subtest "And" => sub {
   is $all->name =>
     'Llama::Parser::And(Test::Chars("a"), Test::Chars("b"), Test::Chars("c"))';
 
-  $result = $all->parse_or_die($input);
+  $result = $all->run($input);
   is_deeply $result->value => [qw(a b c)];
   is $result->rest => "de";
 };
@@ -164,7 +164,7 @@ subtest "And - early return" => sub {
     Chars('f')
   );
 
-  $result = $all->parse_or_die($input);
+  $result = $all->run($input);
   is_deeply $result->value => [qw(a b c d e)];
   is $result->rest => '';
 };

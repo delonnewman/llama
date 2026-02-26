@@ -1,5 +1,6 @@
 package Llama::Base::Hash;
 use Llama::Prelude qw(+Base :signatures);
+no strict 'refs';
 
 use Data::Printer;
 use Hash::Util ();
@@ -8,28 +9,20 @@ use Scalar::Util qw(blessed);
 use Llama::Package;
 use Llama::Util qw(string_hash hash_combine);
 
-sub allocate ($class, @args) {
-  my %attributes = @args == 1 ? $args[0]->%* : @args;
-  bless {%attributes}, $class;
+sub allocate ($class) {
+  bless {}, $class;
 }
 
-sub is_frozen ($self) { Hash::Util::hash_locked(%$self) }
-
-sub unfreeze ($self) {
-  Hash::Util::unlock_keys(%$self);
-  Hash::Util::unlock_value(%$self, $_) for $self->class->readonly_attributes;
-
-  return $self;
+sub BUILD ($self, %args) {
+  %{$self} = %args;
 }
 
-sub freeze ($self) {
-  my @attributes = ($self->class->attributes, keys %$self, '__hash__');
-
-  Hash::Util::lock_keys(%$self, @attributes);
-  Hash::Util::lock_value(%$self, $_) for $self->class->readonly_attributes;
-
-  return $self;
+sub clone ($self) {
+  my $copy = $self->allocate;
+  %{$copy} = %{$self};
+  return $copy;
 }
+
 
 sub __kind__ { 'Llama::Class::Hash' }
 
@@ -55,27 +48,24 @@ sub toHashRef ($self) {
   return $ref;
 }
 
-{
-  no strict 'refs';
-  *DATAFY = \&toHashRef;
-}
+*DATAFY = \&toHashRef;
 
 sub toHash ($self) {
-  my %hash = map { $_ => $self->{$_} } grep { defined $self->{$_} } keys %$self;
+  my %hash =
+    map { $_ => $self->{$_} }
+    grep { defined $self->{$_} } $self->instance->keys;
   wantarray ? %hash : \%hash;
 }
 
 sub toArray ($self) {
-  my @array = $self->META->pairs;
+  my @array = $self->instance->pairs;
   wantarray ? @array : \@array;
 }
 
 sub toStr ($self) {
   my $class = $self->__name__;
-
-  no strict 'refs';
-  my %attributes = %{$class . '::ATTRIBUTES'};
-  my $pairs = join ', ' => map { $_ . ' => ' . $attributes{$_}->type } keys %attributes;
+  my $pairs =
+    join ', ' => map { $_->name . ' => ' . $_->type } $self->class->ATTRIBUTES;
 
   return $pairs ? "$class($pairs)" : $class;
 }

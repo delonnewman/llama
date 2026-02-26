@@ -1,5 +1,6 @@
 package Llama::Class::EigenClass;
 use Llama::Prelude qw(+Class :signatures);
+no strict 'refs';
 
 sub build($class, $mirror) {
   my $new_class  = $class->new;
@@ -12,12 +13,10 @@ sub build($class, $mirror) {
   # bless object into new class
   $mirror->BLESS($new_class->name);
 
-
   return $new_class;
 }
 
 sub progenitor ($self, @args) {
-  no strict 'refs';
   if (@args) {
     $self->superclasses($args[0]);
     ${$self->package->qualify('ATTRIBUTE_DATA')}{__progenitor__} = $args[0];

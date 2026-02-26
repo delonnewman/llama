@@ -20,15 +20,35 @@ sub pairs  ($self) {
   wantarray ? @pairs : \@pairs;
 }
 
-sub freeze ($self, @keys) {
-  my @attributes = ($self->subject_keys, @keys);
+sub is_frozen ($self) { Hash::Util::hash_locked($self->subject->%*) }
 
-  Hash::Util::lock_keys($self->subject->%*, @attributes);
-  Hash::Util::lock_value($self->subject->%*, $_) for @attributes;
+sub unfreeze ($self) {
+  $self->unseal;
+  my $subject = $self->subject;
+  Hash::Util::unlock_value(%$subject, $_) for $self->class->readonly_attributes;
 
-  $self;
+  return $self;
 }
 
-sub is_frozen ($self) { Hash::Util::hash_locked(%$self) }
+sub freeze ($self) {
+  $self->seal;
+  my $subject = $self->subject;
+  Hash::Util::lock_value(%$subject, $_) for $self->class->readonly_attributes;
+
+  return $self;
+}
+
+sub is_sealed ($self) { Hash::Util::hash_locked(%$self) }
+
+sub seal ($self) {
+  my @attributes = ($self->class->attributes, $self->keys, '__hash__');
+  my $subject = $self->subject;
+  Hash::Util::lock_keys(%$subject, @attributes);
+  return $self;
+}
+
+sub unseal ($self) {
+  Hash::Util::unlock_keys(%$self);
+}
 
 1;
