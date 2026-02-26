@@ -1,6 +1,15 @@
 package Llama::Class::Hash;
 use Llama::Prelude qw(+Class :signatures);
 
+use Llama::Parser::Data qw(HashObject);
+
+sub parser ($self) {
+  HashObject(
+    $self->name,
+    map { $_->parser } $self->attributes,
+  );
+}
+
 sub add_attribute ($self, @args) {
   my $attribute  = $self->next::method(@args);
   my $name       = $attribute->name;
