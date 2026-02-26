@@ -17,7 +17,7 @@ my $class = $described_class->new_class(
   name       => 'Person',
   attributes => {
     name     => 'Str',
-    dob      => 'DateTime',
+    dob      => 'Tuple(Num, Num, Num)',
     email    => 'Str',
     phone    => 'Str',
     metadata => { mutable => 1, optional => 1 }
