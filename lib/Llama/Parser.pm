@@ -201,8 +201,6 @@ sub run ($self, $input) {
   return $self->($input);
 }
 
-# *parse = \&run;
-
 sub parse ($self, $input) {
   my $result = $self->run($input);
   Carp::confess "ParserError: " . $result->message . " while parsing " . np($input)
