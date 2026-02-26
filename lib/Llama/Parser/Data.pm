@@ -308,8 +308,9 @@ sub Array ($parser = undef) {
         push @values => $result->value;
       }
       if ($result->is_error) {
-        push @messages => "index " . $i++ . " " . $result->message;
+        push @messages => "index " . $i . " " . $result->message;
       }
+      $i++;
     }
 
     return Result->CompositeError(messages => \@messages) if @messages;
@@ -396,7 +397,7 @@ sub HashObject ($class_name, @parsers) {
 
 sub InstanceOf ($class_name) {
   Parser->new(sub ($input) {
-    if (blssed $input && $input->isa($class_name)) {
+    if (blessed $input && $input->isa($class_name)) {
       return Result->Ok(value => $input);
     }
     return Result->Error(message => np($input) . " is not an instance of $class_name");
