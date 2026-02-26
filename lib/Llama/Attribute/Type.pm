@@ -29,7 +29,7 @@ sub BUILD ($self, %attributes) {
   $self->{class}       = delete $attributes{class};
   $self->{cardinality} = delete $attributes{cardinality};
   $self->{options}     = {%attributes};
-  $self->freeze;
+  $self->instance->freeze;
 }
 
 sub default     ($self) { $self->{default} }
