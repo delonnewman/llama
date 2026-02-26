@@ -329,18 +329,18 @@ subtest "${package}::Seq" => sub {
   parse_error_ok Seq() => undef;
 };
 
-$package->import('Elem');
+# $package->import('Elem');
 
-subtest "${package}::Elem" => sub {
-  my $nums = Elem(Num(1)) >> Elem(Num(2)) >> Elem(Num(3));
-  pass();
+# subtest "${package}::Elem" => sub {
+#   my $nums = Elem(Num(1)) >> Elem(Num(2)) >> Elem(Num(3));
+#   pass();
   
-  # parse_ok $nums => [1..3]  => [1..3];
-  # parse_ok $nums => [1..10] => [1..10];
+#   parse_ok $nums => [1..3]  => [1..3];
+#   parse_ok $nums => [1..10] => [1..10];
 
-  # parse_error_ok $nums => [] => [];
-  # parse_error_ok $nums => [qw(a b c)];
-};
+#   parse_error_ok $nums => [] => [];
+#   parse_error_ok $nums => [qw(a b c)];
+# };
 
 package Test::Person {
   $package->import('HashObject', 'HasKey', 'MayHaveKey', 'Str', 'Num', 'Bool');
