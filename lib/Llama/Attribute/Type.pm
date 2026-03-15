@@ -78,7 +78,7 @@ sub is_valid ($self, $value) {
 }
 
 sub toStr ($self) {
-  my $str = $self->value || $self->class_name;
+  my $str = $self->parser->name;
   $str = "Mutable($str)"  if $self->is_mutable;
   $str = "Optional($str)" if $self->is_optional;
   return $str;
