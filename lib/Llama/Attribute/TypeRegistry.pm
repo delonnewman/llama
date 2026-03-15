@@ -7,7 +7,7 @@ my $TYPE_PATTERN = qr/
   ^(?<tag>\w+)
   (?:
     \(
-      (?<args>\w+(?:\s*,\s*\w+)*)
+      (?<args>[\w:]+(?:\s*,\s*[\w:]+)*)
     \)
   )?
 /x;
