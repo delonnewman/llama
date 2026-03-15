@@ -15,6 +15,7 @@ sub is_ok { 0 }
 sub is_void { 0 }
 
 package Llama::Parser::Result::Ok {
+  use Data::Printer;
   our @ISA = qw(Llama::Parser::Result);
 
   sub value ($self) { $self->{value} }
@@ -32,10 +33,60 @@ package Llama::Parser::Result::Ok {
 
     return !!'';
   }
+
+  sub pair ($self, $other) {
+    Llama::Parser::Result::Pair->empty->pair($self)->pair($other);
+  }
 }
 
 package Llama::Parser::Result::Pair {
+  use Data::Printer;
   our @ISA = qw(Llama::Parser::Result::Ok);
+
+  sub new ($self, $first, $next) {
+    my $class = ref($self) || $self;
+    bless [$first, $next] => $class;
+  }
+
+  sub first ($self) { $self->[0] }
+  sub next ($self) { $self->[1] }
+
+  sub value ($self) { $self->first->value }
+  sub rest ($self) { $self->first->rest }
+
+  sub empty ($self) {
+    my $class = ref($self) || $self;
+    state $empty = $class->new(undef, undef);
+  }
+
+  sub is_empty ($self) {
+    !defined($self->[0]) && !defined($self->[1]);
+  }
+
+  sub pair ($self, $result) {
+    if ($self->is_empty) {
+      return $self->new($result, undef);
+    }
+    return $self->new($result, $self);
+  }
+
+  sub toArrayRef ($self) {
+    my @array;
+    my $current = $self;
+    while ($current) {
+      unshift @array => $current->first->value;
+      $current = $current->next;
+    }
+    \@array;
+  }
+
+  sub toStr ($self) {
+    if (!$self->next) {
+      'Pair(' . np($self->first->value) . ', Empty)';
+    } else {
+      'Pair(' . np($self->first->value) . ', ' . $self->next->toStr . ')';
+    }
+  }
 }
 
 package Llama::Parser::Result::Void {

@@ -11,7 +11,7 @@ $package->import('Undef');
 
 subtest "${package}::Undef" => sub {
   is Undef()->name => 'Llama::Parser::Data::Undef';
-  
+
   parse_ok Undef() => undef, undef;
 
   parse_error_ok Undef() => 1234;
@@ -329,18 +329,20 @@ subtest "${package}::Seq" => sub {
   parse_error_ok Seq() => undef;
 };
 
-# $package->import('Elem');
+$package->import('Elem');
 
-# subtest "${package}::Elem" => sub {
-#   my $nums = Elem(Num(1)) >> Elem(Num(2)) >> Elem(Num(3));
-#   pass();
-  
-#   parse_ok $nums => [1..3]  => [1..3];
-#   parse_ok $nums => [1..10] => [1..10];
+subtest "${package}::Elem" => sub {
+  my $nums = Elem(Num(1)) >> Elem(Num(2)) >> Elem(Num(3));
 
-#   parse_error_ok $nums => [] => [];
-#   parse_error_ok $nums => [qw(a b c)];
-# };
+  my $exact = $nums->run([1..3]);
+  is_deeply $exact->toArrayRef => [1..3];
+
+  my $extra = $nums->run([1..10]);
+  is_deeply $extra->toArrayRef => [1..3];
+
+  parse_error_ok $nums => [];
+  parse_error_ok $nums => [qw(a b c)];
+};
 
 package Test::Person {
   $package->import('HashObject', 'HasKey', 'MayHaveKey', 'Str', 'Num', 'Bool');
