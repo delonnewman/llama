@@ -4,6 +4,7 @@ use Llama::Prelude qw(+Base::Hash :signatures);
 use Carp ();
 use Data::Printer;
 use Feature::Compat::Try;
+use Module::Load ();
 use Scalar::Util qw(blessed);
 
 use Llama::Parser::Data ();
@@ -47,7 +48,12 @@ sub BUILD ($self, %attributes) {
   $self->{options}     = {%attributes};
 
   if ($self->{class}) {
-    $self->{parser} = Llama::Parser::Data::InstanceOf($self->{class});
+    Module::Load::load($self->{class}) unless $self->{class}->can('class');
+    if ($self->{class}->class->can('parser')) {
+      $self->{parser} = $self->{class}->class->parser;
+    } else {
+      $self->{parser} = Llama::Parser::Data::InstanceOf($self->{class});
+    }
   } elsif (!$self->{value}) {
     $self->{parser} = Llama::Parser::Any();
   } else {
