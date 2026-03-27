@@ -28,6 +28,7 @@ our @EXPORT_OK = qw(
   Literal
   HashObject
   InstanceOf
+  ClassOf
   Seq
   Elem
 );
@@ -402,6 +403,15 @@ sub InstanceOf ($class_name) {
     }
     return Result->Error(message => np($input) . " is not an instance of $class_name");
   } => "InstanceOf($class_name)");
+}
+
+sub ClassOf ($class_name) {
+  Parser->new(sub ($input) {
+    if ($input && $input->can('new')) {
+      return Result->Ok(value => $input);
+    }
+    return Result->Error(message => np($input) . " is not a class");
+  } => "ClassOf($class_name)");
 }
 
 1;

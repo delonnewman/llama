@@ -19,7 +19,8 @@ sub registry ($self) {
       ->add(Str        => \&Llama::Parser::Data::Str)
       ->add(Tuple      => \&Llama::Parser::Data::Tuple)
       ->add(Array      => \&Llama::Parser::Data::Array)
-      ->add(InstanceOf => \&Llama::Parser::Data::InstanceOf);
+      ->add(InstanceOf => \&Llama::Parser::Data::InstanceOf)
+      ->add(ClassOf    => \&Llama::Parser::Data::ClassOf);
   };
 }
 
@@ -42,10 +43,12 @@ sub BUILD ($self, %attributes) {
   $self->{order}       = delete $attributes{order}    // 0;
   $self->{default}     = delete $attributes{default};
   $self->{class}       = delete $attributes{class};
-  $self->{cardinality} = delete $attributes{cardinality};
+  $self->{cardinality} = delete $attributes{cardinality} // 'one';
   $self->{options}     = {%attributes};
 
-  if (!$self->{value}) {
+  if ($self->{class}) {
+    $self->{parser} = Llama::Parser::Data::InstanceOf($self->{class});
+  } elsif (!$self->{value}) {
     $self->{parser} = Llama::Parser::Any();
   } else {
     my $parser = $self->registry->parse($self->{value});
@@ -54,6 +57,10 @@ sub BUILD ($self, %attributes) {
     } else {
       $self->{parser} = Llama::Parser::Data::InstanceOf($parser);
     }
+  }
+
+  if ($self->{cardinality} eq 'many')  {
+    $self->{parser} = Llama::Parser::Data::Array($self->{parser});
   }
 
   $self->instance->freeze;
