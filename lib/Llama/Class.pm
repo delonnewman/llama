@@ -145,16 +145,12 @@ sub add_attribute ($self, @args) {
     ? $args[0]
     : Llama::Attribute->new(@args);
 
-  no strict 'refs';
-  no warnings 'once';
   ${$self->package->qualify('ATTRIBUTES')}{$attribute->name} = $attribute;
 
   $attribute;
 }
 
 sub attribute ($self, $name) {
-  no strict 'refs';
-
   my $attribute;
   for ($self->ancestry) {
     $attribute = ${$_ . '::ATTRIBUTES'}{$name};
@@ -174,13 +170,11 @@ head2 attributes
 =cut
 
 sub attributes ($self) {
-  no strict 'refs';
   my @attributes = map { $_->name } $self->ATTRIBUTES;
   wantarray ? @attributes : \@attributes;
 }
 
 sub readonly_attributes ($self) {
-  no strict 'refs';
   my @attributes = map { $_->name } grep { !$_->is_mutable } $self->ATTRIBUTES;
   wantarray ? @attributes : \@attributes;
 }
@@ -196,8 +190,6 @@ sub optional_attributes ($self) {
 }
 
 sub ATTRIBUTES ($self) {
-  no strict 'refs';
-
   my %attributes =
     map { $_->name => $_ }
     map { values %{Llama::Package->named($_)->qualify('ATTRIBUTES')} }
@@ -208,8 +200,6 @@ sub ATTRIBUTES ($self) {
 }
 
 sub set_attribute_value ($self, $name, $value) {
-  no strict 'refs';
-
   my $attribute = $self->attribute($name);
   $attribute->validate_writable->validate($value);
   ${$self->package->qualify('ATTRIBUTE_DATA')}{$name} = $value;
@@ -218,7 +208,6 @@ sub set_attribute_value ($self, $name, $value) {
 }
 
 sub get_attribute_value ($self, $name) {
-  no strict 'refs';
   ${$self->package->qualify('ATTRIBUTE_DATA')}{$name};
 }
 
