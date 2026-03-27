@@ -6,9 +6,9 @@ use Llama::Parser::Data qw(HashObject HasKey MayHaveKey);
 sub parser ($self) {
   my @keys = map {
     $_->is_required
-      ? HasKey($_->name => $_->parser)
-      : MayHaveKey($_->name => $_->parser)
-  } $self->attributes;
+      ? HasKey($_->name => $_->type->parser)
+      : MayHaveKey($_->name => $_->type->parser)
+  } $self->ATTRIBUTES;
 
   return HashObject(
     $self->name,
