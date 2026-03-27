@@ -135,8 +135,9 @@ sub AndThen (@parsers) {
 =cut
 
 sub And (@parsers) {
-  my $name = __PACKAGE__ . '::And(' . join(', ', map { $_->name } @parsers) . ')';
+  Carp::confess 'at least one parser is required' unless @parsers;
 
+  my $name = __PACKAGE__ . '::And(' . join(', ', map { $_->name } @parsers) . ')';
   __PACKAGE__->new(sub ($input) {
     my (@messages, @values, $result);
 
