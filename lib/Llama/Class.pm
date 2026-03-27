@@ -198,11 +198,12 @@ sub optional_attributes ($self) {
 sub ATTRIBUTES ($self) {
   no strict 'refs';
 
-  my @attributes =
-    sort { $a->order <=> $b->order }
+  my %attributes =
+    map { $_->name => $_ }
     map { values %{Llama::Package->named($_)->qualify('ATTRIBUTES')} }
-    $self->ancestry;
+    reverse $self->ancestry;
 
+  my @attributes = sort { $a->order <=> $b->order } values %attributes;
   wantarray ? @attributes : \@attributes;
 }
 
