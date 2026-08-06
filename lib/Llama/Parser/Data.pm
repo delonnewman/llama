@@ -165,6 +165,7 @@ sub Bool :prototype() {
 
 =cut
 
+# TODO: separate regex into separate parser, take numerical parameter to test length
 sub Str ($pattern = undef) {
   my $prefix = __PACKAGE__ . '::Str';
   my $name   = $pattern ? "$prefix(" . np($pattern) . ")" : $prefix;
