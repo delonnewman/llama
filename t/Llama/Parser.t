@@ -152,7 +152,7 @@ subtest "And" => sub {
   is $result->rest => "de";
 };
 
-subtest "And - early return" => sub {
+subtest "And - no early return" => sub {
   my $result;
 
   my $all = And(
@@ -165,8 +165,7 @@ subtest "And - early return" => sub {
   );
 
   $result = $all->run($input);
-  is_deeply $result->value => [qw(a b c d e)];
-  is $result->rest => '';
+  ok $result->is_error;
 };
 
 done_testing;

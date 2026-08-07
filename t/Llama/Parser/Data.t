@@ -383,7 +383,8 @@ subtest "${package}::HashObject" => sub {
   is $person->age     => 19;
   is $person->manager => !!0;
 
-  throws { Test::Person->new(name => 'Katie', age => 'five') } qr/ArgumentError:/
+  throws { Test::Person->new(name => 'Katie', age => 'five') } qr/ArgumentError:/;
+  throws { Test::Person->new(name => 'Katie') } qr/ArgumentError:/;
 };
 
 done_testing;

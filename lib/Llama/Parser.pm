@@ -146,9 +146,12 @@ sub And (@parsers) {
       if ($result->is_ok && !@messages) {
         $input = $result->rest;
         push @values => $result->value unless $result->is_void;
+      } elsif ($result->is_error) {
+        push @messages => $result->message;
+      } elsif ($result->is_terminal) {
+        push @messages => "Sequence ends before $parser";
+        last;
       }
-      push @messages => $result->message if $result->is_error;
-      last if $result->is_terminal;
     }
 
     return Result->CompositeError(messages => \@messages) if @messages;
