@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+cpanm Carton App::cpm && cpm install -g
