@@ -260,13 +260,13 @@ subtest "${package}::OptionalKeys" => sub {
   };
 
   $result = $person->run({
-    name => 'Janet',
-    age  => 30,
+    name => 'James',
+    age  => 24,
   });
 
   is_deeply toHashRef($result->value) => {
-    name => 'Janet',
-    age  => 30,
+    name => 'James',
+    age  => 24,
   };
 };
 

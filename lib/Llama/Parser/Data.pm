@@ -352,8 +352,9 @@ sub MayHaveKey ($key, $value = Defined) {
 
   Parser->new(sub ($input) {
     return Result->Error(message => "only hash references are valid instead got " . np($input))
-      if ref($input) ne 'HASH';
+      unless ref($input) eq 'HASH' || !defined($input);
 
+    return Result->Void unless defined $input;
     return Result->Void(rest => $input) unless exists $input->{$key};
 
     my $result = $value->run($input->{$key});
