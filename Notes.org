@@ -57,6 +57,10 @@ http://cml.cs.uchicago.edu
 https://wingolog.org/archives/2017/06/29/a-new-concurrent-ml
 https://en.wikipedia.org/wiki/Concurrent_ML
 
+** NREPL
+https://github.com/nrepl/neat
+https://nrepl.org/nrepl/building_servers.html
+
 * Class
 ** Class::Sum
 ** Class::Product
