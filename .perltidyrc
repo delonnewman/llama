@@ -15,7 +15,7 @@
 -nst     # Don't output to STDOUT
 -l=80    # Max line length of 80
 -ce      # } else {
--xci
--wtc=b
--atc
--dtc
+-xci     # Extend the intentation model
+-wtc=b   # Trailing commas in bare lines and multiline lists
+-atc     # Add trailing commas according to style
+-dtc     # Delete trailing commas according to style
