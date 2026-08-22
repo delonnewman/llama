@@ -16,4 +16,7 @@ docs:
 deps:
 	cpm install --with-develop -g
 
-.PHONY: test console clean docs
+tidy:
+	find . -name "*.pl" -o -name "*.pm" | xargs perltidy -b -bext='/'
+
+.PHONY: test console clean docs tidy

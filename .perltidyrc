@@ -8,7 +8,9 @@
 -vt=0    # Less vertical tightness
 -pt=2    # High parenthesis tightness
 -bt=2    # High brace tightness
+-bbt=0   # Low brace tightness for code
 -sbt=2   # High square bracket tightness
 -wn      # Weld nested containers
 -isbc    # Don't indent comments without leading space
 -nst     # Don't output to STDOUT
+-l=80    # Max line length of 80
