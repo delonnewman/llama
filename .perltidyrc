@@ -7,10 +7,15 @@
 -ci=2    # Continuation indentation is 2 columns
 -vt=0    # Less vertical tightness
 -pt=2    # High parenthesis tightness
--bt=2    # High brace tightness
+-bt=1    # Mid brace tightness
 -bbt=0   # Low brace tightness for code
 -sbt=2   # High square bracket tightness
 -wn      # Weld nested containers
 -isbc    # Don't indent comments without leading space
 -nst     # Don't output to STDOUT
 -l=80    # Max line length of 80
+-ce      # } else {
+-xci
+-wtc=b
+-atc
+-dtc

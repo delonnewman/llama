@@ -3,10 +3,10 @@ package Llama::Exception;
 use utf8;
 use strict;
 use warnings;
-use feature qw(:5.20);
+use feature      qw(:5.20);
 use experimental qw(signatures);
 
-use overload '""' => sub{shift->toStr}, 'bool' => sub{1};
+use overload '""' => sub { shift->toStr }, 'bool' => sub { 1 };
 
 use Llama::StackFrame;
 
@@ -23,7 +23,7 @@ sub stacktrace ($self) { $self->{stacktrace} }
 {
   # aliases
   no strict 'refs';
-  *__name__ = \&name;  
+  *__name__ = \&name;
 }
 
 sub toStr ($self) {

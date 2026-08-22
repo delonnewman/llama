@@ -14,7 +14,7 @@ my $TYPE_PATTERN = qr/
 
 sub parse ($self, $type) {
   my $form = $self->parse_tag($type);
-  my @args = map { $self->parse($_) } @$form[1..$#{$form}];
+  my @args = map { $self->parse($_) } @$form[1 .. $#{$form}];
 
   unless ($self->has($form->[0]) || @args) {
     return $form->[0];

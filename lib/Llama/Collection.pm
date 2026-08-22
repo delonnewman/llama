@@ -22,7 +22,7 @@ sub list (@elems) {
   my $list = Llama::Collection::List->empty;
 
   @elems = reverse @elems;
-  $list = $list->cons($_) for @elems;
+  $list  = $list->cons($_) for @elems;
 
   return $list;
 }

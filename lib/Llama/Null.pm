@@ -22,7 +22,7 @@ sub ARRAY {
 }
 
 sub CODE {
-  state $CODE = Llama::Null::Code->new(sub{@_});
+  state $CODE = Llama::Null::Code->new(sub { @_ });
 }
 
 package Llama::Null::Scalar {

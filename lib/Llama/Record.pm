@@ -2,7 +2,7 @@ package Llama::Record;
 use Llama::Prelude qw(+Item :signatures);
 
 use Data::Printer;
-use Hash::Util ();
+use Hash::Util   ();
 use Scalar::Util ();
 
 use Llama::Class::Record;
@@ -15,7 +15,8 @@ sub import ($class, $attributes = undef) {
 }
 
 sub new_class ($class, %attributes) {
-  my $self = Llama::Class::Record->new($attributes{name} // die "name is required");
+  my $self
+    = Llama::Class::Record->new($attributes{name} // die "name is required");
   $self->superclasses($class);
 
   my %schema = ($attributes{attributes} // {})->%*;

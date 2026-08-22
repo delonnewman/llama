@@ -44,7 +44,7 @@ try {
 } catch ($e) {
   pass("error $e raised");
   like $e => qr/\w+ is required/;
-}
+};
 
 package Address {
   use Llama::Record {

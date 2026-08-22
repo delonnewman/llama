@@ -3,20 +3,20 @@ package Llama::StackFrame;
 use utf8;
 use strict;
 use warnings;
-use feature qw(:5.20);
+use feature      qw(:5.20);
 use experimental qw(signatures);
 
-use overload '""' => sub{shift->toStr}, 'bool' => sub{1};
+use overload '""' => sub { shift->toStr }, 'bool' => sub { 1 };
 
 sub current ($class) {
   return $class->at(1);
 }
 
 sub trace ($class, $minus = 3) {
-  my @trace = ();
-  my $i = 0;
+  my @trace   = ();
+  my $i       = 0;
   my $skipped = 0;
-  my $frame = $class->at($i);
+  my $frame   = $class->at($i);
   until ($frame->is_empty) {
     if ($minus && $skipped < $minus) {
       $skipped++;
@@ -58,7 +58,7 @@ sub hint_hash  ($self) { $self->[10] }
   # aliases
   no strict 'refs';
   no warnings 'once';
-    
+
   *sub  = \&subroutine;
   *file = \&filename;
   *pkg  = \&package;

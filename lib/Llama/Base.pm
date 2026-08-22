@@ -17,8 +17,8 @@ use Llama::Exception;
 use Llama::Package;
 
 use overload
-  'bool' => sub{shift->toBool},
-  '""'   => sub{shift->toStr};
+  'bool' => sub { shift->toBool },
+  '""'   => sub { shift->toStr };
 
 # Protect subclasses using AUTOLOAD
 sub DESTROY { }
@@ -48,7 +48,7 @@ sub class ($self) {
   my $class  = $mirror->name->named($self->__name__);
 
   return $class unless $class->isa('Llama::Class::EigenClass');
-  return $mirror->name->named($class->progenitor)
+  return $mirror->name->named($class->progenitor);
 }
 
 sub __kind__ { 'Llama::Class' }
@@ -60,7 +60,7 @@ sub instance ($self) {
 sub __name__ ($self) { ref($self) || $self }
 sub __type__ ($self) { Scalar::Util::reftype($self) }
 sub __addr__ ($self) { Scalar::Util::refaddr($self) }
-*__id__ = \&__addr__;
+*__id__   = \&__addr__;
 *__hash__ = \&__addr__;
 
 sub identical ($self, $other) { $self->__id__ eq $other->__id__ }
@@ -71,7 +71,7 @@ sub toBool { 1 }
 
 sub toStr ($self) {
   my $class = $self->__name__;
-  my $id = sprintf("0x%06X", $self->__id__);
+  my $id    = sprintf("0x%06X", $self->__id__);
 
   return "$class=OBJECT($id)";
 }
@@ -97,10 +97,10 @@ sub itself ($self, @args) { $self }
 *if_falsy  = \&itself;
 *if_truthy = \&tap;
 
-sub if ($self, @args) { $self->if_truthy(@args) }
+sub if   ($self, @args) { $self->if_truthy(@args) }
 sub else ($self, @args) { $self->if_falsy(@args) }
 
-sub bind ($self, $name, @outer)  {
+sub bind ($self, $name, @outer) {
   return sub (@inner) { $self->$name(@outer, @inner) };
 }
 

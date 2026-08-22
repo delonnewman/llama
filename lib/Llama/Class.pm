@@ -20,13 +20,16 @@ sub named ($class, $name) {
 }
 
 sub new ($class, $name = undef) {
-  my $kind = $name ? ${$name . '::ATTRIBUTE_DATA'}{__kind__} // $class : $class;
+  my $kind = $name
+    ? ${ $name . '::ATTRIBUTE_DATA' }{__kind__} // $class
+    : $class;
   $name //= '';
 
   my $self = bless \$name, $kind;
 
   # generate name
-  $name .= "$class=OBJECT(" . sprintf("0x%06X", $self->__addr__) . ')' unless $name;
+  $name .= "$class=OBJECT(" . sprintf("0x%06X", $self->__addr__) . ')'
+    unless $name;
 
   $self->mro($DEFAULT_MRO);
   $self->kind($kind);
@@ -40,11 +43,12 @@ sub name ($self) { $$self }
 sub kind ($self, @args) {
   if (@args) {
     Llama::Class::InstanceCache->invalidate($self->name);
-    ${$self->package->qualify('ATTRIBUTE_DATA')}{__kind__} = $args[0];
+    ${ $self->package->qualify('ATTRIBUTE_DATA') }{__kind__} = $args[0];
     return $self;
   }
 
-  return ${$self->package->qualify('ATTRIBUTE_DATA')}{__kind__} // $self->__name__;
+  return ${ $self->package->qualify('ATTRIBUTE_DATA') }{__kind__}
+    // $self->__name__;
 }
 
 sub new_instance ($self, @args) { $self->name->new(@args) }
@@ -71,7 +75,7 @@ sub ancestry ($self) {
 sub superclasses ($self, @superclasses) {
   if (@superclasses) {
     $self->package->ISA(@superclasses);
-    return $self
+    return $self;
   }
 
   my @isa = $self->package->ISA;
@@ -99,10 +103,14 @@ sub prepend_superclasses($self, @classes) {
 }
 
 sub add_instance_method ($self, $name, $sub) {
-  $self->add_method($name, sub ($self, @args) {
-    Carp::confess "instance methods can't be called in a package context" unless ref $self;
-    return $sub->(@args);
-  });
+  $self->add_method(
+    $name,
+    sub ($self, @args) {
+      Carp::confess "instance methods can't be called in a package context"
+        unless ref $self;
+      return $sub->(@args);
+    },
+  );
 }
 
 sub add_abstract_method ($self, $name, $message = undef) {
@@ -119,9 +127,9 @@ sub add_method ($self, $name, $sub) {
 sub eigen_class ($self) { $self }
 
 sub methods ($self) {
-  my %methods = map {
-    $_ => [sort Llama::Package->named($_)->symbol_names('CODE')]
-  } $self->ancestry;
+  my %methods
+    = map { $_ => [sort Llama::Package->named($_)->symbol_names('CODE')] }
+    $self->ancestry;
 
   wantarray ? %methods : \%methods;
 }
@@ -141,11 +149,12 @@ head2 add_attribute
 =cut
 
 sub add_attribute ($self, @args) {
-  my $attribute = @args == 1 && $args[0]->isa('Llama::Attribute')
+  my $attribute
+    = @args == 1 && $args[0]->isa('Llama::Attribute')
     ? $args[0]
     : Llama::Attribute->new(@args);
 
-  ${$self->package->qualify('ATTRIBUTES')}{$attribute->name} = $attribute;
+  ${ $self->package->qualify('ATTRIBUTES') }{ $attribute->name } = $attribute;
 
   $attribute;
 }
@@ -153,7 +162,7 @@ sub add_attribute ($self, @args) {
 sub attribute ($self, $name) {
   my $attribute;
   for ($self->ancestry) {
-    $attribute = ${$_ . '::ATTRIBUTES'}{$name};
+    $attribute = ${ $_ . '::ATTRIBUTES' }{$name};
     last if $attribute;
   }
 
@@ -180,7 +189,8 @@ sub readonly_attributes ($self) {
 }
 
 sub required_attributes ($self) {
-  my @attributes = map { $_->name } grep { $_->is_required && !$_->default } $self->ATTRIBUTES;
+  my @attributes = map { $_->name }
+    grep { $_->is_required && !$_->default } $self->ATTRIBUTES;
   wantarray ? @attributes : \@attributes;
 }
 
@@ -190,9 +200,9 @@ sub optional_attributes ($self) {
 }
 
 sub ATTRIBUTES ($self) {
-  my %attributes =
-    map { $_->name => $_ }
-    map { values %{Llama::Package->named($_)->qualify('ATTRIBUTES')} }
+  my %attributes
+    = map { $_->name => $_ }
+    map   { values %{ Llama::Package->named($_)->qualify('ATTRIBUTES') } }
     reverse $self->ancestry;
 
   my @attributes = sort { $a->order <=> $b->order } values %attributes;
@@ -202,13 +212,13 @@ sub ATTRIBUTES ($self) {
 sub set_attribute_value ($self, $name, $value) {
   my $attribute = $self->attribute($name);
   $attribute->validate_writable->validate($value);
-  ${$self->package->qualify('ATTRIBUTE_DATA')}{$name} = $value;
+  ${ $self->package->qualify('ATTRIBUTE_DATA') }{$name} = $value;
 
   return $self;
 }
 
 sub get_attribute_value ($self, $name) {
-  ${$self->package->qualify('ATTRIBUTE_DATA')}{$name};
+  ${ $self->package->qualify('ATTRIBUTE_DATA') }{$name};
 }
 
 

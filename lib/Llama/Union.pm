@@ -16,7 +16,10 @@ sub import($class, @args) {
   return unless @args;
 
   my $name = caller;
-  my $data = ref $args[0] eq 'HASH' ? $args[0] : {map { $_ => { -symbol => 1 } } @args};
+  my $data
+    = ref $args[0] eq 'HASH'
+    ? $args[0]
+    : { map { $_ => { -symbol => 1 } } @args };
 
   return make_union($name, $data);
 }
@@ -32,7 +35,7 @@ my sub symbolic_member ($name, $subtype) {
 
 my sub record_member ($name, $subtype, $fields) {
   my $member_name = $name . '::' . $subtype;
-  my $class = Llama::Class::Record->new($member_name);
+  my $class       = Llama::Class::Record->new($member_name);
   $class->append_superclasses('Llama::Record');
 
   for my $name (keys %$fields) {
@@ -67,7 +70,7 @@ my sub expand_members ($name, $data) {
     }
     die "invalid options: " . np($options) if %$options;
   }
-  
+
   return \%members;
 }
 
@@ -80,7 +83,8 @@ sub make_union ($name, $data, %options) {
     my $member = $union{$name};
     $union->add_member($member, $name);
     unless ($member->isa('Llama::Class::Sum')) {
-      $union->add_method($name, sub ($class, @args) { "${class}::$name"->new(@args) });
+      $union->add_method($name,
+        sub ($class, @args) { "${class}::$name"->new(@args) });
     }
   }
 

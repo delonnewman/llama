@@ -1,7 +1,7 @@
 package Llama::Enum;
 use Llama::Prelude qw(+Base::Scalar :signatures);
 
-use Carp ();
+use Carp         ();
 use Scalar::Util qw(blessed);
 use Data::Printer;
 
@@ -9,12 +9,21 @@ use Llama::Enum::Class;
 use Llama::Enum::Member;
 
 use overload (
-  "cmp"  => sub($self, $other, $) { $self->key   cmp $self->parent->coerce($other)->key },
-  "<=>"  => sub($self, $other, $) { $self->value <=> $self->parent->coerce($other)->value },
-  "=="   => sub($self, $other, $) { $self->value == $self->parent->coerce($other)->value },
-  "eq"   => sub($self, $other, $) { $self->key   eq $self->parent->coerce($other)->key },
-  "!="   => sub($self, $other, $) { $self->value != $self->parent->coerce($other)->value },
-  "ne"   => sub($self, $other, $) { $self->key   ne $self->parent->coerce($other)->key }
+  "cmp" =>
+    sub($self, $other, $) { $self->key cmp $self->parent->coerce($other)->key },
+  "<=>" => sub($self, $other, $) {
+    $self->value <=> $self->parent->coerce($other)->value;
+  },
+  "==" => sub($self, $other, $) {
+    $self->value == $self->parent->coerce($other)->value;
+  },
+  "eq" =>
+    sub($self, $other, $) { $self->key eq $self->parent->coerce($other)->key },
+  "!=" => sub($self, $other, $) {
+    $self->value != $self->parent->coerce($other)->value;
+  },
+  "ne" =>
+    sub($self, $other, $) { $self->key ne $self->parent->coerce($other)->key },
 );
 
 use constant KEYS_INDEX   => 'MEMBERS';
@@ -29,7 +38,8 @@ use constant VALUES_INDEX => 'MEMBERS_BY_VALUE';
 sub import($class, @args) {
   my ($enum_package) = caller;
 
-  my %enum = ref $args[0] eq 'HASH' ? %{$args[0]} : map { uc $_ => uc $_ } @args;
+  my %enum
+    = ref $args[0] eq 'HASH' ? %{ $args[0] } : map { uc $_ => uc $_ } @args;
   my $enum = Llama::Enum::Class->new($enum_package)->build($class);
 
   $enum->class->add($_, $enum{$_}) for keys %enum;
@@ -39,7 +49,8 @@ sub import($class, @args) {
 # see Llama::Enum::Class::build to see the methods that are dynamically created).
 
 sub coerce($class, $value) {
-  Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
+  Carp::croak "invalid usage should only be called on subclasses"
+    if $class eq __PACKAGE__;
 
   return $value             if blessed($value) && $value->isa(__PACKAGE__);
   return $class->of($value) if $class->is_value($value);
@@ -47,47 +58,53 @@ sub coerce($class, $value) {
 }
 
 sub values_of ($class, @keys) {
-  Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
+  Carp::croak "invalid usage should only be called on subclasses"
+    if $class eq __PACKAGE__;
 
   my @values = map { $class->keyed($_)->value } @keys;
   wantarray ? @values : \@values;
 }
 
 sub is_key($class, $key) {
-  Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
+  Carp::croak "invalid usage should only be called on subclasses"
+    if $class eq __PACKAGE__;
 
   no strict 'refs';
-  ${$class . '::' . KEYS_INDEX}{uc $key};
+  ${ $class . '::' . KEYS_INDEX }{ uc $key };
 }
 
 sub is_value($class, $value) {
-  Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
+  Carp::croak "invalid usage should only be called on subclasses"
+    if $class eq __PACKAGE__;
 
   no strict 'refs';
-  ${$class . '::' . VALUES_INDEX}{$value};
+  ${ $class . '::' . VALUES_INDEX }{$value};
 }
 
 sub members($class, @keys) {
-  Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
+  Carp::croak "invalid usage should only be called on subclasses"
+    if $class eq __PACKAGE__;
 
   no strict 'refs';
-  my %members = %{$class . '::' . KEYS_INDEX};
+  my %members = %{ $class . '::' . KEYS_INDEX };
   my @members = @keys ? map { $members{$_} } @keys : values %members;
 
   return wantarray ? @members : int @members;
 }
 
 sub all($class, @keys) {
-  Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
+  Carp::croak "invalid usage should only be called on subclasses"
+    if $class eq __PACKAGE__;
 
   return wantarray ? $class->members(@keys) : [$class->members(@keys)];
 }
 
 sub of($class, $value) {
-  Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
+  Carp::croak "invalid usage should only be called on subclasses"
+    if $class eq __PACKAGE__;
 
   no strict 'refs';
-  my %members_by_value = %{$class . '::' . VALUES_INDEX};
+  my %members_by_value = %{ $class . '::' . VALUES_INDEX };
   return $members_by_value{$value} // do {
     my $valid = join ', ' => sort(keys %members_by_value);
     Carp::croak "invalid $class value ($value) valid values are ($valid)";
@@ -95,39 +112,45 @@ sub of($class, $value) {
 }
 
 sub keyed($class, $key) {
-  Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
+  Carp::croak "invalid usage should only be called on subclasses"
+    if $class eq __PACKAGE__;
 
   $key = uc $key;
   no strict 'refs';
-  my %members = %{$class . '::' . KEYS_INDEX};
+  my %members = %{ $class . '::' . KEYS_INDEX };
   return $members{$key} // do {
     my $valid = join ', ' => keys %members;
-    Carp::croak "invalid $class key (". np($key) .") valid keys are ($valid)";
+    Carp::croak "invalid $class key ("
+      . np($key)
+      . ") valid keys are ($valid)";
   };
 }
 
 sub add($class, $key, $value = $key) {
-  Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
+  Carp::croak "invalid usage should only be called on subclasses"
+    if $class eq __PACKAGE__;
 
   Llama::Enum::Member->new($class, $key)->build($value);
 
   return $class;
-};
+}
 
 sub add_key_mapping($class, $key, $object) {
-  Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
+  Carp::croak "invalid usage should only be called on subclasses"
+    if $class eq __PACKAGE__;
 
   no strict 'refs';
-  ${$class . '::' . KEYS_INDEX}{$key} = $object;
+  ${ $class . '::' . KEYS_INDEX }{$key} = $object;
 
   return $class;
 }
 
 sub add_value_mapping($class, $value, $object) {
-  Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
+  Carp::croak "invalid usage should only be called on subclasses"
+    if $class eq __PACKAGE__;
 
   no strict 'refs';
-  ${$class . '::' . VALUES_INDEX}{$value} = $object;
+  ${ $class . '::' . VALUES_INDEX }{$value} = $object;
 
   return $class;
 }
@@ -143,12 +166,15 @@ sub equals($self, $other) {
 
 sub toStr ($self) {
   my $str = $self->parent . '(';
-  $str .= $self->key eq $self->value ? $self->key : $self->key . ' => ' . $self->value;
+  $str
+    .= $self->key eq $self->value
+    ? $self->key
+    : $self->key . ' => ' . $self->value;
   $str .= ")";
   return $str;
 }
 
-sub key($self) { [split('::', ref $self)]->[-1] }
+sub key($self)   { [split('::', ref $self)]->[-1] }
 sub value($self) { $$self }
 
 1;

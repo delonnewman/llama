@@ -6,7 +6,7 @@ use utf8;
 use experimental 'signatures';
 no strict 'refs';
 
-sub KEY :prototype() { '__META_CLASS__' }
+sub KEY : prototype() { '__META_CLASS__' }
 
 sub get ($, $class_name) {
   my $sym = $class_name . '::' . KEY;

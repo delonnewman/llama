@@ -1,11 +1,9 @@
 package Llama::Boolean;
 use Llama::Prelude qw(:signatures);
+
 # use Llama::Util qw(extract_flags);
 
-use Llama::Enum {
-  FALSE => 0,
-  TRUE  => 1,
-};
+use Llama::Enum { FALSE => 0, TRUE => 1 };
 
 # sub import ($class, @args) {
 #   my $caller = caller;
@@ -18,7 +16,7 @@ use Llama::Enum {
 #   }
 # }
 
-sub toNum  ($self) {   $self->value }
+sub toNum  ($self) { $self->value }
 sub toBool ($self) { !!$self->value }
 
 sub coerce ($class, $value) {
@@ -30,13 +28,13 @@ sub coerce ($class, $value) {
 package Llama::Boolean::FALSE {
   sub toStr { 'false' }
   *if_truthy = \&Llama::Base::itself;
-  *if_falsy = \&Llama::Base::tap;
+  *if_falsy  = \&Llama::Base::tap;
 }
 
 package Llama::Boolean::TRUE {
   sub toStr { 'true' }
   *if_truthy = \&Llama::Base::tap;
-  *if_falsy = \&Llama::Base::itself;
+  *if_falsy  = \&Llama::Base::itself;
 }
 
 1;

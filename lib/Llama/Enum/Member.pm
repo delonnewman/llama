@@ -26,8 +26,8 @@ sub new ($class, $enum_class, $key) {
 # Attributes
 
 sub enum_class ($self) { $self->[0] }
-sub key ($self) { $self->[1] }
-sub name ($self) { join '::' => @$self }
+sub key        ($self) { $self->[1] }
+sub name       ($self) { join '::' => @$self }
 
 # Instance Methods
 
@@ -45,17 +45,18 @@ sub build ($self, $value) {
 }
 
 sub subclass ($self, $superclass) {
-  @{$self->name . '::ISA'} = $superclass;
+  @{ $self->name . '::ISA' } = $superclass;
   return $self;
 }
 
 sub add_accessor_method ($self, $instance) {
-  *{$self->name} = sub :prototype() { $instance };
+  *{ $self->name } = sub : prototype() { $instance };
   return $self;
 }
 
 sub make_instance ($self, $value) {
   unless (blessed $value) {
+
     # Make member class a subclass of the enum class
     $self->subclass($self->enum_class);
 
@@ -71,7 +72,9 @@ sub make_instance ($self, $value) {
   return $object if $object->isa($self->name);
 
   # Only instances of the enum class can become members
-  Carp::croak "only subclass instances can be members $object isn't a subclass of $class" unless $object->isa($class);
+  Carp::croak
+    "only subclass instances can be members $object isn't a subclass of $class"
+    unless $object->isa($class);
 
   # Make member class a subclass of the value class
   $self->subclass(ref $value);

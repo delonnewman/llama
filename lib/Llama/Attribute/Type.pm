@@ -12,8 +12,8 @@ use Llama::Attribute::TypeRegistry;
 
 sub registry ($self) {
   state $registry = do {
-    Llama::Attribute::TypeRegistry->new
-      ->add(Defined    => \&Llama::Parser::Data::Defined)
+    Llama::Attribute::TypeRegistry->new->add(
+      Defined => \&Llama::Parser::Data::Defined)
       ->add(Any        => \&Llama::Parser::Any)
       ->add(Bool       => \&Llama::Parser::Data::Bool)
       ->add(Num        => \&Llama::Parser::Data::Num)
@@ -33,12 +33,12 @@ sub build ($class, @args) {
   my $ref   = ref $value;
   return $class->new(%$value)           if $ref eq 'HASH';
   return $class->new(default => $value) if $ref eq 'CODE';
-  
+
   return $class->new(value => $value);
 }
 
 sub BUILD ($self, %attributes) {
-  $self->{mutable}     = delete $attributes{mutable}  // 0;
+  $self->{mutable}     = delete $attributes{mutable} // 0;
   $self->{value}       = delete $attributes{value};
   $self->{optional}    = delete $attributes{optional} // 0;
   $self->{order}       = delete $attributes{order}    // 0;
@@ -59,13 +59,13 @@ sub BUILD ($self, %attributes) {
   } else {
     my $parser = $self->registry->parse($self->{value});
     if (blessed($parser)) {
-      $self->{parser} = $parser
+      $self->{parser} = $parser;
     } else {
       $self->{parser} = Llama::Parser::Data::InstanceOf($parser);
     }
   }
 
-  if ($self->{cardinality} eq 'many')  {
+  if ($self->{cardinality} eq 'many') {
     $self->{parser} = Llama::Parser::Data::Array($self->{parser});
   }
 

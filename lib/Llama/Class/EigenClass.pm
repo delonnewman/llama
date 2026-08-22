@@ -19,11 +19,11 @@ sub build($class, $mirror) {
 sub progenitor ($self, @args) {
   if (@args) {
     $self->superclasses($args[0]);
-    ${$self->package->qualify('ATTRIBUTE_DATA')}{__progenitor__} = $args[0];
+    ${ $self->package->qualify('ATTRIBUTE_DATA') }{__progenitor__} = $args[0];
     return $self;
   }
 
-  return ${$self->package->qualify('ATTRIBUTE_DATA')}{__progenitor__};
+  return ${ $self->package->qualify('ATTRIBUTE_DATA') }{__progenitor__};
 }
 
 1;

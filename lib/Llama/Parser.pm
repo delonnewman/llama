@@ -5,7 +5,7 @@ no warnings 'once';
 
 use Carp ();
 use Data::Printer;
-use List::Util qw(reduce);
+use List::Util   qw(reduce);
 use Scalar::Util qw(looks_like_number blessed);
 use Sub::Util;
 
@@ -39,7 +39,7 @@ our @EXPORT_OK = qw(
 
 # Aliases
 
-sub Result :prototype() { 'Llama::Parser::Result' }
+sub Result : prototype() { 'Llama::Parser::Result' }
 
 =pod
 
@@ -50,9 +50,11 @@ sub Result :prototype() { 'Llama::Parser::Result' }
 =cut
 
 sub Const ($value) {
-  __PACKAGE__->new(sub ($input) {
+  my $name = "Const(" . np($value) . ")";
+  my $code = sub ($input) {
     Result->Ok(value => $value, rest => $input);
-  } => "Const(" . np($value) . ")");
+  };
+  __PACKAGE__->new($code => $name);
 }
 
 =pod
@@ -67,9 +69,11 @@ Return a parser that fail on any input. The parser will always return an error r
 =cut
 
 sub Fail ($message) {
-  __PACKAGE__->new(sub ($input) {
+  my $name = __PACKAGE__ . "::Fail(" . np($message) . ")";
+  my $code = sub ($input) {
     return Result->Error(message => $message);
-  } => __PACKAGE__ . "::Fail(" . np($message) . ")");
+  };
+  __PACKAGE__->new($code => $name);
 }
 
 =pod
@@ -86,9 +90,11 @@ is always C<undef>.
 =cut
 
 sub Any {
-  state $Any = __PACKAGE__->new(sub ($input) {
-    return Result->Ok(value => $input);
-  } => 'Any');
+  state $Any = __PACKAGE__->new(
+    sub ($input) {
+      return Result->Ok(value => $input);
+    } => 'Any'
+  );
 }
 
 =pod
@@ -108,8 +114,7 @@ or they all fail. If all parsers fail the result will be the last error.
 sub Or (@parsers) {
   my $parser = reduce { $a->or_else($b) } @parsers;
   return $parser->name(
-    __PACKAGE__ . '::Or(' . join(', ', map { $_->name } @parsers) . ')'
-  );
+    __PACKAGE__ . '::Or(' . join(', ', map { $_->name } @parsers) . ')');
 }
 
 =pod
@@ -121,8 +126,7 @@ sub Or (@parsers) {
 sub AndThen (@parsers) {
   my $parser = reduce { $a->and_then($b) } @parsers;
   return $parser->name(
-    __PACKAGE__ . '::AndThen(' . join(', ', map { $_->name } @parsers) . ')'
-  );
+    __PACKAGE__ . '::AndThen(' . join(', ', map { $_->name } @parsers) . ')');
 }
 
 =pod
@@ -137,26 +141,30 @@ sub AndThen (@parsers) {
 sub And (@parsers) {
   Carp::confess 'at least one parser is required' unless @parsers;
 
-  my $name = __PACKAGE__ . '::And(' . join(', ', map { $_->name } @parsers) . ')';
-  __PACKAGE__->new(sub ($input) {
-    my (@messages, @values, $result);
+  my $name
+    = __PACKAGE__ . '::And(' . join(', ', map { $_->name } @parsers) . ')';
 
-    for my $parser (@parsers) {
-      $result = $parser->run($input);
-      if ($result->is_ok && !@messages) {
-        $input = $result->rest;
-        push @values => $result->value unless $result->is_void;
-      } elsif ($result->is_error) {
-        push @messages => $result->message;
-      } elsif ($result->is_terminal) {
-        push @messages => "Sequence ends before $parser";
-        last;
+  __PACKAGE__->new(
+    sub ($input) {
+      my (@messages, @values, $result);
+
+      for my $parser (@parsers) {
+        $result = $parser->run($input);
+        if ($result->is_ok && !@messages) {
+          $input = $result->rest;
+          push @values => $result->value unless $result->is_void;
+        } elsif ($result->is_error) {
+          push @messages => $result->message;
+        } elsif ($result->is_terminal) {
+          push @messages => "Sequence ends before $parser";
+          last;
+        }
       }
-    }
 
-    return Result->CompositeError(messages => \@messages) if @messages;
-    return Result->Ok(value => \@values, rest => $result->rest);
-  } => $name);
+      return Result->CompositeError(messages => \@messages) if @messages;
+      return Result->Ok(value => \@values, rest => $result->rest);
+    } => $name,
+  );
 }
 
 =pod
@@ -192,11 +200,11 @@ sub name ($self, @args) {
 =cut
 
 use overload
-  '|'  => sub{shift->or_else(shift)},
-  '>>' => sub{shift->and_then(shift)};
+  '|'  => sub { shift->or_else(shift) },
+  '>>' => sub { shift->and_then(shift) };
 
 sub toStr ($self) {
-  my $name  = $self->name;
+  my $name = $self->name;
   return $self->next::method() if $name =~ /ANON/;
   return "$name";
 }
@@ -207,8 +215,14 @@ sub run ($self, $input) {
 
 sub parse ($self, $input) {
   my $result = $self->run($input);
-  Carp::confess "ParserError: " . $result->message . " while parsing " . np($input)
-    if $result->is_error;
+
+  if ($result->is_error) {
+    Carp::confess "ParserError: "
+      . $result->message
+      . " while parsing "
+      . np($input);
+  }
+
   return $result->value;
 }
 

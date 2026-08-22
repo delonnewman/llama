@@ -10,10 +10,7 @@ sub parser ($self) {
       : MayHaveKey($_->name => $_->type->parser)
   } $self->ATTRIBUTES;
 
-  return HashObject(
-    $self->name,
-    @keys,
-  );
+  return HashObject($self->name, @keys);
 }
 
 sub add_attribute ($self, @args) {
@@ -21,17 +18,19 @@ sub add_attribute ($self, @args) {
   my $name       = $attribute->name;
   my $is_mutable = $attribute->is_mutable;
 
-  $self->add_method($name => sub ($self, @args) {
-    return $self->{$name} unless @args;
+  $self->add_method(
+    $name => sub ($self, @args) {
+      return $self->{$name} unless @args;
 
-    my $caller = caller;
-    unless ($is_mutable || $self->isa($caller)) {
-      die "AttributeError: can't write to readonly attribute: $name";
-    }
+      my $caller = caller;
+      unless ($is_mutable || $self->isa($caller)) {
+        die "AttributeError: can't write to readonly attribute: $name";
+      }
 
-    $self->{$name} = $self->class->attribute($name)->type->parse($args[0]);
-    return $self;
-  });
+      $self->{$name} = $self->class->attribute($name)->type->parse($args[0]);
+      return $self;
+    },
+  );
 
   return $attribute;
 }

@@ -17,7 +17,7 @@ sub reverse ($self) {
   my $seq = $self;
   while ($seq) {
     $list = $list->cons($seq->first);
-    $seq = $seq->next;
+    $seq  = $seq->next;
   }
 
   return $list;

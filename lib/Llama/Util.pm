@@ -8,8 +8,8 @@ use experimental qw(signatures postderef);
 
 use Carp;
 use Data::Printer;
-use Scalar::Util qw(reftype blessed);
-use POSIX qw(pow);
+use Scalar::Util       qw(reftype blessed);
+use POSIX              qw(pow);
 use Digest::MurmurHash qw(murmur_hash);
 
 use Exporter 'import';
@@ -30,10 +30,19 @@ sub valid_value_type ($value, $type) {
 
   my $value_type = reftype($value);
   my $is_valid //= do {
-    if ($type eq 'HASH' || $type eq 'ARRAY' || $type eq 'IO'   || $type eq 'CODE') {
+    if ( $type eq 'HASH'
+      || $type eq 'ARRAY'
+      || $type eq 'IO'
+      || $type eq 'CODE')
+    {
       $value_type eq $type;
     } else {
-      !defined($value_type) || $value_type eq 'SCALAR' || $value_type eq 'REF' || $value_type eq 'LVALUE' || $value_type eq 'REGEXP' || $value_type eq 'VSTRING';
+      !defined($value_type)
+        || $value_type eq 'SCALAR'
+        || $value_type eq 'REF'
+        || $value_type eq 'LVALUE'
+        || $value_type eq 'REGEXP'
+        || $value_type eq 'VSTRING';
     }
   };
 
@@ -54,7 +63,7 @@ context return a list of the key / value pairs.
 
 sub extract_flags ($arrayref, %options) {
   my $prefix = $options{prefix} // 'Llama';
-  my %flags = ();
+  my %flags  = ();
 
   for (my $i = 0; $i < @$arrayref; $i++) {
     last unless @$arrayref;
@@ -62,7 +71,8 @@ sub extract_flags ($arrayref, %options) {
     if ($item =~ /^-/) {
       $flags{$item} = $arrayref->[$i + 1];
       splice @$arrayref, $i => 2;
-      $i -= 2; next;
+      $i -= 2;
+      next;
     }
     if ($item =~ /^:/) {
       $item =~ s/^:/-/;
@@ -110,7 +120,7 @@ sub toHashRef ($val) {
 }
 
 sub string_hash ($string) {
-  return 0           unless $string;
+  return 0 unless $string;
   return ord $string if length $string == 1;
   return murmur_hash($string);
 }
@@ -123,11 +133,15 @@ sub hash_combine ($seed, $hash) {
 sub hash_code ($val) {
   my $hash;
   if (ref $val eq 'ARRAY') {
-    $hash = !$hash ? string_hash($_) : hash_combine($hash, string_hash($_)) for @$val;
+    $hash = !$hash ? string_hash($_) : hash_combine($hash, string_hash($_))
+      for @$val;
   } elsif (ref $val eq 'HASH') {
-    $hash = !$hash
+    $hash
+      = !$hash
       ? hash_combine(string_hash($_), string_hash($val->{$_}))
-      : hash_combine($hash, hash_combine(string_hash($_), string_hash($val->{$_}))) for keys %$val;
+      : hash_combine($hash,
+        hash_combine(string_hash($_), string_hash($val->{$_})))
+      for keys %$val;
   } else {
     $hash = string_hash($val);
   }

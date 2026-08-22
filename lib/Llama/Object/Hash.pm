@@ -13,7 +13,7 @@ sub values ($self) {
   wantarray ? @values : \@values;
 }
 
-sub pairs  ($self) {
+sub pairs ($self) {
   my $subject = $self->subject;
   my @keys    = $self->keys;
   my @pairs   = map { Llama::Pair->new($_ => $subject->{$_}) } @keys;
@@ -42,7 +42,7 @@ sub is_sealed ($self) { Hash::Util::hash_locked(%$self) }
 
 sub seal ($self) {
   my @attributes = ($self->class->attributes, $self->keys, '__hash__');
-  my $subject = $self->subject;
+  my $subject    = $self->subject;
   Hash::Util::lock_keys(%$subject, @attributes);
   return $self;
 }

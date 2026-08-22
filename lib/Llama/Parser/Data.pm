@@ -6,7 +6,7 @@ no warnings 'once';
 use Data::Printer;
 use Scalar::Util qw(blessed looks_like_number);
 
-use Llama::Util qw(toHashRef);
+use Llama::Util   qw(toHashRef);
 use Llama::Parser qw(And Or Const);
 use Llama::Parser::Result;
 
@@ -68,8 +68,8 @@ L<Llama::Parser>
 
 =cut
 
-sub Result :prototype() { 'Llama::Parser::Result' }
-sub Parser :prototype() { 'Llama::Parser' }
+sub Result : prototype() { 'Llama::Parser::Result' }
+sub Parser : prototype() { 'Llama::Parser' }
 
 =pod
 
@@ -86,12 +86,15 @@ it returns an error result.
 
 =cut
 
-sub Undef :prototype() {
-  state $Undef = Parser->new(sub ($input) {
-    return Result->Ok(value => $input) unless defined $input;
+sub Undef : prototype() {
+  state $Undef = Parser->new(
+    sub ($input) {
+      return Result->Ok(value => $input) unless defined $input;
 
-    Result->Error(message => "is not undefined got " . np($input));
-  }, => __PACKAGE__ . '::Undef');
+      Result->Error(message => "is not undefined got " . np($input));
+    },
+    => __PACKAGE__ . '::Undef',
+  );
 }
 
 =pod
@@ -107,12 +110,15 @@ it returns an error result.
 
 =cut
 
-sub Defined :prototype() {
-  state $Defined = Parser->new(sub ($input) {
-    return Result->Ok(value => $input) if defined $input;
+sub Defined : prototype() {
+  state $Defined = Parser->new(
+    sub ($input) {
+      return Result->Ok(value => $input) if defined $input;
 
-    Result->Error(message => "is not defined");
-  } => __PACKAGE__ . '::Defined');
+      Result->Error(message => "is not defined");
+      } => __PACKAGE__
+      . '::Defined',
+  );
 }
 
 =pod
@@ -122,11 +128,14 @@ sub Defined :prototype() {
 =cut
 
 sub True {
-  state $True = Parser->new(sub ($input) {
-    return Result->Ok(value => !!1) if $input eq '1';
+  state $True = Parser->new(
+    sub ($input) {
+      return Result->Ok(value => !!1) if $input eq '1';
 
-    Result->Error(message => np($input) . " is not a valid true value");
-  } => __PACKAGE__ . '::True');
+      Result->Error(message => np($input) . " is not a valid true value");
+      } => __PACKAGE__
+      . '::True',
+  );
 }
 
 =pod
@@ -136,11 +145,14 @@ sub True {
 =cut
 
 sub False {
-  state $False = Parser->new(sub ($input) {
-    return Result->Ok(value => !!0) if !$input;
+  state $False = Parser->new(
+    sub ($input) {
+      return Result->Ok(value => !!0) if !$input;
 
-    Result->Error(message => np($input) . " is not a valid false value");
-  } => __PACKAGE__ . '::False');
+      Result->Error(message => np($input) . " is not a valid false value");
+      } => __PACKAGE__
+      . '::False',
+  );
 }
 
 =pod
@@ -149,14 +161,17 @@ sub False {
 
 =cut
 
-sub Bool :prototype() {
+sub Bool : prototype() {
   state $FalseOrTrue = False() | True();
-  state $Bool = Parser->new(sub ($input) {
-    my $result = $FalseOrTrue->run($input);
-    return $result if $result->is_ok;
+  state $Bool        = Parser->new(
+    sub ($input) {
+      my $result = $FalseOrTrue->run($input);
+      return $result if $result->is_ok;
 
-    Result->Error(message => np($input) . " is not a valid boolean value");
-  } => __PACKAGE__ . '::Bool');
+      Result->Error(message => np($input) . " is not a valid boolean value");
+      } => __PACKAGE__
+      . '::Bool',
+  );
 }
 
 =pod
@@ -169,21 +184,26 @@ sub Bool :prototype() {
 sub Str ($pattern = undef) {
   my $prefix = __PACKAGE__ . '::Str';
   my $name   = $pattern ? "$prefix(" . np($pattern) . ")" : $prefix;
-  
-  Parser->new(sub ($input) {
-    return Result->Error(message => np($input) . " is not a valid string value")
-      unless defined($input) && ref(\$input) eq 'SCALAR';
 
-    return Result->Ok(value => "$input") unless defined $pattern;
+  Parser->new(
+    sub ($input) {
+      return Result->Error(
+        message => np($input) . " is not a valid string value")
+        unless defined($input) && ref(\$input) eq 'SCALAR';
 
-    if (ref $pattern eq 'Regexp') {
-      return Result->Ok(value => "$input") if $input =~ $pattern;
-      return Result->Error(message => np($input) . " does not match pattern " . np($pattern));
-    }
+      return Result->Ok(value => "$input") unless defined $pattern;
 
-    return Result->Ok(value => "$input") if $input eq $pattern;
-    return Result->Error(message => np($input) . " does not equal " . np($pattern));
-  } => $name);
+      if (ref $pattern eq 'Regexp') {
+        return Result->Ok(value => "$input") if $input =~ $pattern;
+        return Result->Error(
+          message => np($input) . " does not match pattern " . np($pattern));
+      }
+
+      return Result->Ok(value => "$input") if $input eq $pattern;
+      return Result->Error(
+        message => np($input) . " does not equal " . np($pattern));
+    } => $name,
+  );
 }
 
 =pod
@@ -210,26 +230,28 @@ In all cases if the input is successful it will be coerced into a number.
 sub Num ($literal = undef) {
   my $prefix = __PACKAGE__ . '::Num';
   my $name   = $literal ? "$prefix(" . np($literal) . ")" : $prefix;
-  
-  Parser->new(sub ($input) {
-    return Result->Error(message => "is not a valid number got ". np($input))
-      unless defined($input) && looks_like_number($input);
 
-    return Result->Ok(value => 0+$input) unless defined $literal;
-    return Result->Ok(value => 0+$input) if $input == $literal;
+  Parser->new(
+    sub ($input) {
+      return Result->Error(
+        message => "is not a valid number got " . np($input))
+        unless defined($input) && looks_like_number($input);
 
-    Result->Error(message => np($input) . " does not equal " . np($literal));
-  } => $name);
+      return Result->Ok(value => 0 + $input) unless defined $literal;
+      return Result->Ok(value => 0 + $input) if $input == $literal;
+
+      Result->Error(
+        message => np($input) . " does not equal " . np($literal));
+    } => $name,
+  );
 }
 
 # TODO: consider supporting booleans on newer Perls > 5.36
-sub Literal ($val)  {
+sub Literal ($val) {
   my $ref = ref $val;
-  return Tuple(map { Literal($_) } @$val)
-    if $ref eq 'ARRAY';
+  return Tuple(map { Literal($_) } @$val) if $ref eq 'ARRAY';
 
-  return Keys(map { $_ => Literal($val->{$_}) } keys %$val)
-    if $ref eq 'HASH';
+  return Keys(map { $_ => Literal($val->{$_}) } keys %$val) if $ref eq 'HASH';
 
   return Num($val) if looks_like_number($val);
   return Str($val);
@@ -238,24 +260,24 @@ sub Literal ($val)  {
 sub Tuple (@parsers) {
   Parser->new(sub ($input) {
     return Result->Error(
-      message => "only array references are valid instead got " . np($input)
-    ) if ref $input ne 'ARRAY';
+      message => "only array references are valid instead got " . np($input))
+      if ref $input ne 'ARRAY';
 
     return Result->Error(
       message => (
-        "expected a sequence of " .
-        scalar(@parsers) .
-        " elements, but got " .
-        scalar(@$input) .
-        " instead"
-      )
+            "expected a sequence of "
+          . scalar(@parsers)
+          . " elements, but got "
+          . scalar(@$input)
+          . " instead"
+      ),
     ) unless @parsers == @$input;
 
     my ($result, @values, @messages);
     for (my $i = 0; $i < @$input; $i++) {
       $result = $parsers[$i]->run($input->[$i]);
       push @messages => $result->message if $result->is_error;
-      push @values => $result->value if $result->is_ok;
+      push @values   => $result->value   if $result->is_ok;
     }
 
     return Result->CompositeError(messages => \@messages) if @messages;
@@ -286,7 +308,7 @@ sub Elem ($parser) {
     my $result2 = $parser->run($seq[0]);
     return $result2 if $result2->is_error;
 
-    Result->Ok(value => $result2->value, rest => [@seq[1..$#seq]]);
+    Result->Ok(value => $result2->value, rest => [@seq[1 .. $#seq]]);
   });
 }
 
@@ -294,78 +316,94 @@ sub Array ($parser = undef) {
   my $prefix = __PACKAGE__ . '::Array';
   my $name   = $parser ? "$prefix(" . $parser->name . ")" : $prefix;
 
-  Parser->new(sub ($input) {
-    return Result->Error(message => "only array references are valid instead got " . np($input))
-      if ref $input ne 'ARRAY';
+  Parser->new(
+    sub ($input) {
+      return Result->Error(
+        message => "only array references are valid instead got "
+          . np($input))
+        if ref $input ne 'ARRAY';
 
-    return Result->Ok(value => $input) unless $parser;
+      return Result->Ok(value => $input) unless $parser;
 
-    my (@messages, @values);
-    my $i = 0;
+      my (@messages, @values);
+      my $i = 0;
 
-    for my $val (@$input) {
-      my $result = $parser->run($val);
-      if ($result->is_ok && !@messages) {
-        $input = $result->rest;
-        push @values => $result->value;
+      for my $val (@$input) {
+        my $result = $parser->run($val);
+        if ($result->is_ok && !@messages) {
+          $input = $result->rest;
+          push @values => $result->value;
+        }
+        if ($result->is_error) {
+          push @messages => "index " . $i . " " . $result->message;
+        }
+        $i++;
       }
-      if ($result->is_error) {
-        push @messages => "index " . $i . " " . $result->message;
-      }
-      $i++;
-    }
 
-    return Result->CompositeError(messages => \@messages) if @messages;
-    return Result->Ok(value => \@values);
-  } => $name);
+      return Result->CompositeError(messages => \@messages) if @messages;
+      return Result->Ok(value => \@values);
+    } => $name,
+  );
 }
 
 sub HasKey ($key, $value = Defined) {
   my $prefix = __PACKAGE__ . '::HasKey';
-  my $name   = $value->name =~ /Defined/
+  my $name
+    = $value->name =~ /Defined/
     ? "$prefix($key)"
     : "$prefix($key => " . $value->name . ")";
-  
-  Parser->new(sub ($input) {
-    return Result->Error(message => "only hash references are valid instead got " . np($input))
-      if ref($input) ne 'HASH';
 
-    return Result->Error(message => "key " . np($key) . " is missing")
-      unless exists $input->{$key};
+  Parser->new(
+    sub ($input) {
+      return Result->Error(
+        message => "only hash references are valid instead got " . np($input))
+        if ref($input) ne 'HASH';
 
-    my $result = $value->run($input->{$key});
-    return Result->Error(message => "key " . np($key) . " " . $result->message) if $result->is_error;
+      return Result->Error(message => "key " . np($key) . " is missing")
+        unless exists $input->{$key};
 
-    my @keys = grep { $_ ne $key } keys %$input;
-    my %rest = %{$input}{@keys};
-    my $pair = [$key, $result->value];
+      my $result = $value->run($input->{$key});
+      return Result->Error(
+        message => "key " . np($key) . " " . $result->message)
+        if $result->is_error;
 
-    return Result->Ok(value => $pair, rest => %rest ? \%rest : undef);
-  } => $name);
+      my @keys = grep { $_ ne $key } keys %$input;
+      my %rest = %{$input}{@keys};
+      my $pair = [$key, $result->value];
+
+      return Result->Ok(value => $pair, rest => %rest ? \%rest : undef);
+    } => $name,
+  );
 }
 
 sub MayHaveKey ($key, $value = Defined) {
   my $prefix = __PACKAGE__ . '::MayHaveKey';
-  my $name   = $value->name =~ /Defined/
+  my $name
+    = $value->name =~ /Defined/
     ? "$prefix($key)"
     : "$prefix($key => " . $value->name . ")";
 
-  Parser->new(sub ($input) {
-    return Result->Error(message => "only hash references are valid instead got " . np($input))
-      unless ref($input) eq 'HASH' || !defined($input);
+  Parser->new(
+    sub ($input) {
+      return Result->Error(
+        message => "only hash references are valid instead got " . np($input))
+        unless ref($input) eq 'HASH' || !defined($input);
 
-    return Result->Void unless defined $input;
-    return Result->Void(rest => $input) unless exists $input->{$key};
+      return Result->Void                 unless defined $input;
+      return Result->Void(rest => $input) unless exists $input->{$key};
 
-    my $result = $value->run($input->{$key});
-    return Result->Error(message => "key " . np($key) . " " . $result->message) if $result->is_error;
+      my $result = $value->run($input->{$key});
+      return Result->Error(
+        message => "key " . np($key) . " " . $result->message)
+        if $result->is_error;
 
-    my @keys = grep { $_ ne $key } keys %$input;
-    my %rest = %{$input}{@keys};
-    my $pair = [$key, $result->value];
+      my @keys = grep { $_ ne $key } keys %$input;
+      my %rest = %{$input}{@keys};
+      my $pair = [$key, $result->value];
 
-    return Result->Ok(value => $pair, rest => %rest ? \%rest : undef);
-  } => $name);
+      return Result->Ok(value => $pair, rest => %rest ? \%rest : undef);
+    } => $name,
+  );
 }
 
 sub Keys (%schema) {
@@ -384,7 +422,7 @@ sub OptionalKeys (%schema) {
 }
 
 sub HashObject ($class_name, @parsers) {
-  my $inner = And(@parsers);
+  my $inner      = And(@parsers);
   my $attributes = join(', ', map { $_->name } @parsers);
 
   my $parser = Parser->new(sub ($input) {
@@ -399,21 +437,26 @@ sub HashObject ($class_name, @parsers) {
 }
 
 sub InstanceOf ($class_name) {
-  Parser->new(sub ($input) {
-    if (blessed $input && $input->isa($class_name)) {
-      return Result->Ok(value => $input);
-    }
-    return Result->Error(message => np($input) . " is not an instance of $class_name");
-  } => "InstanceOf($class_name)");
+  Parser->new(
+    sub ($input) {
+      if (blessed $input && $input->isa($class_name)) {
+        return Result->Ok(value => $input);
+      }
+      return Result->Error(
+        message => np($input) . " is not an instance of $class_name");
+    } => "InstanceOf($class_name)"
+  );
 }
 
 sub ClassOf ($class_name) {
-  Parser->new(sub ($input) {
-    if ($input && $input->can('new')) {
-      return Result->Ok(value => $input);
-    }
-    return Result->Error(message => np($input) . " is not a class");
-  } => "ClassOf($class_name)");
+  Parser->new(
+    sub ($input) {
+      if ($input && $input->can('new')) {
+        return Result->Ok(value => $input);
+      }
+      return Result->Error(message => np($input) . " is not a class");
+    } => "ClassOf($class_name)"
+  );
 }
 
 1;

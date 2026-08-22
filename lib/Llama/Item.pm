@@ -7,7 +7,8 @@ use experimental 'lexical_subs';
 
 sub BUILD ($self, @args) {
   if (!@args && (my @required = $self->class->required_attributes)) {
-    Carp::croak "ArgumentError: missing required attribute(s): " . join(', ' => @required);
+    Carp::croak "ArgumentError: missing required attribute(s): "
+      . join(', ' => @required);
   }
   $self->parse(@args);
 }
@@ -22,11 +23,12 @@ my sub attribute_value ($self, $attribute, $value) {
 }
 
 sub parse ($self, @args) {
-  Carp::croak "ParseError: can't parse an empty value" unless @args || ref $self;
-  return unless @args;
+  Carp::croak "ParseError: can't parse an empty value"
+    unless @args || ref $self;
+  return                  unless @args;
   $self = $self->allocate unless ref $self;
 
-  my %errors = ();
+  my %errors     = ();
   my %attributes = @args > 1 ? @args : $args[0]->%*;
   for my $name ($self->class->attributes) {
     my $attribute = $self->class->attribute($name);
@@ -39,7 +41,7 @@ sub parse ($self, @args) {
   }
 
   if (%errors) {
-    my $messages   = join "\n" => map { "$_ $errors{$_}" } keys %errors;
+    my $messages = join "\n" => map { "$_ $errors{$_}" } keys %errors;
     Carp::croak "ParseError: $messages\n from data: " . np(%attributes);
   }
 
@@ -72,7 +74,8 @@ sub toStr ($self) {
   my @pairs = $self->META->pairs;
   return $class unless @pairs;
 
-  my $pairs = join ', ' => map { $_->key . ' => ' . $_->value } grep { $_->value } @pairs;
+  my $pairs = join ', ' => map { $_->key . ' => ' . $_->value }
+    grep { $_->value } @pairs;
   return "$class($pairs)";
 }
 

@@ -30,19 +30,21 @@ sub build ($self, $baseclass) {
   # 1) Make enum class inherit from base class i.e. MyEnum->isa('Llama::Enum')
   $self->superclasses($baseclass);
 
-  # 2) Add a method that references the enum parent package i.e. MyEnum->KEY->parent => 'MyEnum'
+# 2) Add a method that references the enum parent package i.e. MyEnum->KEY->parent => 'MyEnum'
   $self->add_method(parent => sub { $classname });
 
-  # 3) Override import method in enum class to support aliasing e.g. "use MyEnum -alias => 'My'"
-  $self->add_method(import => sub($class, @args) {
-    return unless @args && $args[0] eq '-alias';
+# 3) Override import method in enum class to support aliasing e.g. "use MyEnum -alias => 'My'"
+  $self->add_method(
+    import => sub($class, @args) {
+      return unless @args && $args[0] eq '-alias';
 
-    my $alias = @args == 1 ? [split '::' => $class]->[-1] : $args[1];
-    my ($importer) = caller;
+      my $alias = @args == 1 ? [split '::' => $class]->[-1] : $args[1];
+      my ($importer) = caller;
 
-    no strict 'refs';
-    *{$importer . '::' . $alias} = sub :prototype() { $class };
-  });
+      no strict 'refs';
+      *{ $importer . '::' . $alias } = sub : prototype() { $class };
+    },
+  );
 
   # 4) Ensure that the key and value indexes exist
   $self->add_key_index;
@@ -53,12 +55,12 @@ sub build ($self, $baseclass) {
 
 sub add_key_index ($self) {
   no strict 'refs';
-  %{$self->name . '::' . Llama::Enum->KEYS_INDEX} = ();
+  %{ $self->name . '::' . Llama::Enum->KEYS_INDEX } = ();
 }
 
 sub add_value_index ($self) {
   no strict 'refs';
-  %{$self->name . '::' . Llama::Enum->VALUES_INDEX} = ();
+  %{ $self->name . '::' . Llama::Enum->VALUES_INDEX } = ();
 }
 
 1;

@@ -19,8 +19,8 @@ delegate [qw(is_mutable is_optional is_valid default order options)] => 'type';
 sub is_required ($self) { !$self->is_optional }
 
 sub value_type ($self) { $self->type->value }
-sub type ($self) { $self->{type} }
-sub name ($self) { $self->{name} }
+sub type       ($self) { $self->{type} }
+sub name       ($self) { $self->{name} }
 
 sub validate_writable ($self) {
   Carp::confess $self->name . " is not writable" unless $self->is_mutable;

@@ -29,8 +29,10 @@ sub parse_ok ($parser, $val, @args) {
 
   if (@args > 0) {
     if (ref $args[0]) {
-      is_deeply $result->value => $args[0] =>
-        "expected: " . np($args[0]) . ', got: ' . np($result->value);
+      is_deeply $result->value => $args[0] => "expected: "
+        . np($args[0])
+        . ', got: '
+        . np($result->value);
     } else {
       is $result->value => $args[0];
     }
@@ -42,7 +44,7 @@ sub parse_ok ($parser, $val, @args) {
 sub error_ok ($result, $pattern = undef, %options) {
   my $name = $options{-name} // '';
 
-  isa_ok $result => "Llama::Parser::Result" => $name;
+  isa_ok $result => "Llama::Parser::Result"        => $name;
   isa_ok $result => "Llama::Parser::Result::Error" => $name;
 
   my $msg = 'result is error';

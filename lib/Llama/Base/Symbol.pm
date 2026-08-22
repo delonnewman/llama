@@ -9,7 +9,7 @@ sub new ($class) {
   return $SYMBOLS{$class} //= bless \$class, $class;
 }
 
-*name = \&Llama::Base::__name__;
+*name  = \&Llama::Base::__name__;
 *toStr = \&Llama::Base::__name__;
 
 1;

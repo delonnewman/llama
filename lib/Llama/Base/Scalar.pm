@@ -4,8 +4,8 @@ use Llama::Prelude qw(+Base :signatures);
 use Scalar::Util ();
 
 use overload
-  '0+' => sub{shift->toNum},
-  '${}' => sub{shift->toScalarRef};
+  '0+'  => sub { shift->toNum },
+  '${}' => sub { shift->toScalarRef };
 
 sub new ($class, $value) {
   bless \$value, $class;
@@ -14,11 +14,11 @@ sub new ($class, $value) {
 sub value ($self) { $$self }
 
 sub looks_like_number ($self) {
-  Scalar::Util::looks_like_number($self->value)
+  Scalar::Util::looks_like_number($self->value);
 }
 
-sub toNum ($self) { 0+$self->value }
-sub toInt ($self) { int $self->value }
+sub toNum       ($self) { 0 + $self->value }
+sub toInt       ($self) { int $self->value }
 sub toScalarRef ($self) { $self }
 
 1;
