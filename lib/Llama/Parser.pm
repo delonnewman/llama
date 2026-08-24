@@ -134,7 +134,8 @@ sub AndThen (@parsers) {
 =head2 And
 
     my $one_two_three = And(Num(1), Num(2), Num(3));
-    $one_two_three->parse("123") # => [Result::Ok(1, "23"), Result::Ok(2, "3"), Result::Ok(3)]
+    $one_two_three->parse("123")
+      # => [Result::Ok(1, "23"), Result::Ok(2, "3"), Result::Ok(3)]
 
 =cut
 
