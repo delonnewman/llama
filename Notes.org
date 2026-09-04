@@ -72,3 +72,81 @@ https://nrepl.org/nrepl/building_servers.html
 ** Base::Scalar
 ** Base::Array
 ** Base::Hash
+
+* Enumerable
+Look at Elixirs protocol and Clojure's Transducers.
+
+https://elixir.hexdocs.pm/Enumerable.html
+https://elixir.hexdocs.pm/enumerable-and-streams.html
+https://clojure.org/reference/transducers
+https://github.com/delonnewman/transducers-ruby
+https://www.npmjs.com/package/@thi.ng/transducers
+
+** Range
+- Lazy range Enumerable, built in integration with native Perl iteration operators
+- Protocol for iterating on objects
+
+* Time Classes
+- Scalar objects
+- Integrate with Time::Piece optionally (DateTime)
+- Integrate with Range
+
+** Date
+Iterates by day
+** Time (Time of Day)
+Iterates by 30 second intervals
+** DateTime
+Iterates by day
+** Duration
+Iterates by 30 second intervals
+
+* Lisp
+A Simple Lisp reader for Perl code. Put another way, a Lisp with Perl Semantics.
+To simplify semantics will assume the following:
+  - use strict 'vars'
+  - Won't include syntax types that would be redundant for a Lisp
+
+** Syntax
+- Syntax Objects
+  - VariableDefinition
+    - LexicalVariableDefinition (my)
+    - TransientVariableDefinition (state)
+    - ExtendedGlobalVariableDefinition (local)
+    - ScopedGlobalVariableDefinition (our)
+  - Variable
+    - Scalar
+    - Array
+    - Hash
+    - Code
+    - Glob
+  - Control
+    - Do
+    - While
+      - Until
+    - DoWhile
+      - DoUntil
+    - ForEach
+    - If (If/Elsif/Else)
+      - Unless
+    - Given/When
+    - Sub
+  - Operator
+    - Deref
+      - ArrayDeref (@$)
+      - HashDeref (%$)
+      - ScalarDeref ($$)
+      - ParameterizedDeref
+        - ParameterizedCodeDeref (->())
+        - ParameterizedArrayDeref (->[])
+        - ParameterizedHashDeref (->{})
+    - Ref (\)
+    - Binary
+    - Unary
+  - Data
+    - List (same semantics as Perl, just that quoted lists evaluate to an ArrayRef)
+    - String (quoted symbols are strings and symbols are just bare strings)
+    - Number
+    - Ref
+      - ArrayRef ([...])
+      - HashRef ({...})
+      - CodeRef (sub{...})
