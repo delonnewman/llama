@@ -1,0 +1,5 @@
+[TestingAndDebugging::RequireUseStrict]
+equivalent_modules = Llama::Prelude Llama::Test::TestSuite
+
+[TestingAndDebugging::RequireUseWarnings]
+equivalent_modules = Llama::Prelude Llama::Test::TestSuite
