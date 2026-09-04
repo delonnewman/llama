@@ -10,7 +10,7 @@ use Llama::Class::Unit;
 use Llama::Class::Product;
 use Llama::Class::Record;
 
-use experimental 'lexical_subs';
+use experimental 'lexical_subs'; # TODO: add to prelude
 
 sub import($class, @args) {
   return unless @args;
