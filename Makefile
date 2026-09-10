@@ -11,7 +11,7 @@ clean:
 	rm -rf t/data
 
 docs:
-	pod2html --htmldir=./docs --podpath=./lib --verbose
+	pods2html lib doc
 
 deps:
 	cpm install --with-develop -g
