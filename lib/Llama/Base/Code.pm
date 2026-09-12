@@ -1,5 +1,6 @@
 package Llama::Base::Code;
 use Llama::Prelude qw(+Base +Callable :signatures);
+no strict 'refs';
 
 use Carp ();
 use Sub::Util ();
@@ -20,6 +21,17 @@ sub set_name ($self, $name) {
 
   $self;
 }
+
+sub basename ($self) {
+  [split '::' => $self->name]->[-1];
+}
+
+sub namespace ($self) {
+  my $ns = $self->name;
+  $ns =~ s/::\w+$//;
+  $ns;
+}
+*classname = \&namespace;
 
 sub toStr ($self) {
   my $name = $self->name;
