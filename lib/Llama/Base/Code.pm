@@ -28,4 +28,6 @@ sub toStr ($self) {
   return "$name=OBJECT($id)";
 }
 
+sub toCodeRef ($self) { $self }
+
 1;
