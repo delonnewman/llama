@@ -14,6 +14,7 @@ use Data::Printer;
 use Scalar::Util ();
 
 use Llama::Exception;
+use Llama::Method;
 use Llama::Package;
 
 use overload
@@ -100,8 +101,8 @@ sub itself ($self, @args) { $self }
 sub if   ($self, @args) { $self->if_truthy(@args) }
 sub else ($self, @args) { $self->if_falsy(@args) }
 
-sub bind ($self, $name, @outer) {
-  return sub (@inner) { $self->$name(@outer, @inner) };
+sub bind ($self, $name, @args) {
+  Llama::Method->new($self, $name, @args)
 }
 
 1;
