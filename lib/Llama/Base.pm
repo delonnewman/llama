@@ -105,5 +105,7 @@ sub bind ($self, $name, @args) {
   Llama::Method->new($self, $name, @args)
 }
 
+*method = \&bind;
+
 1;
 
