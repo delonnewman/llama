@@ -19,4 +19,7 @@ deps:
 tidy:
 	find . -name "*.pl" -o -name "*.pm" | xargs perltidy -b -bext='/'
 
+tools:
+	cpanm Carmel App::cpm Carp::Always
+
 .PHONY: test console clean docs tidy
