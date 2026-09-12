@@ -23,7 +23,6 @@ sub clone ($self) {
   return $copy;
 }
 
-
 sub __kind__ { 'Llama::Class::Hash' }
 
 sub instance ($self) {
