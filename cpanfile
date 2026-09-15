@@ -15,4 +15,7 @@ on 'develop' => sub {
 
   requires 'Pod::Tree';
   requires 'Devel::Cover';
+  requires 'Perl::Critic';
+  requires 'Perl::Tidy';
+  requires 'App::perlimports';
 };
