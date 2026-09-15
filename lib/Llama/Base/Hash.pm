@@ -17,6 +17,8 @@ sub BUILD ($self, %args) {
   %{$self} = %args;
 }
 
+sub DESTROY {  }
+
 sub clone ($self) {
   my $copy = $self->allocate;
   %{$copy} = %{$self};

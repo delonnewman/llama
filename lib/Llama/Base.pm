@@ -22,11 +22,13 @@ use overload
   'bool' => sub { shift->toBool },
   '""'   => sub { shift->toStr };
 
-our $OBJECT_SPACE = Llama::ObjectSpace->new;
-
 # Protect subclasses using AUTOLOAD
 sub DESTROY ($self) {
-  Llama::ObjectSpace->new->remove($self);
+  $self->OBJECT_SPACE->remove($self);
+}
+
+sub OBJECT_SPACE ($self) {
+  state $object_space = Llama::ObjectSpace->new
 }
 
 sub new ($self, @args) {
@@ -40,7 +42,7 @@ sub new ($self, @args) {
 }
 
 sub allocate ($self) {
-  $OBJECT_SPACE->allocate($self->__name__);
+  $self->OBJECT_SPACE->allocate($self->__name__);
 }
 
 sub BUILD ($self, %attributes) {
@@ -48,19 +50,23 @@ sub BUILD ($self, %attributes) {
 }
 
 sub set_attribute ($self, $name, $value) {
-  $OBJECT_SPACE->set($self, $name, $value);
+  $self->OBJECT_SPACE->set($self, $name, $value);
 }
 
 sub attribute_value ($self, $name) {
-  $OBJECT_SPACE->get($self, $name);
+  $self->OBJECT_SPACE->get($self, $name);
 }
 
 sub assign_attributes ($self, %attributes) {
   for my $name (keys %attributes) {
-    $OBJECT_SPACE->set($self, $name, $attributes{$name});
+    $self->OBJECT_SPACE->set($self, $name, $attributes{$name});
   }
 
   $self;
+}
+
+sub attributes ($self) {
+  $self->OBJECT_SPACE->attributes($self);
 }
 
 sub META ($self) {
@@ -142,5 +148,5 @@ package Person {
   sub age ($self) { $self->attribute_value('age') }
 }
 
-Person->new(name => 'Delon', age => 63)
-Person->new(name => 'Jackie', age => 45)
+$d = Person->new(name => 'Delon', age => 63);
+$j = Person->new(name => 'Jackie', age => 45);

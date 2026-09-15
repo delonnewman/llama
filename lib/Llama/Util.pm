@@ -120,7 +120,7 @@ sub toHashRef ($val) {
 }
 
 sub string_hash ($string) {
-  return 0 unless $string;
+  return 0 unless defined $string;
   return ord $string if length $string == 1;
   return murmur_hash($string);
 }
