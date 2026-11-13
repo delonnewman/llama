@@ -40,7 +40,8 @@ sub allocate ($self) {
 
 sub META ($self) {
   return $self->class unless ref $self;
-  return $self->instance;
+
+  $self->instance;
 }
 
 sub class ($self) {
@@ -56,7 +57,7 @@ sub class ($self) {
 sub __kind__ { 'Llama::Class' }
 
 sub instance ($self) {
-  return Llama::Package->named('Llama::Object')->maybe_load->name->new($self);
+  Llama::Package->named('Llama::Object')->maybe_load->name->new($self);
 }
 
 sub __name__ ($self) { ref($self) || $self }
