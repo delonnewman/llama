@@ -22,10 +22,10 @@ use overload
   '!'    => sub { !$_[0]->toBool },
   '""'   => sub { $_[0]->toStr },
   '.'    => sub { $_[2] ? $_[1] . $_[0]->toStr : $_[0]->toStr . $_[1] },
-  '=='   => sub { $_[0]->equals($_[1]) },
-  'eq'   => sub { $_[0]->equals($_[1]) },
-  '!='   => sub { !$_[0]->equals($_[1]) },
-  'ne'   => sub { !$_[0]->equals($_[1]) },
+  '=='   => sub { $_[0]->equalsNum($_[1]) },
+  'eq'   => sub { $_[0]->equalsStr($_[1]) },
+  '!='   => sub { !$_[0]->equalsNum($_[1]) },
+  'ne'   => sub { !$_[0]->equalsStr($_[1]) },
   'fallback' => 0;
 
 # Protect subclasses using AUTOLOAD
@@ -74,8 +74,10 @@ sub __addr__ ($self) { Scalar::Util::refaddr($self) }
 *__hash__ = \&__addr__;
 
 sub identical ($self, $other) { $self->__id__ eq $other->__id__ }
-*equals  = \&identical;
 *matches = \&identical;
+*equals  = \&identical;
+*equalsStr = \&equals;
+*equalsNum = \&equals;
 
 sub toBool { 1 }
 

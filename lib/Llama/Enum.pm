@@ -10,13 +10,10 @@ use Llama::Enum::Class;
 use Llama::Enum::Member;
 
 use overload (
-  "int" => sub { $_[0]->value },
+  "int" => sub { $_[0]->toNum },
+  "0+"  => sub { $_[0]->toNum },
   "cmp" => sub { $_[0]->key   cmp $_[0]->parent->coerce($_[1])->key },
   "<=>" => sub { $_[0]->value <=> $_[0]->parent->coerce($_[1])->value },
-  "=="  => sub { $_[0]->value == $_[0]->parent->coerce($_[1])->value },
-  "eq"  => sub { $_[0]->key   eq $_[0]->parent->coerce($_[1])->key },
-  "!="  => sub { $_[0]->value != $_[0]->parent->coerce($_[1])->value },
-  "ne"  => sub { $_[0]->key   ne $_[0]->parent->coerce($_[1])->key },
 );
 
 use constant KEYS_INDEX   => 'MEMBERS';
@@ -134,6 +131,14 @@ sub equals ($self, $other) {
   $self->key eq $other->key;
 }
 
+sub equalsStr ($self, $other) {
+  $self->value eq $self->parent->coerce($other)->value
+}
+
+sub equalsNum ($self, $other) {
+  $self->value == $self->parent->coerce($other)->value
+}
+
 sub toStr ($self) {
   my $str = $self->parent . '(';
 
@@ -147,6 +152,8 @@ sub toStr ($self) {
 
 sub key ($self)   { [split('::', ref $self)]->[-1] }
 sub value ($self) { $$self }
+
+sub toNum ($self) { $self->value + 0 }
 
 1;
 
