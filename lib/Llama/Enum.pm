@@ -10,13 +10,13 @@ use Llama::Enum::Class;
 use Llama::Enum::Member;
 
 use overload (
+  "int" => sub { $_[0]->value },
   "cmp" => sub { $_[0]->key   cmp $_[0]->parent->coerce($_[1])->key },
   "<=>" => sub { $_[0]->value <=> $_[0]->parent->coerce($_[1])->value },
-  "=="  => sub { $_[0]->value ==  $_[0]->parent->coerce($_[1])->value},
-  "eq"  => sub { $_[0]->key   eq  $_[0]->parent->coerce($_[1])->key },
-  "!="  => sub { $_[0]->value !=  $_[0]->parent->coerce($_[1])->value },
-  "ne"  => sub { $_[0]->key   ne  $_[0]->parent->coerce($_[1])->key },
-  "int" => sub { $_[0]->value }
+  "=="  => sub { $_[0]->value == $_[0]->parent->coerce($_[1])->value },
+  "eq"  => sub { $_[0]->key   eq $_[0]->parent->coerce($_[1])->key },
+  "!="  => sub { $_[0]->value != $_[0]->parent->coerce($_[1])->value },
+  "ne"  => sub { $_[0]->key   ne $_[0]->parent->coerce($_[1])->key },
 );
 
 use constant KEYS_INDEX   => 'MEMBERS';
@@ -114,18 +114,14 @@ sub add ($class, $key, $value = $key) {
 sub add_key_mapping ($class, $key, $object) {
   Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
 
-  no strict 'refs';
-  ${ $class . '::' . KEYS_INDEX }{$key} = $object;
-
+  ${$class . '::' . KEYS_INDEX}{$key} = $object;
   $class;
 }
 
 sub add_value_mapping ($class, $value, $object) {
   Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
 
-  no strict 'refs';
-  ${ $class . '::' . VALUES_INDEX }{$value} = $object;
-
+  ${$class . '::' . VALUES_INDEX}{$value} = $object;
   $class;
 }
 
