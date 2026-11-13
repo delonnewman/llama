@@ -25,12 +25,11 @@ sub new ($class, $name = undef) {
     : $class;
   $name //= '';
 
-  my $self = $class->allocate;
+  my $self = bless \$name, $kind;
 
   # generate name
   $name .= "$class=OBJECT(" . sprintf("0x%06X", $self->__addr__) . ')'
     unless $name;
-  $$self .= $name;
 
   $self->mro($DEFAULT_MRO);
   $self->kind($kind);
