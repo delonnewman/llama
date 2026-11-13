@@ -30,8 +30,7 @@ use constant VALUES_INDEX => 'MEMBERS_BY_VALUE';
 sub import ($class, @args) {
   my ($enum_package) = caller;
 
-  my %enum
-    = ref $args[0] eq 'HASH' ? %{ $args[0] } : map { uc $_ => uc $_ } @args;
+  my %enum = ref $args[0] eq 'HASH' ? %{ $args[0] } : map { uc $_ => uc $_ } @args;
   my $enum = Llama::Enum::Class->new($enum_package)->build($class);
 
   $enum->class->add($_, $enum{$_}) for keys %enum;
@@ -77,13 +76,13 @@ sub members ($class, @keys) {
   my %members = %{ $class . '::' . KEYS_INDEX };
   my @members = @keys ? map { $members{$_} } @keys : values %members;
 
-  return wantarray ? @members : int @members;
+  wantarray ? @members : int @members;
 }
 
 sub all ($class, @keys) {
   Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
 
-  return wantarray ? $class->members(@keys) : [$class->members(@keys)];
+  wantarray ? $class->members(@keys) : [$class->members(@keys)];
 }
 
 sub of ($class, $value) {
@@ -105,9 +104,7 @@ sub keyed ($class, $key) {
   my %members = %{ $class . '::' . KEYS_INDEX };
   $members{$key} // do {
     my $valid = join ', ' => keys %members;
-    Carp::croak "invalid $class key ("
-      . np($key)
-      . ") valid keys are ($valid)";
+    Carp::croak "invalid $class key (" . np($key) . ") valid keys are ($valid)";
   };
 }
 
