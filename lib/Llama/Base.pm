@@ -18,8 +18,15 @@ use Llama::Method;
 use Llama::Package;
 
 use overload
-  'bool' => sub { shift->toBool },
-  '""'   => sub { shift->toStr };
+  'bool' => sub { $_[0]->toBool },
+  '!'    => sub { !$_[0]->toBool },
+  '""'   => sub { $_[0]->toStr },
+  '.'    => sub { $_[2] ? $_[1] . $_[0]->toStr : $_[0]->toStr . $_[1] },
+  '=='   => sub { $_[0]->equals($_[1]) },
+  'eq'   => sub { $_[0]->equals($_[1]) },
+  '!='   => sub { !$_[0]->equals($_[1]) },
+  'ne'   => sub { !$_[0]->equals($_[1]) },
+  'fallback' => 0;
 
 # Protect subclasses using AUTOLOAD
 sub DESTROY { }
