@@ -123,7 +123,7 @@ sub add_method ($self, $name, $sub) {
   $self;
 }
 
-# a class is it's own class
+# a class is it's own eigen class
 sub eigen_class ($self) { $self }
 
 sub methods ($self) {
@@ -135,9 +135,7 @@ sub methods ($self) {
   wantarray ? @methods : \@methods;
 }
 
-=pod
-
-head2 add_attribute
+=head2 add_attribute
 
   $class->add_attribute($attribute);
   $class->add_attribute($name, mutable => 1, value => 'Str');
@@ -171,9 +169,7 @@ sub attribute ($self, $name) {
   return $attribute;
 }
 
-=pod
-
-head2 attributes
+=head2 attributes
 
   $class->attributes # => Llama::Schema
 
@@ -192,11 +188,13 @@ sub readonly_attributes ($self) {
 sub required_attributes ($self) {
   my @attributes = map { $_->name }
     grep { $_->is_required && !$_->default } $self->ATTRIBUTES;
+
   wantarray ? @attributes : \@attributes;
 }
 
 sub optional_attributes ($self) {
   my @attributes = map { $_->name } grep { $_->is_optional } $self->ATTRIBUTES;
+
   wantarray ? @attributes : \@attributes;
 }
 
