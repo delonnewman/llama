@@ -17,12 +17,13 @@ sub BUILD ($self, %args) {
   %{$self} = %args;
 }
 
+sub DESTROY {  }
+
 sub clone ($self) {
   my $copy = $self->allocate;
   %{$copy} = %{$self};
   return $copy;
 }
-
 
 sub __kind__ { 'Llama::Class::Hash' }
 

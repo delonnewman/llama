@@ -11,12 +11,15 @@ clean:
 	rm -rf t/data
 
 docs:
-	pod2html --htmldir=./docs --podpath=./lib --verbose
+	pods2html lib doc
 
 deps:
 	cpm install --with-develop -g
 
 tidy:
 	find . -name "*.pl" -o -name "*.pm" | xargs perltidy -b -bext='/'
+
+tools:
+	cpanm Carmel App::cpm
 
 .PHONY: test console clean docs tidy

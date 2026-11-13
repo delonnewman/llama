@@ -12,5 +12,10 @@ on 'develop' => sub {
   requires 'Term::ReadKey';
   requires 'B::Keywords';
   requires 'Carp::Always';
+
+  requires 'Pod::Tree';
   requires 'Devel::Cover';
+  requires 'Perl::Critic';
+  requires 'Perl::Tidy';
+  requires 'App::perlimports';
 };

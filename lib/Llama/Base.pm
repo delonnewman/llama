@@ -14,6 +14,8 @@ use Data::Printer;
 use Scalar::Util ();
 
 use Llama::Exception;
+use Llama::ObjectSpace;
+use Llama::Method;
 use Llama::Package;
 
 use overload
@@ -21,7 +23,13 @@ use overload
   '""'   => sub { shift->toStr };
 
 # Protect subclasses using AUTOLOAD
-sub DESTROY { }
+sub DESTROY ($self) {
+  $self->OBJECT_SPACE->remove($self);
+}
+
+sub OBJECT_SPACE ($self) {
+  state $object_space = Llama::ObjectSpace->new
+}
 
 sub new ($self, @args) {
   my $class = ref($self) || $self;
@@ -34,7 +42,31 @@ sub new ($self, @args) {
 }
 
 sub allocate ($self) {
-  die Llama::NotImplementedError->new('subclasses should implement allocate');
+  $self->OBJECT_SPACE->allocate($self->__name__);
+}
+
+sub BUILD ($self, %attributes) {
+  $self->assign_attributes(%attributes);
+}
+
+sub set_attribute ($self, $name, $value) {
+  $self->OBJECT_SPACE->set($self, $name, $value);
+}
+
+sub attribute_value ($self, $name) {
+  $self->OBJECT_SPACE->get($self, $name);
+}
+
+sub assign_attributes ($self, %attributes) {
+  for my $name (keys %attributes) {
+    $self->OBJECT_SPACE->set($self, $name, $attributes{$name});
+  }
+
+  $self;
+}
+
+sub attributes ($self) {
+  $self->OBJECT_SPACE->attributes($self);
 }
 
 sub META ($self) {
@@ -100,9 +132,21 @@ sub itself ($self, @args) { $self }
 sub if   ($self, @args) { $self->if_truthy(@args) }
 sub else ($self, @args) { $self->if_falsy(@args) }
 
-sub bind ($self, $name, @outer) {
-  return sub (@inner) { $self->$name(@outer, @inner) };
+sub bind ($self, $name, @args) {
+  Llama::Method->new($self, $name, @args)
 }
+
+*method = \&bind;
 
 1;
 
+__END__
+
+package Person {
+  use Llama::Prelude qw(+Base :signatures);
+  sub name ($self) { $self->attribute_value('name') }
+  sub age ($self) { $self->attribute_value('age') }
+}
+
+$d = Person->new(name => 'Delon', age => 63);
+$j = Person->new(name => 'Jackie', age => 45);

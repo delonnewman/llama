@@ -12,4 +12,6 @@ sub new ($class) {
 *name  = \&Llama::Base::__name__;
 *toStr = \&Llama::Base::__name__;
 
+sub DESTROY {  }
+
 1;

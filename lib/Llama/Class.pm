@@ -25,11 +25,12 @@ sub new ($class, $name = undef) {
     : $class;
   $name //= '';
 
-  my $self = bless \$name, $kind;
+  my $self = $class->allocate;
 
   # generate name
   $name .= "$class=OBJECT(" . sprintf("0x%06X", $self->__addr__) . ')'
     unless $name;
+  $$self .= $name;
 
   $self->mro($DEFAULT_MRO);
   $self->kind($kind);
@@ -127,11 +128,12 @@ sub add_method ($self, $name, $sub) {
 sub eigen_class ($self) { $self }
 
 sub methods ($self) {
-  my %methods
-    = map { $_ => [sort Llama::Package->named($_)->symbol_names('CODE')] }
-    $self->ancestry;
+  my @methods = map {
+    my $class = $_;
+    map { "$class\::$_" } sort Llama::Package->named($_)->symbol_names('CODE')
+  } $self->ancestry;
 
-  wantarray ? %methods : \%methods;
+  wantarray ? @methods : \@methods;
 }
 
 =pod

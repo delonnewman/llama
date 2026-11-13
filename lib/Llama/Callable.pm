@@ -15,4 +15,6 @@ sub partial ($self, @outer) {
   return sub (@inner) { $self->call(@outer, @inner) }
 }
 
+# TODO: add memoize, curry compose and compose_right
+
 1;
