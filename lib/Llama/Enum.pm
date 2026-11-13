@@ -1,7 +1,7 @@
 package Llama::Enum;
 use Llama::Prelude qw(+Base::Scalar :signatures);
 
-use Carp         ();
+use Carp ();
 use Scalar::Util qw(blessed);
 use Data::Printer;
 
@@ -9,21 +9,13 @@ use Llama::Enum::Class;
 use Llama::Enum::Member;
 
 use overload (
-  "cmp" =>
-    sub($self, $other, $) { $self->key cmp $self->parent->coerce($other)->key },
-  "<=>" => sub($self, $other, $) {
-    $self->value <=> $self->parent->coerce($other)->value;
-  },
-  "==" => sub($self, $other, $) {
-    $self->value == $self->parent->coerce($other)->value;
-  },
-  "eq" =>
-    sub($self, $other, $) { $self->key eq $self->parent->coerce($other)->key },
-  "!=" => sub($self, $other, $) {
-    $self->value != $self->parent->coerce($other)->value;
-  },
-  "ne" =>
-    sub($self, $other, $) { $self->key ne $self->parent->coerce($other)->key },
+  "cmp" => sub { $_[0]->key   cmp $_[0]->parent->coerce($_[1])->key },
+  "<=>" => sub { $_[0]->value <=> $_[0]->parent->coerce($_[1])->value },
+  "=="  => sub { $_[0]->value ==  $_[0]->parent->coerce($_[1])->value},
+  "eq"  => sub { $_[0]->key   eq  $_[0]->parent->coerce($_[1])->key },
+  "!="  => sub { $_[0]->value !=  $_[0]->parent->coerce($_[1])->value },
+  "ne"  => sub { $_[0]->key   ne  $_[0]->parent->coerce($_[1])->key },
+  "int" => sub { $_[0]->value }
 );
 
 use constant KEYS_INDEX   => 'MEMBERS';
@@ -35,7 +27,7 @@ use constant VALUES_INDEX => 'MEMBERS_BY_VALUE';
 # This is where all the magic happens!
 #
 # See https://perldoc.perl.org/functions/use
-sub import($class, @args) {
+sub import ($class, @args) {
   my ($enum_package) = caller;
 
   my %enum
@@ -48,42 +40,38 @@ sub import($class, @args) {
 # Class Methods (i.e. methods called on the enum class,
 # see Llama::Enum::Class::build to see the methods that are dynamically created).
 
-sub coerce($class, $value) {
-  Carp::croak "invalid usage should only be called on subclasses"
-    if $class eq __PACKAGE__;
+sub coerce ($class, $value) {
+  Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
 
   return $value             if blessed($value) && $value->isa(__PACKAGE__);
   return $class->of($value) if $class->is_value($value);
-  return $class->keyed($value);
+
+  $class->keyed($value);
 }
 
 sub values_of ($class, @keys) {
-  Carp::croak "invalid usage should only be called on subclasses"
-    if $class eq __PACKAGE__;
+  Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
 
   my @values = map { $class->keyed($_)->value } @keys;
   wantarray ? @values : \@values;
 }
 
-sub is_key($class, $key) {
-  Carp::croak "invalid usage should only be called on subclasses"
-    if $class eq __PACKAGE__;
+sub is_key ($class, $key) {
+  Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
 
   no strict 'refs';
   ${ $class . '::' . KEYS_INDEX }{ uc $key };
 }
 
-sub is_value($class, $value) {
-  Carp::croak "invalid usage should only be called on subclasses"
-    if $class eq __PACKAGE__;
+sub is_value ($class, $value) {
+  Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
 
   no strict 'refs';
   ${ $class . '::' . VALUES_INDEX }{$value};
 }
 
-sub members($class, @keys) {
-  Carp::croak "invalid usage should only be called on subclasses"
-    if $class eq __PACKAGE__;
+sub members ($class, @keys) {
+  Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
 
   no strict 'refs';
   my %members = %{ $class . '::' . KEYS_INDEX };
@@ -92,33 +80,30 @@ sub members($class, @keys) {
   return wantarray ? @members : int @members;
 }
 
-sub all($class, @keys) {
-  Carp::croak "invalid usage should only be called on subclasses"
-    if $class eq __PACKAGE__;
+sub all ($class, @keys) {
+  Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
 
   return wantarray ? $class->members(@keys) : [$class->members(@keys)];
 }
 
-sub of($class, $value) {
-  Carp::croak "invalid usage should only be called on subclasses"
-    if $class eq __PACKAGE__;
+sub of ($class, $value) {
+  Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
 
   no strict 'refs';
   my %members_by_value = %{ $class . '::' . VALUES_INDEX };
-  return $members_by_value{$value} // do {
+  $members_by_value{$value} // do {
     my $valid = join ', ' => sort(keys %members_by_value);
     Carp::croak "invalid $class value ($value) valid values are ($valid)";
   };
 }
 
-sub keyed($class, $key) {
-  Carp::croak "invalid usage should only be called on subclasses"
-    if $class eq __PACKAGE__;
+sub keyed ($class, $key) {
+  Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
 
   $key = uc $key;
   no strict 'refs';
   my %members = %{ $class . '::' . KEYS_INDEX };
-  return $members{$key} // do {
+  $members{$key} // do {
     my $valid = join ', ' => keys %members;
     Carp::croak "invalid $class key ("
       . np($key)
@@ -126,56 +111,53 @@ sub keyed($class, $key) {
   };
 }
 
-sub add($class, $key, $value = $key) {
-  Carp::croak "invalid usage should only be called on subclasses"
-    if $class eq __PACKAGE__;
+sub add ($class, $key, $value = $key) {
+  Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
 
   Llama::Enum::Member->new($class, $key)->build($value);
-
-  return $class;
+  $class;
 }
 
-sub add_key_mapping($class, $key, $object) {
-  Carp::croak "invalid usage should only be called on subclasses"
-    if $class eq __PACKAGE__;
+sub add_key_mapping ($class, $key, $object) {
+  Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
 
   no strict 'refs';
   ${ $class . '::' . KEYS_INDEX }{$key} = $object;
 
-  return $class;
+  $class;
 }
 
-sub add_value_mapping($class, $value, $object) {
-  Carp::croak "invalid usage should only be called on subclasses"
-    if $class eq __PACKAGE__;
+sub add_value_mapping ($class, $value, $object) {
+  Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
 
   no strict 'refs';
   ${ $class . '::' . VALUES_INDEX }{$value} = $object;
 
-  return $class;
+  $class;
 }
 
 # Member Instance Methods (i.e. methods called on enum
 # member instances e.g. MyEnum->KEY->name)
 
-sub equals($self, $other) {
+sub equals ($self, $other) {
   return 0 unless blessed($other) && $other->isa($self->parent);
 
-  return $self->key eq $other->key;
+  $self->key eq $other->key;
 }
 
 sub toStr ($self) {
   my $str = $self->parent . '(';
-  $str
-    .= $self->key eq $self->value
+
+  $str .= $self->key eq $self->value
     ? $self->key
     : $self->key . ' => ' . $self->value;
   $str .= ")";
-  return $str;
+
+  $str;
 }
 
-sub key($self)   { [split('::', ref $self)]->[-1] }
-sub value($self) { $$self }
+sub key ($self)   { [split('::', ref $self)]->[-1] }
+sub value ($self) { $$self }
 
 1;
 
