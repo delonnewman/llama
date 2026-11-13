@@ -1,5 +1,6 @@
 package Llama::Enum;
 use Llama::Prelude qw(+Base::Scalar :signatures);
+no strict 'refs';
 
 use Carp ();
 use Scalar::Util qw(blessed);
@@ -58,22 +59,19 @@ sub values_of ($class, @keys) {
 sub is_key ($class, $key) {
   Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
 
-  no strict 'refs';
-  ${ $class . '::' . KEYS_INDEX }{ uc $key };
+  ${$class . '::' . KEYS_INDEX}{ uc $key };
 }
 
 sub is_value ($class, $value) {
   Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
 
-  no strict 'refs';
-  ${ $class . '::' . VALUES_INDEX }{$value};
+  ${$class . '::' . VALUES_INDEX}{$value};
 }
 
 sub members ($class, @keys) {
   Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
 
-  no strict 'refs';
-  my %members = %{ $class . '::' . KEYS_INDEX };
+  my %members = %{$class . '::' . KEYS_INDEX};
   my @members = @keys ? map { $members{$_} } @keys : values %members;
 
   wantarray ? @members : int @members;
@@ -88,8 +86,7 @@ sub all ($class, @keys) {
 sub of ($class, $value) {
   Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
 
-  no strict 'refs';
-  my %members_by_value = %{ $class . '::' . VALUES_INDEX };
+  my %members_by_value = %{$class . '::' . VALUES_INDEX};
   $members_by_value{$value} // do {
     my $valid = join ', ' => sort(keys %members_by_value);
     Carp::croak "invalid $class value ($value) valid values are ($valid)";
@@ -100,8 +97,7 @@ sub keyed ($class, $key) {
   Carp::croak "invalid usage should only be called on subclasses" if $class eq __PACKAGE__;
 
   $key = uc $key;
-  no strict 'refs';
-  my %members = %{ $class . '::' . KEYS_INDEX };
+  my %members = %{$class . '::' . KEYS_INDEX};
   $members{$key} // do {
     my $valid = join ', ' => keys %members;
     Carp::croak "invalid $class key (" . np($key) . ") valid keys are ($valid)";
